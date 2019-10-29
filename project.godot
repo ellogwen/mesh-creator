@@ -1,0 +1,44 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "Reference",
+"class": "FaceModeGizmoController",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/gizmos/face_mode_gizmo_controller.gd"
+}, {
+"base": "Reference",
+"class": "MeshCreatorInstanceEditorState",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/MeshCreatorInstanceEditorState.gd"
+}, {
+"base": "Reference",
+"class": "VertexModeGizmoController",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/gizmos/vertex_mode_gizmo_controller.gd"
+} ]
+_global_script_class_icons={
+"FaceModeGizmoController": "",
+"MeshCreatorInstanceEditorState": "",
+"VertexModeGizmoController": ""
+}
+
+[application]
+
+config/name="MeshCreator"
+config/icon="res://icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "mesh_creator" )
+
+[rendering]
+
+environment/default_environment="res://default_env.tres"
