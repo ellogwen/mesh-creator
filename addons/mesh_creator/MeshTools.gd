@@ -29,23 +29,52 @@ func CreateMeshFromFaces(facesArray, mesh = null, material = null):
 
 	for i in range(0, facesSize):
 		var face = facesArray[i]
-		uv_array.append(Vector2(0, 0))
+		var edge_ab = face.edge_length_a_b()
+		var edge_bc = face.edge_length_b_c()
+		var edge_cd = face.edge_length_c_d()
+		var edge_da = face.edge_length_d_a()
+		
+		var centroid = face.get_centroid()
+		
+		var N = face.Normal.abs()
+		var Auv = Vector2.ZERO
+		var Buv = Vector2.ZERO
+		var Cuv = Vector2.ZERO
+		var Duv = Vector2.ZERO
+		
+		if (N.x > N.y and N.x > N.z):
+			Auv = Vector2(face.A.z, face.A.y)
+			Buv = Vector2(face.B.z, face.B.y)	
+			Cuv = Vector2(face.C.z, face.C.y)
+			Duv = Vector2(face.D.z, face.D.y)
+		elif (N.y > N.x and N.y > N.z):
+			Auv = Vector2(face.A.x, face.A.z)
+			Buv = Vector2(face.B.x, face.B.z)	
+			Cuv = Vector2(face.C.x, face.C.z)
+			Duv = Vector2(face.D.x, face.D.z)
+		elif (N.z > N.x and N.z > N.y):
+			Auv = Vector2(face.A.x, face.A.y)
+			Buv = Vector2(face.B.x, face.B.y)	
+			Cuv = Vector2(face.C.x, face.C.y)
+			Duv = Vector2(face.D.x, face.D.y)
+				
+		uv_array.append(Auv)
 		normal_array.append(face.Normal)
 		vertex_array.append(face.A)
-		uv_array.append(Vector2(1 + i, 0))
+		uv_array.append(Buv)
 		normal_array.append(face.Normal)
 		vertex_array.append(face.B)
-		uv_array.append(Vector2(1 + i, 1 + i))
+		uv_array.append(Cuv)
 		normal_array.append(face.Normal)
 		vertex_array.append(face.C)
 		
-		uv_array.append(Vector2(0, 0))
+		uv_array.append(Auv)
 		normal_array.append(face.Normal)
 		vertex_array.append(face.A)
-		uv_array.append(Vector2(1 + i, 1 + i))
+		uv_array.append(Cuv)
 		normal_array.append(face.Normal)
 		vertex_array.append(face.C)
-		uv_array.append(Vector2(0, 1 + i))
+		uv_array.append(Duv)
 		normal_array.append(face.Normal)
 		vertex_array.append(face.D)
 		

@@ -11,6 +11,9 @@ var _editorState: MeshCreatorInstanceEditorState = null
 
 func get_editor_state() -> MeshCreatorInstanceEditorState:
 	return _editorState
+	
+func get_editor_plugin():
+	return ActiveEditorPlugin
 
 func _init():	
 	if (Engine.is_editor_hint()):
@@ -45,8 +48,14 @@ func SetEditorPlugin(plugin):
 	ActiveEditorPlugin = plugin
 	if (ActiveEditorPlugin != null):
 		ActiveEditorPlugin.connect("state_changed", self, "_on_editorplugin_state_changed")
+		ActiveEditorPlugin.connect("mode_changed", self, "_on_editorplugin_mode_changed")
 		
 func _on_editorplugin_state_changed():		
+	pass	
+	
+func _on_editorplugin_mode_changed():		
+	if (_editorIndicator != null):
+		_editorIndicator.UpdateDraw()
 	pass	
 	
 func GetFacesWithVertex(vtx: Vector3):
@@ -61,6 +70,8 @@ func _on_editor_state_changed():
 	if (_editorIndicator != null):
 		_editorIndicator.UpdateDraw()
 	pass
+	
+
 
 # Face class
 class Face:
@@ -72,6 +83,7 @@ class Face:
 	var NormalCDB: Vector3
 	var Normal: Vector3	
 	var Id: int = -1
+	var EdgesMapping: Array = Array()
 	
 	func clone():
 		var f = Face.new()
@@ -82,8 +94,20 @@ class Face:
 		f.NormalABD = NormalABD
 		f.NormalCDB = NormalCDB
 		f.Normal = Normal
-		f.Id = Id
+		f.Id = Id		
 		return f
+		
+	func edge_length_a_b():
+		return abs((B - A).length())
+		
+	func edge_length_b_c():
+		return abs((C - D).length())
+		
+	func edge_length_c_d():
+		return abs((D - C).length())
+		
+	func edge_length_d_a():
+		return abs((D - A).length())
 	
 	func set_points(a, b, c, d):
 		A = a
