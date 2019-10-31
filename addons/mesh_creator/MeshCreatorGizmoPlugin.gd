@@ -46,15 +46,13 @@ func create_gizmo(spatial):
 	else:
 		return null
 		
-func _on_toolbox_tool_action(actionName, params):
-	if (actionName == "TOOL_INSET"):
-		if (_meshCreatorGizmo != null):
-			var controller = _meshCreatorGizmo.get_active_controller()
-			if (controller != null):
-				controller.request_action(actionName, params)
-		pass
+func _on_toolbox_tool_action(actionName, params):	
+	if (_meshCreatorGizmo != null):
+		var controller = _meshCreatorGizmo.get_active_controller()
+		if (controller != null):
+			controller.request_action(actionName, params)	
 	pass
-		
+			
 func forward_editor_mouse_button_input(event, camera) -> bool:
 	if (_meshCreatorGizmo != null):
 		return _meshCreatorGizmo.forward_editor_mouse_button_input(event, camera)

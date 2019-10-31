@@ -262,44 +262,87 @@ func _has_clicked_on_face(face, point, camera):
 	else:
 		return false	
 		
+func _extrude_selected_faces():
+	var mci = _gizmo.get_spatial_node()
+	for face in mci.get_editor_state().get_selected_faces():
+		var highestId = mci.get_editor_state().get_highest_face_id()
+		var newAFace = face.clone(highestId + 1)
+		var newBFace = face.clone(highestId + 2)
+		var newCFace = face.clone(highestId + 3)
+		var newDFace = face.clone(highestId + 4)
+		
+		var newAPos = face.A - (face.Normal * 0.25)
+		var newBPos = face.B - (face.Normal * 0.25)
+		var newCPos = face.C - (face.Normal * 0.25)
+		var newDPos = face.D - (face.Normal * 0.25)
+		
+		face.set_points(newAPos, newBPos, newCPos, newDPos)
+		
+		newAFace.set_point(2, face.B)
+		newAFace.set_point(3, face.A)
+		newBFace.set_point(0, face.B)
+		newBFace.set_point(3, face.C)
+		newCFace.set_point(1, face.C)
+		newCFace.set_point(0, face.D)
+		newDFace.set_point(1, face.A)
+		newDFace.set_point(2, face.D)
+		
+		mci.get_editor_state().add_face(newAFace)
+		mci.get_editor_state().add_face(newBFace)
+		mci.get_editor_state().add_face(newCFace)
+		mci.get_editor_state().add_face(newDFace)
+		pass
+		
+	meshTools.CreateMeshFromFaces(mci.get_editor_state().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))
+	mci.get_editor_state().recalculate_edges()
+	mci.get_editor_state().notify_state_changed()
+	gizmo_redraw()
+	pass
+	
+func _inset_selected_faces():
+	var mci = _gizmo.get_spatial_node()
+	for face in mci.get_editor_state().get_selected_faces():
+		var highestId = mci.get_editor_state().get_highest_face_id()
+		var newAFace = face.clone(highestId + 1)
+		var newBFace = face.clone(highestId + 2)
+		var newCFace = face.clone(highestId + 3)
+		var newDFace = face.clone(highestId + 4)
+		
+		var newAPos = face.A + ((face.get_centroid() - face.A) * 0.25)
+		var newBPos = face.B + ((face.get_centroid() - face.B) * 0.25)
+		var newCPos = face.C + ((face.get_centroid() - face.C) * 0.25)
+		var newDPos = face.D + ((face.get_centroid() - face.D) * 0.25)
+		
+		face.set_points(newAPos, newBPos, newCPos, newDPos)
+		
+		newAFace.set_point(3, face.A)
+		newAFace.set_point(2, face.B)
+		newBFace.set_point(0, face.B)
+		newBFace.set_point(3, face.C)
+		newCFace.set_point(1, face.C)
+		newCFace.set_point(0, face.D)
+		newDFace.set_point(1, face.A)
+		newDFace.set_point(2, face.D)
+		
+		mci.get_editor_state().add_face(newAFace)
+		mci.get_editor_state().add_face(newBFace)
+		mci.get_editor_state().add_face(newCFace)
+		mci.get_editor_state().add_face(newDFace)
+		pass
+		
+	meshTools.CreateMeshFromFaces(mci.get_editor_state().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))
+	mci.get_editor_state().recalculate_edges()
+	mci.get_editor_state().notify_state_changed()
+	gizmo_redraw()
+	pass
+		
 func request_action(actionName, params):
 	if (actionName == "TOOL_INSET"):
 		print("Action Inset")
-		var mci = _gizmo.get_spatial_node()
-		for face in mci.get_editor_state().get_selected_faces():
-			var highestId = mci.get_editor_state().get_highest_face_id()
-			var newAFace = face.clone(highestId + 1)
-			var newBFace = face.clone(highestId + 2)
-			var newCFace = face.clone(highestId + 3)
-			var newDFace = face.clone(highestId + 4)
-			
-			var newAPos = face.A + ((face.get_centroid() - face.A) * 0.25)
-			var newBPos = face.B + ((face.get_centroid() - face.B) * 0.25)
-			var newCPos = face.C + ((face.get_centroid() - face.C) * 0.25)
-			var newDPos = face.D + ((face.get_centroid() - face.D) * 0.25)
-			
-			face.set_points(newAPos, newBPos, newCPos, newDPos)
-			
-			newAFace.set_point(3, face.A)
-			newAFace.set_point(2, face.B)
-			newBFace.set_point(0, face.B)
-			newBFace.set_point(3, face.C)
-			newCFace.set_point(1, face.C)
-			newCFace.set_point(0, face.D)
-			newDFace.set_point(1, face.A)
-			newDFace.set_point(2, face.D)
-			
-			mci.get_editor_state().add_face(newAFace)
-			mci.get_editor_state().add_face(newBFace)
-			mci.get_editor_state().add_face(newCFace)
-			mci.get_editor_state().add_face(newDFace)
-			pass
-			
-		meshTools.CreateMeshFromFaces(mci.get_editor_state().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))
-		mci.get_editor_state().recalculate_edges()
-		mci.get_editor_state().notify_state_changed()
-		gizmo_redraw()
-			
+		_inset_selected_faces()
+	if (actionName == "TOOL_EXTRUDE"):
+		print("Action Extrude")
+		_extrude_selected_faces()			
 	pass
 	
 class TranslateTool:	
