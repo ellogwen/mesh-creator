@@ -1,5 +1,6 @@
 class_name MeshCreatorInstanceEditorState
 
+var _highestFaceId = -1
 var _faces: Array
 var _edges: Array
 var _selectedFaceIds: Array
@@ -13,6 +14,7 @@ func _init():
 	_edges = Array()
 	_selectedFaceIds = Array()
 	_selectedEdgeIds = Array()
+	var _highestFaceId = -1
 
 ####################	
 # edges
@@ -58,8 +60,15 @@ func get_face(faceId):
 		if (face.Id == faceId):
 			return face
 	return null
+	
+func get_highest_face_id():
+	return _highestFaceId
 
 func add_face(face) -> void:
+	# @todo find a better way to handle face ids
+	if (face.Id > _highestFaceId):
+		_highestFaceId = face.Id
+		
 	self._faces.push_back(face)
 	if face.EdgesMapping.empty():		
 		var abEdge = find_edge(face.A, face.B)
@@ -87,19 +96,49 @@ func add_face(face) -> void:
 		connect_face_to_edges(face, PoolIntArray([abEdge.Id, bcEdge.Id, cdEdge.Id, daEdge.Id]))			
 		
 	emit_signal("STATE_CHANGED")
+
+
+		
+func recalculate_edges():
+	_edges.clear()
+	for face in _faces:
+		face.EdgesMapping.clear()
+		var abEdge = find_edge(face.A, face.B)
+		var bcEdge = find_edge(face.B, face.C)
+		var cdEdge = find_edge(face.C, face.D)
+		var daEdge = find_edge(face.D, face.A)
+		
+		if (abEdge == null):			
+			abEdge = Edge.new(face.A, face.B, (face.Id * 4) + 0)
+			_edges.push_back(abEdge)
+		if (bcEdge == null):			
+			bcEdge = Edge.new(face.B, face.C, (face.Id * 4) + 1)
+			_edges.push_back(bcEdge)
+		if (cdEdge == null):			
+			cdEdge = Edge.new(face.C, face.D, (face.Id * 4) + 2)
+			_edges.push_back(cdEdge)
+		if (daEdge == null):			
+			daEdge = Edge.new(face.D, face.A, (face.Id * 4) + 3)
+			_edges.push_back(daEdge)
+			
+		connect_edge_to_faces(abEdge, PoolIntArray([face.Id]))
+		connect_edge_to_faces(bcEdge, PoolIntArray([face.Id]))
+		connect_edge_to_faces(cdEdge, PoolIntArray([face.Id]))
+		connect_edge_to_faces(daEdge, PoolIntArray([face.Id]))		
+		connect_face_to_edges(face, PoolIntArray([abEdge.Id, bcEdge.Id, cdEdge.Id, daEdge.Id]))			
+	
 	
 func connect_face_to_edges(face, edgeIds: PoolIntArray):
 	for edgeId in edgeIds:
 		if not face.EdgesMapping.has(edgeId):
-			face.EdgesMapping.push_back(edgeId)
-	emit_signal("STATE_CHANGED")
+			face.EdgesMapping.push_back(edgeId)	
 	pass
 	
 func disconnect_face_from_edges(face, edgeIds: PoolIntArray):
 	for edgeId in edgeIds:
-		face.EdgesMapping.erase(edgeId)
-	emit_signal("STATE_CHANGED")
-	pass
+		face.EdgesMapping.erase(edgeId)	
+	pass	
+
 
 # face selection
 

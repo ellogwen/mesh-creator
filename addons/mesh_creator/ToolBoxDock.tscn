@@ -88,13 +88,19 @@ text = "
 TOOLS"
 align = 1
 
-[node name="ToolsButton" type="GridContainer" parent="ToolsList"]
+[node name="ToolsButtons" type="GridContainer" parent="ToolsList"]
 margin_top = 163.0
 margin_right = 219.0
 margin_bottom = 183.0
 columns = 3
 
-[node name="Button_ToolExtrude" type="Button" parent="ToolsList/ToolsButton"]
+[node name="Button_ToolExtrude" type="Button" parent="ToolsList/ToolsButtons"]
 margin_right = 60.0
 margin_bottom = 20.0
 text = "Extrude"
+
+[node name="Button_ToolInset" type="Button" parent="ToolsList/ToolsButtons"]
+margin_left = 64.0
+margin_right = 109.0
+margin_bottom = 20.0
+text = "Inset"

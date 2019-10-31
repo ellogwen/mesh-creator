@@ -2,6 +2,7 @@ tool
 extends Panel
 
 signal button_create_new_mesh
+signal tool_action
 
 var _mesh_creator = null
 
@@ -19,6 +20,9 @@ func _connect_signals():
 	$ToolsList/ModesButtons/Button_ModeVertex.connect("toggled", self, "_on_ButtonModeVertex_Toggle")
 	$ToolsList/ModesButtons/Button_ModeEdge.connect("toggled", self, "_on_ButtonModeEdge_Toggle")
 	$ToolsList/ModesButtons/Button_ModeFace.connect("toggled", self, "_on_ButtonModeFace_Toggle")
+	
+	$ToolsList/ToolsButtons/Button_ToolExtrude.connect("pressed", self, "_on_ButtonToolExtrude_Press")
+	$ToolsList/ToolsButtons/Button_ToolInset.connect("pressed", self, "_on_ButtonToolInset_Press")
 	pass
 
 func _on_CreatorModeChanged():
@@ -47,6 +51,14 @@ func _on_ButtonModeEdge_Toggle(isPressed):
 func _on_ButtonModeFace_Toggle(isPressed):
 	if (isPressed):
 		_mesh_creator.set_selection_mode(_mesh_creator.SelectionModes.FACE)
+	pass	
+	
+func _on_ButtonToolInset_Press():
+	emit_signal("tool_action", "TOOL_INSET", null)
+	pass
+	
+func _on_ButtonToolExtrude_Press():
+	emit_signal("tool_action", "TOOL_EXTRUDE", null)
 	pass	
 
 	

@@ -27,6 +27,7 @@ func _enter_tree() -> void:
 	connect("main_screen_changed", self, "_on_editor_main_screen_changed")
 	toolBoxDock = preload("res://addons/mesh_creator/ToolBoxDock.tscn").instance()
 	toolBoxDock.connect("button_create_new_mesh", self, "_on_toolbox_button_create_new_mesh")
+	toolBoxDock.connect("tool_action", meshCreatorGizmoPlugin, "_on_toolbox_tool_action")
 	toolBoxDock.set_creator(self)
 	add_control_to_dock(DOCK_SLOT_LEFT_UL, toolBoxDock)
 	add_spatial_gizmo_plugin(meshCreatorGizmoPlugin)
@@ -84,7 +85,7 @@ func _on_toolbox_button_create_new_mesh() -> void:
 	mci.add_child(dbg3d)
 	dbg3d.set_owner(root3D)	
 	pass
-	
+
 func _create_new_cube():	
 	var mt = MeshTools.new()		
 	var cube = mt.MeshGenerator_Cube()

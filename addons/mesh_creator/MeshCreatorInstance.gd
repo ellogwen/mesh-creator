@@ -85,7 +85,7 @@ class Face:
 	var Id: int = -1
 	var EdgesMapping: Array = Array()
 	
-	func clone():
+	func clone(newId = -1):
 		var f = Face.new()
 		f.A = A
 		f.B = B
@@ -94,7 +94,7 @@ class Face:
 		f.NormalABD = NormalABD
 		f.NormalCDB = NormalCDB
 		f.Normal = Normal
-		f.Id = Id		
+		f.Id = newId		
 		return f
 		
 	func edge_length_a_b():

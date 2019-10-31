@@ -142,6 +142,7 @@ func gizmo_set_handle(index, camera, screen_point : Vector2):
 			#_move_face_to(face.Id, newFacePos)		
 			_move_face_to(face.Id, newPos)
 		meshTools.CreateMeshFromFaces(spatial.get_editor_state().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))
+		spatial.get_editor_state().recalculate_edges()
 		spatial.get_editor_state().notify_state_changed()
 		gizmo_redraw()
 	pass
@@ -260,6 +261,46 @@ func _has_clicked_on_face(face, point, camera):
 		return true
 	else:
 		return false	
+		
+func request_action(actionName, params):
+	if (actionName == "TOOL_INSET"):
+		print("Action Inset")
+		var mci = _gizmo.get_spatial_node()
+		for face in mci.get_editor_state().get_selected_faces():
+			var highestId = mci.get_editor_state().get_highest_face_id()
+			var newAFace = face.clone(highestId + 1)
+			var newBFace = face.clone(highestId + 2)
+			var newCFace = face.clone(highestId + 3)
+			var newDFace = face.clone(highestId + 4)
+			
+			var newAPos = face.A + ((face.get_centroid() - face.A) * 0.25)
+			var newBPos = face.B + ((face.get_centroid() - face.B) * 0.25)
+			var newCPos = face.C + ((face.get_centroid() - face.C) * 0.25)
+			var newDPos = face.D + ((face.get_centroid() - face.D) * 0.25)
+			
+			face.set_points(newAPos, newBPos, newCPos, newDPos)
+			
+			newAFace.set_point(3, face.A)
+			newAFace.set_point(2, face.B)
+			newBFace.set_point(0, face.B)
+			newBFace.set_point(3, face.C)
+			newCFace.set_point(1, face.C)
+			newCFace.set_point(0, face.D)
+			newDFace.set_point(1, face.A)
+			newDFace.set_point(2, face.D)
+			
+			mci.get_editor_state().add_face(newAFace)
+			mci.get_editor_state().add_face(newBFace)
+			mci.get_editor_state().add_face(newCFace)
+			mci.get_editor_state().add_face(newDFace)
+			pass
+			
+		meshTools.CreateMeshFromFaces(mci.get_editor_state().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))
+		mci.get_editor_state().recalculate_edges()
+		mci.get_editor_state().notify_state_changed()
+		gizmo_redraw()
+			
+	pass
 	
 class TranslateTool:	
 	var startPosition	
@@ -269,6 +310,6 @@ class TranslateTool:
 	var right
 	func getDrawPosition(index):
 		match(index):
-			0: return currentPosition + (right * 0.5)
-			1: return currentPosition - (up * 0.5)
-			2: return currentPosition + (forward * 0.5)
+			0: return currentPosition + (right * 0.25)
+			1: return currentPosition - (up * 0.25)
+			2: return currentPosition + (forward * 0.25)

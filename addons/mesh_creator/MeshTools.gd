@@ -43,20 +43,20 @@ func CreateMeshFromFaces(facesArray, mesh = null, material = null):
 		var Duv = Vector2.ZERO
 		
 		if (N.x > N.y and N.x > N.z):
-			Auv = Vector2(face.A.z, face.A.y)
-			Buv = Vector2(face.B.z, face.B.y)	
-			Cuv = Vector2(face.C.z, face.C.y)
-			Duv = Vector2(face.D.z, face.D.y)
+			Auv = Vector2(face.A.z + 0.5, face.A.y + 0.5)
+			Buv = Vector2(face.B.z + 0.5, face.B.y + 0.5)	
+			Cuv = Vector2(face.C.z + 0.5, face.C.y + 0.5)
+			Duv = Vector2(face.D.z + 0.5, face.D.y + 0.5)
 		elif (N.y > N.x and N.y > N.z):
-			Auv = Vector2(face.A.x, face.A.z)
-			Buv = Vector2(face.B.x, face.B.z)	
-			Cuv = Vector2(face.C.x, face.C.z)
-			Duv = Vector2(face.D.x, face.D.z)
+			Auv = Vector2(face.A.x + 0.5, face.A.z + 0.5)
+			Buv = Vector2(face.B.x + 0.5, face.B.z + 0.5)	
+			Cuv = Vector2(face.C.x + 0.5, face.C.z + 0.5)
+			Duv = Vector2(face.D.x + 0.5, face.D.z + 0.5)
 		elif (N.z > N.x and N.z > N.y):
-			Auv = Vector2(face.A.x, face.A.y)
-			Buv = Vector2(face.B.x, face.B.y)	
-			Cuv = Vector2(face.C.x, face.C.y)
-			Duv = Vector2(face.D.x, face.D.y)
+			Auv = Vector2(face.A.x + 0.5, face.A.y + 0.5)
+			Buv = Vector2(face.B.x + 0.5, face.B.y + 0.5)	
+			Cuv = Vector2(face.C.x + 0.5, face.C.y + 0.5)
+			Duv = Vector2(face.D.x + 0.5, face.D.y + 0.5)
 				
 		uv_array.append(Auv)
 		normal_array.append(face.Normal)

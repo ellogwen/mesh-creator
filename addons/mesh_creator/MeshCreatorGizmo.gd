@@ -63,6 +63,9 @@ func _set_active_gizmo_controller(controller):
 	
 	_gizmo_controller = controller
 	pass
+	
+func get_active_controller():
+	return _gizmo_controller
 
 func redraw():
 	print("Redraw (Selection Mode) " + str(get_plugin().get_creator().SelectionMode))
