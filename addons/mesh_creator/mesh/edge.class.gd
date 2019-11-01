@@ -1,21 +1,21 @@
 # namespace MeshCreator_Mesh
+class_name MeshCreator_Mesh_Edge
 
-class Edge:
-	var A: Vector3
-	var B: Vector3
-	var Id: int = -1	
-	var FacesMapping: Array = Array()
+var _a: Vector3
+var _b: Vector3
+
+func _init(a: Vector3, b: Vector3) -> void:
+	_a = a
+	_b = b	
+
+func length() -> float:
+	return (_b - _a).length()
 	
-	func _init(a, b, id):
-		A = a
-		B = b
-		Id = id
-	
-	func length():
-		return (B - A).length()
+func matches(a: Vector3, b: Vector3, strict: bool = false) -> bool:
+	if (strict):
+		return (_a == a and _b == b)
+	else:
+		return ( (_a == a and _b == b) or (_a == b and _b == a) )
 		
-	func matches(a, b, strict = false):
-		if (strict):
-			return (A == a and B == b)
-		else:
-			return ( (A == a and B == b) or (A == b and B == a) )
+func get_interpolated_point(factor: float) -> Vector3:
+	return (_b - _a) * factor

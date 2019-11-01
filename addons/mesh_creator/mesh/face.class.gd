@@ -1,106 +1,151 @@
 # namspace MeshCreator_Mesh
+class_name MeshCreator_Mesh_Face
 
-class Face:
-	var A: Vector3
-	var B: Vector3
-	var C: Vector3
-	var D: Vector3
-	var NormalABD: Vector3
-	var NormalCDB: Vector3
-	var Normal: Vector3	
-	var Id: int = -1
-	var EdgesMapping: Array = Array()
+# typeof Array<MeshCreator_Mesh_Triangle>
+var _tris: Array = Array() 
+# typeof Array<MeshCreator_Mesh_Vertex>
+var _vertices: Array = Array()
+
+var _normal: Vector3
+var _centroid: Vector3 = Vector3.ZERO
+var _meshIndex: int = -1
+
+func _init(verts: Array = Array()) -> void:	
+	for v in verts:
+		_vertices.push_back(v)
+	_triangulate()
+	_calc_normal()
+	_calc_centroid()
+	pass	
 	
-	func clone(newId = -1):
-		var f = get_script().new()
-		f.A = A
-		f.B = B
-		f.C = C
-		f.D = D
-		f.NormalABD = NormalABD
-		f.NormalCDB = NormalCDB
-		f.Normal = Normal
-		f.Id = newId		
-		return f
-		
-	func edge_length_a_b():
-		return abs((B - A).length())
-		
-	func edge_length_b_c():
-		return abs((C - D).length())
-		
-	func edge_length_c_d():
-		return abs((D - C).length())
-		
-	func edge_length_d_a():
-		return abs((D - A).length())
+func get_mesh_index() -> int:
+	return _meshIndex
+	pass
 	
-	func set_points(a, b, c, d):
-		A = a
-		B = b
-		C = c
-		D = d
-		calc_normals()
-		
-	func set_point(index: int, p: Vector3):
-		match (index):
-			0: A = p
-			1: B = p
-			2: C = p
-			3: D = p		
-		calc_normals()
+func set_mesh_index(idx: int) -> void:
+	_meshIndex = idx
+	pass	
+
+func from_points(points: PoolVector3Array) -> void:
+	_vertices.clear()
+	for pt in points:		
+		_vertices.push_back(MeshCreator_Mesh_Vertex.new(pt))	
+	_triangulate()
+	_calc_normal()
+	_calc_centroid()
 	
-	func calc_normals():		
-		NormalABD = get_triangle_normal(A, B, D)
-		NormalCDB = get_triangle_normal(C, D, B)
-		Normal = ((NormalABD + NormalCDB) * 0.5).normalized()
-		pass
+func get_triangles() -> Array:
+	return _tris
+
+# @todo this does only work with convex!
+func _triangulate() -> bool:	
+	var vertCount = _vertices.size()
+	if (vertCount < 3):
+		return false
+	_tris.clear()
+	for i in range(2, vertCount):
+		var c = _vertices[i].get_position()
+		var b = _vertices[i - 1].get_position()
+		var a = _vertices[0].get_position()
+		var tri = MeshCreator_Mesh_Triangle.new(a, b, c)
+		_tris.push_back(tri)
+	return true
+		
+func _calc_normal() -> void:
+	var trisCount = _tris.size()				
+	if (trisCount < 1):
+		return
+		
+	_normal = Vector3.ZERO
+	for tri in _tris:
+		_normal += tri.get_normal()
+	_normal /= trisCount
+	_normal = _normal.normalized()
+	pass
 	
-	func get_triangle_normal(p1, p2, p3):
-		var u: Vector3 = (p2 - p1)
-		var v: Vector3 = (p3 - p1)
-		return Vector3(
-			(u.y * v.z) - (u.z * v.y),
-			(u.z * v.x) - (u.x * v.z),
-			(u.x * v.y) - (u.y * v.x)
-		).normalized()
-		pass
+func _calc_centroid() -> void:
+	var vertCount = _vertices.size()
+	if (vertCount < 3):
+		return
 		
-	func get_centroid() -> Vector3:
-		return 0.25 * (A + B + C + D)
-		pass
-		
-	func HasVertex(vtx: Vector3):
-		return (A == vtx or B == vtx or C == vtx or D == vtx)
-		
-	func GetVertexIndices(vtx: Vector3):
-		var indices = PoolIntArray()		
-		if A == vtx:
-			indices.append(0)
-		if B == vtx:
-			indices.append(1)
-		if C == vtx:
-			indices.append(2)
-		if D == vtx:
-			indices.append(3)
-			
-		return indices
+	var vecSum = Vector3.ZERO
+	for v in _vertices:
+		vecSum += v.get_position()
 	
-	func GetVertexByIndex(index: int):
-		match(index):
-			0: return A
-			1: return B
-			2: return C
-			3: return D
+	_centroid = vecSum / vertCount
+	pass
+
+func set_point_at_index(index: int, p: Vector3) -> void:	
+	_vertices[index].set_position(p)
+	_triangulate()
+	_calc_normal()
+	_calc_centroid()
+	
+func get_centroid() -> Vector3:
+	return _centroid
+
+func get_edge(fromIndex: int) -> MeshCreator_Mesh_Edge:
+	var vertCount = _vertices.size()
+	if (fromIndex < 0):
+		return null
+	if (fromIndex >= vertCount):
 		return null
 		
-	func Equals(face):
-		return (
-			(A == face.A or A == face.B or A == face.C or A == face.D)
-			and
-			(B == face.A or B == face.B or B == face.C or B == face.D)
-			and
-			(C == face.A or C == face.B or C == face.C or C == face.D)
-			and
-			(D == face.A or D == face.B or D == face.C or D == face.D)
-		)
+	var toIndex = fromIndex + 1
+	if (fromIndex == vertCount - 1):
+		toIndex = 0
+		
+	var a = _vertices[fromIndex].get_position()
+	var b = _vertices[toIndex].get_position()
+	
+	return MeshCreator_Mesh_Edge.new(a, b)
+
+func get_edge_length(fromIndex: int) -> float:
+	var vertCount = _vertices.size()
+	if (fromIndex < 0):
+		return 0.0
+	if (fromIndex >= vertCount):
+		return 0.0
+		
+	var toIndex = fromIndex + 1
+	if (fromIndex == vertCount - 1):
+		toIndex = 0
+		
+	var a = _vertices[fromIndex].get_position()
+	var b = _vertices[toIndex].get_position()
+	
+	return (b - a).length()
+
+func get_vertex(index: int) -> MeshCreator_Mesh_Vertex:
+	return _vertices[index]
+	
+func get_vertices() -> Array:
+	return _vertices
+
+func has_vertex(vertex: MeshCreator_Mesh_Vertex) -> bool:
+	return has_vertex_position(vertex.get_position())
+	
+func has_vertex_position(position: Vector3) -> bool:	
+	for v in _vertices:
+		if (position == v.get_position()):
+			return true
+	return false
+
+func get_vertex_index(position: Vector3) -> int:
+	for i in range(0, _vertices.size()):
+		if _vertices[i].get_position() == position:
+			return i
+	return -1
+
+func equals(otherFace: MeshCreator_Mesh_Face) -> bool:
+	for vtx in otherFace.get_vertices():
+		if (has_vertex(vtx) == false):
+			return false
+	return true
+
+func clone(newId = -1) -> MeshCreator_Mesh_Face:
+	var pts = PoolVector3Array()
+	for vtx in _vertices.size():
+		pts.push_back(vtx.get_position())
+	var f = get_script().new(pts)	
+	return f

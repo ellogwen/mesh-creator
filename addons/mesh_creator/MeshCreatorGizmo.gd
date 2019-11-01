@@ -15,8 +15,8 @@ var _vertexGizmoController
 var _faceGizmoController
 
 func _init():
-	_vertexGizmoController = preload("res://addons/mesh_creator/gizmos/vertex_mode_gizmo_controller.gd").new(self)
-	_faceGizmoController = preload("res://addons/mesh_creator/gizmos/face_mode_gizmo_controller.gd").new(self)
+	_vertexGizmoController = MeshCreator_Gizmos_VertexModeGizmoController.new(self)
+	_faceGizmoController = MeshCreator_Gizmos_FaceModeGizmoController.new(self)
 	pass
 	
 func setup(plugin):

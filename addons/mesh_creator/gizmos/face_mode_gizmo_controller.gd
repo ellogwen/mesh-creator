@@ -1,7 +1,7 @@
-class_name FaceModeGizmoController
+class_name MeshCreator_Gizmos_FaceModeGizmoController
+
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
-var MeshTools = preload("res://addons/mesh_creator/MeshTools.gd")
-var meshTools = MeshTools.new()
+var meshTools = MeshCreator_MeshTools.new()
 
 var MATERIALS = {
 	FACE_UNSELECTED = null,
