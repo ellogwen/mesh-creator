@@ -1,9 +1,10 @@
 extends Node
 
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
+var MeshCreator_Mesh_Face = preload("res://addons/mesh_creator/mesh/face.class.gd").Face
 
 func CreateFace(A: Vector3, B: Vector3, C: Vector3, D: Vector3):
-	var face = MeshCreatorInstance.Face.new()
+	var face = MeshCreator_Mesh_Face.new()
 	face.set_points(A, B, C, D)	
 	return face	
 	

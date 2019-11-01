@@ -1,5 +1,7 @@
 class_name MeshCreatorInstanceEditorState
 
+var MeshCreator_Mesh_Edge = preload("res://addons/mesh_creator/mesh/edge.class.gd").Edge
+
 var _highestFaceId = -1
 var _faces: Array
 var _edges: Array
@@ -77,16 +79,16 @@ func add_face(face) -> void:
 		var daEdge = find_edge(face.D, face.A)
 		
 		if (abEdge == null):			
-			abEdge = Edge.new(face.A, face.B, (face.Id * 4) + 0)
+			abEdge = MeshCreator_Mesh_Edge.new(face.A, face.B, (face.Id * 4) + 0)
 			_edges.push_back(abEdge)
 		if (bcEdge == null):			
-			bcEdge = Edge.new(face.B, face.C, (face.Id * 4) + 1)
+			bcEdge = MeshCreator_Mesh_Edge.new(face.B, face.C, (face.Id * 4) + 1)
 			_edges.push_back(bcEdge)
 		if (cdEdge == null):			
-			cdEdge = Edge.new(face.C, face.D, (face.Id * 4) + 2)
+			cdEdge = MeshCreator_Mesh_Edge.new(face.C, face.D, (face.Id * 4) + 2)
 			_edges.push_back(cdEdge)
 		if (daEdge == null):			
-			daEdge = Edge.new(face.D, face.A, (face.Id * 4) + 3)
+			daEdge = MeshCreator_Mesh_Edge.new(face.D, face.A, (face.Id * 4) + 3)
 			_edges.push_back(daEdge)
 			
 		connect_edge_to_faces(abEdge, PoolIntArray([face.Id]))
@@ -109,16 +111,16 @@ func recalculate_edges():
 		var daEdge = find_edge(face.D, face.A)
 		
 		if (abEdge == null):			
-			abEdge = Edge.new(face.A, face.B, (face.Id * 4) + 0)
+			abEdge = MeshCreator_Mesh_Edge.new(face.A, face.B, (face.Id * 4) + 0)
 			_edges.push_back(abEdge)
 		if (bcEdge == null):			
-			bcEdge = Edge.new(face.B, face.C, (face.Id * 4) + 1)
+			bcEdge = MeshCreator_Mesh_Edge.new(face.B, face.C, (face.Id * 4) + 1)
 			_edges.push_back(bcEdge)
 		if (cdEdge == null):			
-			cdEdge = Edge.new(face.C, face.D, (face.Id * 4) + 2)
+			cdEdge = MeshCreator_Mesh_Edge.new(face.C, face.D, (face.Id * 4) + 2)
 			_edges.push_back(cdEdge)
 		if (daEdge == null):			
-			daEdge = Edge.new(face.D, face.A, (face.Id * 4) + 3)
+			daEdge = MeshCreator_Mesh_Edge.new(face.D, face.A, (face.Id * 4) + 3)
 			_edges.push_back(daEdge)
 			
 		connect_edge_to_faces(abEdge, PoolIntArray([face.Id]))
@@ -182,25 +184,3 @@ func clear_face_selection() -> void:
 
 func notify_state_changed() -> void:
 	emit_signal("STATE_CHANGED")
-	
-# Edge class
-class Edge:
-	var A: Vector3
-	var B: Vector3
-	var Id: int = -1	
-	var FacesMapping: Array = Array()
-	
-	func _init(a, b, id):
-		A = a
-		B = b
-		Id = id
-	
-	func length():
-		return (B - A).length()
-		
-	func matches(a, b, strict = false):
-		if (strict):
-			return (A == a and B == b)
-		else:
-			return ( (A == a and B == b) or (A == b and B == a) )
-
