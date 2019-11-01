@@ -51,7 +51,9 @@ func SetEditorPlugin(plugin):
 		ActiveEditorPlugin.connect("state_changed", self, "_on_editorplugin_state_changed")
 		ActiveEditorPlugin.connect("mode_changed", self, "_on_editorplugin_mode_changed")
 		
-func _on_editorplugin_state_changed():		
+func _on_editorplugin_state_changed():	
+	if (_editorIndicator != null):
+		_editorIndicator.UpdateDraw()	
 	pass	
 	
 func _on_editorplugin_mode_changed():		

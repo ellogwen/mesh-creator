@@ -59,6 +59,10 @@ func make_visible(visible):
 		toolBoxDock.hide()
 	pass
 	
+func notify_state_changed():
+	emit_signal("state_changed")
+	pass
+	
 func set_selection_mode(selectionMode):
 	if (selectionMode != SelectionMode):
 		SelectionMode = selectionMode

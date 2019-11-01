@@ -3,7 +3,13 @@ class_name MeshCreator_Mesh_Mesh
 	
 # typeof Array<MeshCreator_Mesh_Face>
 var _faces: Array = Array()
+func get_face(index: int): return _faces[index]
 func get_faces() -> Array: return _faces
+func get_faces_selection(faceIds: Array) -> Array:
+	var faces = Array()
+	for fId in faceIds:
+		faces.push_back(get_face(fId))
+	return faces
 
 # typeof Array<MeshCreator_Mesh_Edge>
 var _edges: Array  = Array()	
@@ -11,7 +17,13 @@ func get_edges() -> Array: return _edges
 
 # typeof Array<MeasCreator_Mesh_Vertex>
 var _vertices: Array = Array()
+func get_vertex(index: int): return _vertices[index]
 func get_vertices() -> Array: return _vertices
+func get_vertices_selection(vtxIds: Array) -> Array:
+	var verts = Array()
+	for vId in vtxIds:
+		verts.push_back(get_vertex(vId))
+	return verts
 
 var _nextVerticesIndex = -1
 func _nextVertIdx() -> int:
@@ -27,8 +39,7 @@ func _init():
 	clear()		
 	pass
 
-func get_vertex(index: int):
-	return _vertices[index]
+
 	
 func clear():
 	_faces.clear()

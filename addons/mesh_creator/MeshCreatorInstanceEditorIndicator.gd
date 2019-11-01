@@ -20,6 +20,7 @@ func UpdateDraw():
 	clear()
 	
 	begin(Mesh.PRIMITIVE_LINES)	
+	
 	end()
 
 	# Begin draw.
@@ -27,21 +28,26 @@ func UpdateDraw():
 	
 	# face centers
 	if (MCI.get_editor_plugin().SelectionMode == 3):
-		for face in MCI.get_editor_state().get_faces():
+		for face in MCI.get_mc_mesh().get_faces():
 			_render_face_center(face)
 	
 	# selected faces
-	var selectedFaces = MCI.get_editor_state().get_selected_faces()	
+	# @todo erm... nope, this will surely be backfire 
+	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_tool("FACE_SELECTION").get_selected_face_ids())	
 	for face in selectedFaces:
 		_render_editor_selected_face(face)
 		
 	# fake lines
 	if (MCI.get_editor_plugin().SelectionMode != 0):
-		for face in MCI.get_editor_state().get_faces():
-			_render_fake_line(face.A, face.B, face.Normal, ColorN("orange", 0.8))
-			_render_fake_line(face.B, face.C, face.Normal, ColorN("orange", 0.8))
-			_render_fake_line(face.C, face.D, face.Normal, ColorN("orange", 0.8))
-			_render_fake_line(face.D, face.A, face.Normal, ColorN("orange", 0.8))
+		for face in MCI.get_mc_mesh().get_faces():
+			var verts = face.get_vertices()
+			var vertsCount = verts.size()
+			for i in range(1, vertsCount):
+				if (i == vertsCount - 1):
+					_render_fake_line(verts[i].get_position(), verts[0].get_position(), face.get_normal(), ColorN("orange", 0.8))
+				else:
+					_render_fake_line(verts[i -1].get_position(), verts[i].get_position(), face.get_normal(), ColorN("orange", 0.8))
+					
 	
 	# End drawing.
 	end()
@@ -53,23 +59,19 @@ func _render_face_center(face):
 	
 	var centroid = face.get_centroid()	
 	
-	var Ap = (face.A - centroid).normalized()
-	var Bp = (face.B - centroid).normalized()
-	var Cp = (face.C - centroid).normalized()
-	var Dp = (face.D - centroid).normalized()
+	for tri in face.get_triangles():
+		var Ap = (tri.get_a() - centroid).normalized()
+		var Bp = (tri.get_b() - centroid).normalized()
+		var Cp = (tri.get_c() - centroid).normalized()		
 	
-	set_normal(face.Normal)	
-	add_vertex(centroid + (Ap * 0.05) - (face.Normal * 0.0001))
-	set_normal(face.Normal)	
-	add_vertex(centroid + (Bp * 0.05) - (face.Normal * 0.0001))
-	set_normal(face.Normal)	
-	add_vertex(centroid + (Cp * 0.05) - (face.Normal * 0.0001))
-	set_normal(face.Normal)	
-	add_vertex(centroid + (Ap * 0.05) - (face.Normal * 0.0001))
-	set_normal(face.Normal)	
-	add_vertex(centroid + (Cp * 0.05) - (face.Normal * 0.0001))
-	set_normal(face.Normal)
-	add_vertex(centroid + (Dp * 0.05) - (face.Normal * 0.0001))
+		set_normal(tri.get_normal())
+		add_vertex(centroid + (Ap * 0.05) - (tri.get_normal() * 0.0001))
+		set_normal(tri.get_normal())
+		add_vertex(centroid + (Bp * 0.05) - (tri.get_normal() * 0.0001))
+		set_normal(tri.get_normal())
+		add_vertex(centroid + (Cp * 0.05) - (tri.get_normal() * 0.0001))
+	
+	
 	
 func _render_line(from, to, color):
 	set_color(color)	
@@ -104,34 +106,20 @@ func _render_fake_line(from, to, normal, color, thickness = 0.02):
 	pass
 	
 func _render_editor_selected_face(face):	
-	set_color(ColorN("green", 0.5))
-	set_normal(face.Normal)
-	set_uv(Vector2(0, 0))
-	add_vertex(face.A - (face.Normal * 0.0001))
-	
-	set_color(ColorN("green", 0.5))
-	set_normal(face.Normal)
-	set_uv(Vector2(0, 0))
-	add_vertex(face.B - (face.Normal * 0.0001))
-	
-	set_color(ColorN("green", 0.5))
-	set_normal(face.Normal)
-	set_uv(Vector2(0, 0))
-	add_vertex(face.C - (face.Normal * 0.0001))
-	
-	set_color(ColorN("green", 0.5))
-	set_normal(face.Normal)
-	set_uv(Vector2(0, 0))
-	add_vertex(face.A - (face.Normal * 0.0001))
-	
-	set_color(ColorN("green", 0.5))
-	set_normal(face.Normal)
-	set_uv(Vector2(0, 0))
-	add_vertex(face.C - (face.Normal * 0.0001))
-	
-	set_color(ColorN("green", 0.5))
-	set_normal(face.Normal)
-	set_uv(Vector2(0, 0))
-	add_vertex(face.D - (face.Normal * 0.0001))
+	for tri in face.get_triangles():		
+		set_color(ColorN("green", 0.5))
+		set_normal(tri.get_normal())
+		set_uv(Vector2(0, 0))
+		add_vertex(tri.get_a() - (tri.get_normal() * 0.0001))
+		
+		set_color(ColorN("green", 0.5))
+		set_normal(tri.get_normal())
+		set_uv(Vector2(0, 0))
+		add_vertex(tri.get_b() - (tri.get_normal() * 0.0001))
+		
+		set_color(ColorN("green", 0.5))
+		set_normal(tri.get_normal())
+		set_uv(Vector2(0, 0))
+		add_vertex(tri.get_c() - (tri.get_normal() * 0.0001))
 	
 	pass

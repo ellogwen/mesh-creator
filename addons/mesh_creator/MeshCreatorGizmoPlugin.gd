@@ -20,7 +20,6 @@ func get_creator():
 func get_name():
     return "MeshCreatorInstance"
 
-
 func _init():
 	create_material("face_select_line", Color.yellow, false, false, false)	
 	create_material("lines", Color.green, false, false, false)	
@@ -41,10 +40,13 @@ func create_gizmo(spatial):
 	if spatial is MeshCreatorInstance:		
 		_meshCreatorGizmo = MeshCreatorGizmo.new()
 		get_creator().connect("mode_changed", _meshCreatorGizmo, "on_creator_mode_changed")		
-		_meshCreatorGizmo.setup(self)
+		_meshCreatorGizmo.setup(self)		
 		return _meshCreatorGizmo
 	else:
 		return null
+		
+func get_mc_gizmo():	
+	return _meshCreatorGizmo
 		
 func _on_toolbox_tool_action(actionName, params):	
 	if (_meshCreatorGizmo != null):

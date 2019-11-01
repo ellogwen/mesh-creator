@@ -18,6 +18,9 @@ func _init(verts: Array = Array()) -> void:
 	_calc_centroid()
 	pass	
 	
+func get_normal() -> Vector3: return _normal
+func get_centroid() -> Vector3:	return _centroid
+	
 func get_mesh_index() -> int:
 	return _meshIndex
 	pass
@@ -80,9 +83,6 @@ func set_point_at_index(index: int, p: Vector3) -> void:
 	_triangulate()
 	_calc_normal()
 	_calc_centroid()
-	
-func get_centroid() -> Vector3:
-	return _centroid
 
 func get_edge(fromIndex: int) -> MeshCreator_Mesh_Edge:
 	var vertCount = _vertices.size()
