@@ -61,29 +61,30 @@ func define_face_from_vertices(verts: Array) -> int:
 	_faces.push_back(f)
 	return f.get_mesh_index()
 	
-func add_face_from_points(pts: PoolVector3Array) -> int:
+func add_face_from_points(pts: PoolVector3Array, independentVerts = false) -> int:
 	var verts = Array()
 	for pt in pts:
-		verts.push_back(get_vertex(add_point(pt).get_mesh_index()))
+		verts.push_back(get_vertex(add_point(pt, independentVerts).get_mesh_index()))
 	return define_face_from_vertices(verts)	
 	
-func add_vertex(vtx: MeshCreator_Mesh_Vertex) -> MeshCreator_Mesh_Vertex:
+func add_vertex(vtx: MeshCreator_Mesh_Vertex, independentVerts = false) -> MeshCreator_Mesh_Vertex:
 	if (vtx.get_mesh_index() >= 0):
 		print("[Mesh Creator] Add Vertex Warning. Vertex already indexed: Idx " + str(vtx.get_mesh_index()))		
 		return get_vertex(vtx.get_mesh_index())
 	# find duplicate is this the right way? @todo find a good solution for linked vertices
-	for v in _vertices:
-		if v.equals_position(vtx):
-			vtx.set_mesh_index(v.get_mesh_index())			
-			return get_vertex(v.get_mesh_index())
+	if (independentVerts == false):
+		for v in _vertices:
+			if v.equals_position(vtx):
+				vtx.set_mesh_index(v.get_mesh_index())			
+				return get_vertex(v.get_mesh_index())
 	_vertices.push_back(vtx)
 	vtx.set_mesh_index(_nextVertIdx())
 	return vtx
 
 	
-func add_point(pt: Vector3) -> MeshCreator_Mesh_Vertex:
+func add_point(pt: Vector3, independetVerts = false) -> MeshCreator_Mesh_Vertex:
 	var vtx = MeshCreator_Mesh_Vertex.new(pt)
-	return add_vertex(vtx)
+	return add_vertex(vtx, independetVerts)
 	
 func translate_vertex(vertexId: int, offset: Vector3):
 	var vtx = get_vertex(vertexId)

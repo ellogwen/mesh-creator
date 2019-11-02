@@ -183,41 +183,53 @@ func _extrude_selected_faces():
 	gizmo_redraw()
 	pass
 	
+func _get_selected_faces():
+	return _gizmo.get_spatial_node().get_mc_mesh().get_faces_selection(
+		_gizmo.EDITOR_TOOLS['FACE_SELECTION'].get_selected_face_ids()
+	)
+	
+# @todo does this only work with convex faces?	
 func _inset_selected_faces():
 	var mci = _gizmo.get_spatial_node()
-	for face in mci.get_editor_state().get_selected_faces():
-		var highestId = mci.get_editor_state().get_highest_face_id()
-		var newAFace = face.clone(highestId + 1)
-		var newBFace = face.clone(highestId + 2)
-		var newCFace = face.clone(highestId + 3)
-		var newDFace = face.clone(highestId + 4)
+	for face in _get_selected_faces():
+		var faceNewPts = Array()
+		var faceVerts = face.get_vertices()
+		var faceVertsCount = faceVerts.size()
+		var centroid = face.get_centroid()
 		
-		var newAPos = face.A + ((face.get_centroid() - face.A) * 0.25)
-		var newBPos = face.B + ((face.get_centroid() - face.B) * 0.25)
-		var newCPos = face.C + ((face.get_centroid() - face.C) * 0.25)
-		var newDPos = face.D + ((face.get_centroid() - face.D) * 0.25)
+		for n in range(0, faceVertsCount):
+			var vtx = face.get_vertex(n)
+			faceNewPts.push_back(vtx.get_position() + ((centroid - vtx.get_position()) * 0.25))
+			
+		# create N new faces (quads)
+		for n in range(0, faceVertsCount):
+			var a = faceVerts[n].get_position()
+			var d = faceNewPts[n]
+			var b
+			var c			
+			if (n + 1 >= faceVertsCount):
+				b = faceVerts[0].get_position()
+				c = faceNewPts[0]
+			else:
+				b = faceVerts[n + 1].get_position()
+				c = faceNewPts[n + 1]
+			
+			mci.get_mc_mesh().add_face_from_points(PoolVector3Array([a, b, c, d]))			
+			pass
 		
-		face.set_points(newAPos, newBPos, newCPos, newDPos)
+		# overwrite existing verts and define new
+		# introduce new verts
+		var newVerts = Array()
+		for pt in faceNewPts:
+			newVerts.push_back(mci.get_mc_mesh().add_point(pt))
+		face.from_verts(newVerts)
 		
-		newAFace.set_point(3, face.A)
-		newAFace.set_point(2, face.B)
-		newBFace.set_point(0, face.B)
-		newBFace.set_point(3, face.C)
-		newCFace.set_point(1, face.C)
-		newCFace.set_point(0, face.D)
-		newDFace.set_point(1, face.A)
-		newDFace.set_point(2, face.D)
-		
-		mci.get_editor_state().add_face(newAFace)
-		mci.get_editor_state().add_face(newBFace)
-		mci.get_editor_state().add_face(newCFace)
-		mci.get_editor_state().add_face(newDFace)
+			
+		face.refresh() # this makes sure triangulation is done		
 		pass
 		
-	meshTools.CreateMeshFromFaces(mci.get_editor_state().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))
-	mci.get_editor_state().recalculate_edges()
-	mci.get_editor_state().notify_state_changed()
-	gizmo_redraw()
+	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
+	request_redraw()
 	pass
 		
 func request_action(actionName, params):

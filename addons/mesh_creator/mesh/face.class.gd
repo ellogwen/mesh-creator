@@ -42,6 +42,14 @@ func from_points(points: PoolVector3Array) -> void:
 	_calc_normal()
 	_calc_centroid()
 	
+func from_verts(verts: Array) -> void:
+	_vertices.clear()
+	for vtx in verts:
+		_vertices.push_back(vtx)
+	_triangulate()
+	_calc_normal()
+	_calc_centroid()
+	
 func get_triangles() -> Array:
 	return _tris
 
@@ -148,9 +156,10 @@ func equals(otherFace: MeshCreator_Mesh_Face) -> bool:
 			return false
 	return true
 
-func clone(newId = -1) -> MeshCreator_Mesh_Face:
-	var pts = PoolVector3Array()
-	for vtx in _vertices.size():
-		pts.push_back(vtx.get_position())
-	var f = get_script().new(pts)	
-	return f
+# clone leads to all sorts of problems, remove for now
+#func clone(newId = -1) -> MeshCreator_Mesh_Face:
+#	var pts = PoolVector3Array()
+#	for vtx in _vertices.size():
+#		pts.push_back(vtx.get_position())
+#	var f = get_script().new(pts)	
+#	return f
