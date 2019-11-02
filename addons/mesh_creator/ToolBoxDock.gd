@@ -21,6 +21,8 @@ func _connect_signals():
 	$ToolsList/ModesButtons/Button_ModeEdge.connect("toggled", self, "_on_ButtonModeEdge_Toggle")
 	$ToolsList/ModesButtons/Button_ModeFace.connect("toggled", self, "_on_ButtonModeFace_Toggle")
 	
+	$ToolsList/ToolsButtons/Button_ToolSelect.connect("pressed", self, "_on_ButtonToolSelect_Press")
+	$ToolsList/ToolsButtons/Button_ToolMove.connect("pressed", self, "_on_ButtonToolMove_Press")
 	$ToolsList/ToolsButtons/Button_ToolExtrude.connect("pressed", self, "_on_ButtonToolExtrude_Press")
 	$ToolsList/ToolsButtons/Button_ToolInset.connect("pressed", self, "_on_ButtonToolInset_Press")
 	pass
@@ -52,6 +54,14 @@ func _on_ButtonModeFace_Toggle(isPressed):
 	if (isPressed):
 		_mesh_creator.set_selection_mode(_mesh_creator.SelectionModes.FACE)
 	pass	
+	
+func _on_ButtonToolSelect_Press():
+	emit_signal("tool_action", "TOOL_SELECT", null)
+	pass
+	
+func _on_ButtonToolMove_Press():
+	emit_signal("tool_action", "TOOL_TRANSLATE", null)
+	pass		
 	
 func _on_ButtonToolInset_Press():
 	emit_signal("tool_action", "TOOL_INSET", null)

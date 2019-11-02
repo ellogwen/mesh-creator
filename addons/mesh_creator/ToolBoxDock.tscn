@@ -91,16 +91,28 @@ align = 1
 [node name="ToolsButtons" type="GridContainer" parent="ToolsList"]
 margin_top = 163.0
 margin_right = 219.0
-margin_bottom = 183.0
+margin_bottom = 207.0
 columns = 3
 
+[node name="Button_ToolSelect" type="Button" parent="ToolsList/ToolsButtons"]
+margin_right = 51.0
+margin_bottom = 20.0
+text = "Select"
+
+[node name="Button_ToolMove" type="Button" parent="ToolsList/ToolsButtons"]
+margin_left = 55.0
+margin_right = 102.0
+margin_bottom = 20.0
+text = "Move"
+
 [node name="Button_ToolExtrude" type="Button" parent="ToolsList/ToolsButtons"]
-margin_right = 60.0
+margin_left = 106.0
+margin_right = 166.0
 margin_bottom = 20.0
 text = "Extrude"
 
 [node name="Button_ToolInset" type="Button" parent="ToolsList/ToolsButtons"]
-margin_left = 64.0
-margin_right = 109.0
-margin_bottom = 20.0
+margin_top = 24.0
+margin_right = 51.0
+margin_bottom = 44.0
 text = "Inset"

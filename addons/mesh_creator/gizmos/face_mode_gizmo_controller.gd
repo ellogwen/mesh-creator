@@ -44,6 +44,7 @@ func set_inactive():
 	
 func _setup_tools():
 	get_gizmo().EDITOR_TOOLS['FACE_SELECTION'] = MeshCreator_Gizmos_FaceSelectionGizmoTool.new(self)
+	get_gizmo().EDITOR_TOOLS['FACE_TRANSLATE'] = MeshCreator_Gizmos_FaceTranslateGizmoTool.new(self)
 	pass
 
 func _setup_materials(plugin):
@@ -52,165 +53,88 @@ func _setup_materials(plugin):
 	pass		
 
 func activate_tool(what):
+	if (what == _activeTool):
+		return
 	if (_activeTool != null):
 		_activeTool.set_inactive()
 	what.set_active()
 	_activeTool = what
+	gizmo_redraw()
 	pass
 
 func gizmo_redraw():
 	print("redrawing")
 	_gizmo.clear()	
 	
+	# make sure at least the selection tool is active
 	if (_activeTool == null):
-		activate_tool(get_gizmo().EDITOR_TOOLS.FACE_SELECTION)
+		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SELECTION'])
 	
 	var mci = _gizmo.get_spatial_node()
 	if (not mci is MeshCreatorInstance):
 		return
 		
-	var lines = PoolVector3Array()	
-	
+	# create lines
+	var lines = PoolVector3Array()		
 	var lineMat: SpatialMaterial = _gizmo.get_plugin().get_material("face_select_line", self)
 	lineMat.params_line_width = 10.0
+	if (lines.size() > 0):
+	 	_gizmo.add_lines(lines, lineMat, false)		
+	
+	
+	# create handles
 	var matHandleVertex = _gizmo.get_plugin().get_material("handles_vertex", self)
 	var matHandleVertexSelected = _gizmo.get_plugin().get_material("handles_vertex_selected", self)	
 	
-	
+	var handleIdx = 0			
 	if (_activeTool != null):
+		handleIdx = _activeTool.on_gizmo_add_handles(handleIdx)
 		_activeTool.on_gizmo_redraw(_gizmo)
-		
-	
-	
-	
-	#var selectedFaces = mci.get_editor_state().get_selected_faces()
-	#if (not selectedFaces.empty() and _activeTool == null):
-	#	var toolStart = Vector3.ZERO
-	#	for face in selectedFaces:
-	#		toolStart += face.get_centroid()
-	#	_activeTool = TranslateTool.new()		
-	#	_activeTool.startPosition = toolStart
-	#	_activeTool.currentPosition = toolStart
-	#	_activeTool.forward = -Vector3.FORWARD
-	#	_activeTool.up = -Vector3.UP
-	#	_activeTool.right = Vector3.RIGHT
-		
-	#if _activeTool != null:
-	#	_gizmo.add_handles(PoolVector3Array([_activeTool.getDrawPosition(0)]), _gizmo.get_plugin().HandleRightMaterial, false, false)	
-	#	_gizmo.add_handles(PoolVector3Array([_activeTool.getDrawPosition(1)]), _gizmo.get_plugin().HandleUpMaterial, false, false)	
-	#	_gizmo.add_handles(PoolVector3Array([_activeTool.getDrawPosition(2)]), _gizmo.get_plugin().HandleForwardMaterial, false, false)	
-	
-	_gizmo.show_cursor_3d()
-	
-	if (lines.size() > 0):
-	 	_gizmo.add_lines(lines, lineMat, false)		
 		
 	pass
 	
 func gizmo_get_handle_name(index):
 	if (_activeTool != null):
-		return _activeTool.on_gizmo_get_handle_name(index)
-		#match(index):
-		#	0: return "Translate Right/Left"
-		#	1: return "Translate Up/Down"
-		#	2: return "Translate Forward/Backward"	
+		return _activeTool.on_gizmo_get_handle_name(index)		
 
 func gizmo_get_handle_value(index):
 	if (_activeTool != null):
-		return _activeTool.on_gizmo_get_handle_value(index)
-		#match(index):
-		#	0: return _activeTool.currentPosition.x - _activeTool.startPosition.x
-		#	1: return _activeTool.currentPosition.y - _activeTool.startPosition.y
-		#	2: return _activeTool.currentPosition.z - _activeTool.startPosition.z
+		return _activeTool.on_gizmo_get_handle_value(index)		
 
 func gizmo_commit_handle(index, restore, cancel=false):	
 	if (_activeTool != null):
-		_activeTool.startPosition = _activeTool.currentPosition
-		#_activeTool = null
+		_activeTool.on_gizmo_commit_handle(index, restore, cancel)
 		gizmo_redraw()
-	pass
-	
+	pass	
 
 func gizmo_set_handle(index, camera, screen_point : Vector2):
 	prints("set_handle index", index, screen_point)
-	if (_activeTool == null):
-		return
-		
-	var spatial = _gizmo.get_spatial_node()
-	var spatialTrans = spatial.global_transform
-		
-	var sourcePos = camera.unproject_position(_activeTool.currentPosition)
-	var handlePos = camera.unproject_position(_activeTool.getDrawPosition(index))
-	
-	var axisForwardDir = Vector2.ZERO
-	var axisBackDir = Vector2.ZERO	
-	var toAxis = Vector3.ZERO
-	if (index == 0): 	
-		axisForwardDir = camera.unproject_position(_activeTool.currentPosition - _activeTool.right).normalized()
-		axisBackDir = camera.unproject_position(_activeTool.currentPosition + _activeTool.right).normalized()
-		toAxis = _activeTool.right
-	elif(index == 1):
-		axisForwardDir = camera.unproject_position(_activeTool.currentPosition - _activeTool.up).normalized()
-		axisBackDir = camera.unproject_position(_activeTool.currentPosition + _activeTool.up).normalized()
-		toAxis = _activeTool.up
-	elif(index == 2):
-		axisForwardDir = camera.unproject_position(_activeTool.currentPosition - _activeTool.forward).normalized()
-		axisBackDir = camera.unproject_position(_activeTool.currentPosition + _activeTool.forward).normalized()
-		toAxis = _activeTool.forward
-	else:
-		return
-	
-	var dragDir = (screen_point - handlePos).normalized()
-	
-	var translateForward = true
-	if (dragDir.dot(axisBackDir) > 0):
-		translateForward = false
-		
-	var mag = (screen_point - handlePos).length()	
-	
-	if (mag <= 45): #@todo remove magic number
-		return
-		
-	if (translateForward == true):			
-		toAxis = -toAxis
-		
-	var newPos: Vector3 = _activeTool.currentPosition + (toAxis * 0.15)
-	newPos = Vector3(stepify(newPos.x, 0.25), stepify(newPos.y, 0.25), stepify(newPos.z, 0.25))
-	
-	prints("drag magnitude", mag, "drag direction", dragDir, "use axis forward", translateForward, "use axis", toAxis, "oldPos", _activeTool.currentPosition, "newPos", newPos)
-	
-	if (_activeTool.currentPosition != newPos):
-		_activeTool.currentPosition = newPos		
-		_gizmo.set_cursor_3d(newPos)
-		for face in spatial.get_editor_state().get_selected_faces():
-			#var newFacePos = face.get_centroid() + (_activeTool.currentPosition - _activeTool.startPosition)
-			#_move_face_to(face.Id, newFacePos)		
-			_move_face_to(face.Id, newPos)
-		meshTools.CreateMeshFromFaces(spatial.get_editor_state().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))
-		spatial.get_editor_state().recalculate_edges()
-		spatial.get_editor_state().notify_state_changed()
-		gizmo_redraw()
-	pass
-	
-	
-
-
+	if (_activeTool != null):
+		_activeTool.on_gizmo_set_handle(index, camera, screen_point)
+	pass	
 	
 # editor mouse click events
 func gizmo_forward_mouse_button(event: InputEventMouseButton, camera):	
 	# let active tools handle events
 	if (_activeTool != null):
 		return _activeTool.on_input_mouse_button(event, camera)	
-	return false	
-
+	return false
 
 # editor mouse move events
 func gizmo_forward_mouse_move(event, camera):
 	# let active tools handle mouse movement
 	if (_activeTool != null):
 		return _activeTool.on_input_mouse_move(event, camera)	
-	return false
-	
+	return false	
+
+
+
+
+
+
+
+
+
 
 func _move_connected_vertices(fromPos, toPos):
 	var spatial = _gizmo.get_spatial_node()
@@ -221,40 +145,6 @@ func _move_connected_vertices(fromPos, toPos):
 			face.set_point(vIndex, toPos)			
 	pass	
 
-func _move_face_to(faceId, newPos):
-	var spatial = _gizmo.get_spatial_node()
-	prints("moving face " + str(faceId), newPos)
-	# get face
-	var sourceFace = spatial.get_editor_state().get_face(faceId)
-	if (sourceFace == null): 
-		return
-	# calc difference
-	var from = sourceFace.get_centroid()
-	var diff = newPos - from
-	
-	# for each face vertex , set new pos and find sharing 
-	# vertices and move them to the new positions
-	var newA = sourceFace.A + diff
-	var newB = sourceFace.B + diff
-	var newC = sourceFace.C + diff
-	var newD = sourceFace.D + diff
-	
-	# prevent clashing ?
-	var fTest = sourceFace.clone()
-	fTest.set_points(newA, newB, newC, newD)
-	var clash = false
-	for face in spatial.get_editor_state().get_faces():
-		if (face.Id != fTest.Id and face.Equals(fTest)):
-			clash = true
-			break
-			
-	if not clash:	
-		# move them to the new position
-		_move_connected_vertices(sourceFace.A, newA)	
-		_move_connected_vertices(sourceFace.B, newB)	
-		_move_connected_vertices(sourceFace.C, newC)	
-		_move_connected_vertices(sourceFace.D, newD)
-	pass
 	
 func _extrude_selected_faces():
 	var mci = _gizmo.get_spatial_node()
@@ -331,6 +221,12 @@ func _inset_selected_faces():
 	pass
 		
 func request_action(actionName, params):
+	if (actionName == "TOOL_SELECT"):
+		print("Tool Select")
+		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SELECTION'])
+	if (actionName == "TOOL_TRANSLATE"):
+		print("Tool Move")
+		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_TRANSLATE'])
 	if (actionName == "TOOL_INSET"):
 		print("Action Inset")
 		_inset_selected_faces()
@@ -351,15 +247,3 @@ func request_redraw():
 	# @todo this may results into an endless loop!	
 	gizmo_redraw()
 	pass
-	
-class TranslateTool:	
-	var startPosition	
-	var currentPosition
-	var forward
-	var up
-	var right
-	func getDrawPosition(index):
-		match(index):
-			0: return currentPosition + (right * 0.25)
-			1: return currentPosition - (up * 0.25)
-			2: return currentPosition + (forward * 0.25)

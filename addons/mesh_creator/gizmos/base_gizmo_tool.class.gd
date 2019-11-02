@@ -35,8 +35,19 @@ func on_gui_action(actionCode: String, payload):
 func on_gizmo_redraw(gizmo):
 	pass
 	
+# use this to create new handles, return last used index
+func on_gizmo_add_handles(nextIndex) -> int:
+	return nextIndex
+	pass
+	
 func on_gizmo_get_handle_name(index):
 	return ""
 	
 func on_gizmo_get_handle_value(index):
 	return null
+	
+func on_gizmo_set_handle(index, camera, screen_point: Vector2):
+	pass
+	
+func on_gizmo_commit_handle(index, restore, cancel=false):
+	pass

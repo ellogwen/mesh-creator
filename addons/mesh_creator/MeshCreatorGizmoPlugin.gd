@@ -50,7 +50,7 @@ func get_mc_gizmo():
 		
 func _on_toolbox_tool_action(actionName, params):	
 	if (_meshCreatorGizmo != null):
-		var controller = _meshCreatorGizmo.get_active_controller()
+		var controller = _meshCreatorGizmo.get_active_gizmo_controller()
 		if (controller != null):
 			controller.request_action(actionName, params)	
 	pass
