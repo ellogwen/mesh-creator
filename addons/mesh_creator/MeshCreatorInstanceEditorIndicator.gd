@@ -44,9 +44,9 @@ func UpdateDraw():
 			var vertsCount = verts.size()
 			for i in range(1, vertsCount):
 				if (i == vertsCount - 1):
-					_render_fake_line(verts[i].get_position(), verts[0].get_position(), face.get_normal(), ColorN("orange", 0.8))
+					_render_fake_line(verts[i].get_position(), verts[0].get_position(), face.get_normal(), ColorN("blue", 0.9))
 				else:
-					_render_fake_line(verts[i -1].get_position(), verts[i].get_position(), face.get_normal(), ColorN("orange", 0.8))
+					_render_fake_line(verts[i -1].get_position(), verts[i].get_position(), face.get_normal(), ColorN("blue", 0.9))
 					
 	
 	# End drawing.
