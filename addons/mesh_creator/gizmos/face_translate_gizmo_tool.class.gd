@@ -97,7 +97,7 @@ func on_gizmo_set_handle(index, camera, screen_pos):
 		var offset = newPos - _startPosition		
 		for face in _get_selected_faces():			
 			for i in range(face.get_vertices().size()):
-				face.set_point_at_index(i, face.get_vertex(i).get_position() + offset)				
+				spatial.get_mc_mesh().translate_vertex(face.get_vertex(i).get_mesh_index(), offset)	
 		#	_move_face_to(face.get_mesh_index(), newPos)
 		meshTools.CreateMeshFromFaces(spatial.get_mc_mesh().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))
 		#spatial.get_editor_state().recalculate_edges()

@@ -18,6 +18,11 @@ func _init(verts: Array = Array()) -> void:
 	_calc_centroid()
 	pass	
 	
+func refresh():
+	_triangulate()
+	_calc_normal()
+	_calc_centroid()
+	
 func get_normal() -> Vector3: return _normal
 func get_centroid() -> Vector3:	return _centroid
 	

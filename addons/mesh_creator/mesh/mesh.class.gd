@@ -50,10 +50,13 @@ func clear():
 	pass
 	
 func define_face_from_vertices(verts: Array) -> int:
+	var realVerts = Array()
 	for vtx in verts:
+		var realVtx = vtx
 		if (vtx.get_mesh_index() < 0):
-			add_vertex(vtx)
-	var f = MeshCreator_Mesh_Face.new(verts)	
+			realVtx = add_vertex(vtx)
+		realVerts.push_back(realVtx)
+	var f = MeshCreator_Mesh_Face.new(realVerts)	
 	f.set_mesh_index(_nextFaceIdx())
 	_faces.push_back(f)
 	return f.get_mesh_index()
@@ -61,17 +64,29 @@ func define_face_from_vertices(verts: Array) -> int:
 func add_face_from_points(pts: PoolVector3Array) -> int:
 	var verts = Array()
 	for pt in pts:
-		verts.push_back(get_vertex(add_point(pt)))
+		verts.push_back(get_vertex(add_point(pt).get_mesh_index()))
 	return define_face_from_vertices(verts)	
 	
-func add_vertex(vtx: MeshCreator_Mesh_Vertex) -> int:
+func add_vertex(vtx: MeshCreator_Mesh_Vertex) -> MeshCreator_Mesh_Vertex:
 	if (vtx.get_mesh_index() >= 0):
-		print("[Mesh Creator] Add Vertex Warning. Vertex already indexed: Idx " + str(vtx.get_mesh_index()))
-		return vtx.get_mesh_index()
+		print("[Mesh Creator] Add Vertex Warning. Vertex already indexed: Idx " + str(vtx.get_mesh_index()))		
+		return get_vertex(vtx.get_mesh_index())
+	# find duplicate is this the right way? @todo find a good solution for linked vertices
+	for v in _vertices:
+		if v.equals_position(vtx):
+			vtx.set_mesh_index(v.get_mesh_index())			
+			return get_vertex(v.get_mesh_index())
 	_vertices.push_back(vtx)
 	vtx.set_mesh_index(_nextVertIdx())
-	return vtx.get_mesh_index()
+	return vtx
+
 	
-func add_point(pt: Vector3) -> int:
+func add_point(pt: Vector3) -> MeshCreator_Mesh_Vertex:
 	var vtx = MeshCreator_Mesh_Vertex.new(pt)
 	return add_vertex(vtx)
+	
+func translate_vertex(vertexId: int, offset: Vector3):
+	var vtx = get_vertex(vertexId)
+	if (vtx != null):
+		vtx.set_position(vtx.get_position() + offset)
+	pass

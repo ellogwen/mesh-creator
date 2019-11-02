@@ -29,7 +29,8 @@ func CreateMeshFromFaces(facesArray, mesh = null, material = null):
 	var facesSize = facesArray.size()
 
 	for i in range(0, facesSize):
-		var face = facesArray[i]		
+		var face = facesArray[i]
+		face.refresh()
 		for tri in face.get_triangles():
 			var edge_ab: float = tri.get_side_length(0)
 			var edge_bc: float = tri.get_side_length(1)

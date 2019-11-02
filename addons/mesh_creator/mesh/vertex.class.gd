@@ -28,3 +28,6 @@ func get_mesh_index() -> int:
 
 func set_mesh_index(idx) -> void:
 	_meshIndex = idx
+	
+func equals_position(other: MeshCreator_Mesh_Vertex) -> bool:
+	return other.get_position() == get_position()
