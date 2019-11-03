@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "MeshCreator_Generators_MeshGeneratorBase",
+"class": "MeshCreator_Generators_BoxMeshGenerator",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/generators/box_mesh_generator.gd"
+}, {
+"base": "Reference",
+"class": "MeshCreator_Generators_MeshGeneratorBase",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/generators/mesh_generator_base.gd"
+}, {
 "base": "Reference",
 "class": "MeshCreator_Gizmos_BaseGizmoTool",
 "language": "GDScript",
@@ -70,6 +80,8 @@ _global_script_classes=[ {
 "path": "res://addons/mesh_creator/mesh/vertex.class.gd"
 } ]
 _global_script_class_icons={
+"MeshCreator_Generators_BoxMeshGenerator": "",
+"MeshCreator_Generators_MeshGeneratorBase": "",
 "MeshCreator_Gizmos_BaseGizmoTool": "",
 "MeshCreator_Gizmos_FaceModeGizmoController": "",
 "MeshCreator_Gizmos_FaceSelectionGizmoTool": "",

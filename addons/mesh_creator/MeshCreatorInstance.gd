@@ -7,6 +7,9 @@ var DEFAULT_MATERIAL = preload("res://addons/mesh_creator/materials/mc_default.m
 var _mc_mesh: MeshCreator_Mesh_Mesh
 func get_mc_mesh() -> MeshCreator_Mesh_Mesh:
 	return _mc_mesh
+	
+func set_mc_mesh(mc_mesh: MeshCreator_Mesh_Mesh):
+	_mc_mesh = mc_mesh
 
 var ActiveEditorPlugin = null
 
@@ -18,7 +21,7 @@ func get_editor_plugin():
 
 func _init():	
 	if (Engine.is_editor_hint()):
-		_mc_mesh = MeshCreator_Mesh_Mesh.new()
+		set_mc_mesh(MeshCreator_Mesh_Mesh.new())
 		pass
 	
 func _ready():

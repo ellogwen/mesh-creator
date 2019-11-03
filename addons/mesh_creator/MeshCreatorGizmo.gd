@@ -2,7 +2,6 @@ extends EditorSpatialGizmo
 
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
 var Cursor3D = preload("res://addons/mesh_creator/Cursor3D.gd")
-#var MeshTools = preload("res://addons/mesh_creator/MeshTools.gd")
 
 var EditorHelperScript = preload("res://addons/mesh_creator/MCEditorHelper.gd")
 var editorHelperNode

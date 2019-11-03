@@ -83,61 +83,9 @@ func MeshGenerator_Cube():
 	var cube = preload("res://addons/mesh_creator/MeshCreatorInstance.tscn").instance()
 	var mat = cube.DEFAULT_MATERIAL
 	
-	# top
-	var topFace = PoolVector3Array([
-		Vector3(-0.5, 0.5, -0.5),
-		Vector3(0.5, 0.5, -0.5), 
-		Vector3(0.5, 0.5, 0.5), 
-		Vector3(-0.5, 0.5, 0.5)
-	])		
 	
-	# right	
-	var rightFace = PoolVector3Array([
-		Vector3(0.5, 0.5, 0.5),
-		Vector3(0.5, 0.5, -0.5),
-		Vector3(0.5, -0.5, -0.5),
-		Vector3(0.5, -0.5, 0.5)
-	])		
-	
-	# front	
-	var frontFace = PoolVector3Array([
-		Vector3(-0.5, 0.5, 0.5),
-		Vector3(0.5, 0.5, 0.5),
-		Vector3(0.5, -0.5, 0.5),
-		Vector3(-0.5, -0.5, 0.5)
-	])	
-	
-	# left	
-	var leftFace = PoolVector3Array([
-		Vector3(-0.5, -0.5, -0.5),
-		Vector3(-0.5, 0.5, -0.5),
-		Vector3(-0.5, 0.5, 0.5),
-		Vector3(-0.5, -0.5, 0.5)
-	])		
-	
-	# bottom	
-	var bottomFace = PoolVector3Array([
-		Vector3(0.5, -0.5, 0.5),
-		Vector3(0.5, -0.5, -0.5),
-		Vector3(-0.5, -0.5, -0.5),
-		Vector3(-0.5, -0.5, 0.5)
-	])	
-		
-	# back	
-	var backFace = PoolVector3Array([
-		Vector3(0.5, -0.5, -0.5),
-		Vector3(0.5, 0.5, -0.5),
-		Vector3(-0.5, 0.5, -0.5),
-		Vector3(-0.5, -0.5, -0.5)
-	])	
-	
-	cube.get_mc_mesh().add_face_from_points(topFace)
-	cube.get_mc_mesh().add_face_from_points(frontFace)
-	cube.get_mc_mesh().add_face_from_points(leftFace)
-	cube.get_mc_mesh().add_face_from_points(rightFace)
-	cube.get_mc_mesh().add_face_from_points(backFace)
-	cube.get_mc_mesh().add_face_from_points(bottomFace)
-	
+	var boxMeshGen = MeshCreator_Generators_BoxMeshGenerator.new()
+	var boxMesh = boxMeshGen.generate({ 0: 2.0, 1: 2.0, 2: 1.0})
+	cube.set_mc_mesh(boxMesh)
 	cube.mesh = CreateMeshFromFaces(cube.get_mc_mesh().get_faces(), null, mat)
-	return cube
-	
+	return cube	

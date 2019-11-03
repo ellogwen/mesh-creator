@@ -11,7 +11,6 @@ signal mode_changed
 
 var toolBoxDock
 var current_editor_context = null
-var MeshTools = preload("res://addons/mesh_creator/MeshTools.gd")
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
 var MeshCreatorGizmoPlugin = preload("res://addons/mesh_creator/MeshCreatorGizmoPlugin.gd")
 var meshCreatorGizmoPlugin = MeshCreatorGizmoPlugin.new()
@@ -91,7 +90,7 @@ func _on_toolbox_button_create_new_mesh() -> void:
 	pass
 
 func _create_new_cube():	
-	var mt = MeshTools.new()		
+	var mt = MeshCreator_MeshTools.new()		
 	var cube = mt.MeshGenerator_Cube()
 	return cube
 	pass
