@@ -7,11 +7,11 @@ func _init():
 func get_config():
 	pass
 	
-func get_config_value(id):
-	pass
-	
-func set_config_value(id, val):
-	pass
+func get_config_values(config: Array) -> Dictionary:
+	var d = Dictionary()
+	for i in range(0, config.size()):
+		d[i] = config[0]["value"]
+	return d
 	
 func is_valid() -> bool:
 	return true

@@ -1,24 +1,8 @@
 class_name MeshCreator_MeshTools
 
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
-#var MeshCreator_Mesh_Face = preload("res://addons/mesh_creator/mesh/face.class.gd").Face
-
-#func CreateFace(A: Vector3, B: Vector3, C: Vector3, D: Vector3):
-#	var face = MeshCreator_Mesh_Face.new()
-#	face.set_points(A, B, C, D)	
-#	return face	
 	
-#func FaceToVertices(var face) -> PoolVector3Array:
-#	var points = PoolVector3Array()
-#	points.push_back(face.A)
-#	points.push_back(face.B)
-#	points.push_back(face.D)
-#	points.push_back(face.C)
-#	points.push_back(face.D)
-#	points.push_back(face.B)
-#	return points
-	
-func CreateMeshFromFaces(facesArray, mesh = null, material = null):
+func CreateMeshFromFaces(facesArray, mesh = null, material = null) -> ArrayMesh:
 	var arrays = Array()
 	arrays.resize(Mesh.ARRAY_MAX)
 	
@@ -81,11 +65,10 @@ func CreateMeshFromFaces(facesArray, mesh = null, material = null):
 	
 func MeshGenerator_Cube():
 	var cube = preload("res://addons/mesh_creator/MeshCreatorInstance.tscn").instance()
-	var mat = cube.DEFAULT_MATERIAL
-	
+	var mat = cube.DEFAULT_MATERIAL	
 	
 	var boxMeshGen = MeshCreator_Generators_BoxMeshGenerator.new()
-	var boxMesh = boxMeshGen.generate({ 0: 2.0, 1: 2.0, 2: 1.0})
+	var boxMesh = boxMeshGen.generate({ 0: 1.0, 1: 1.0, 2: 1.0})
 	cube.set_mc_mesh(boxMesh)
 	cube.mesh = CreateMeshFromFaces(cube.get_mc_mesh().get_faces(), null, mat)
 	return cube	

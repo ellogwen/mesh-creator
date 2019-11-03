@@ -5,29 +5,31 @@ class_name MeshCreator_Generators_BoxMeshGenerator
 func _init().():
 	pass
 	
-func get_config():
-	pass
+func get_config():	
 	return [
 		{
 			label = "Width",
 			type = "int",
 			minValue = 1,
 			maxValue = 12,
-			default = 1
+			default = 1,
+			value = 1
 		},
 		{
 			label = "Height",
 			type = "int",
 			minValue = 1,
 			maxValue = 12,
-			default = 1
+			default = 1,
+			value = 1
 		},
 		{
 			label = "Depth",
 			type = "int",
 			minValue = 1,
 			maxValue = 12,
-			default = 1
+			default = 1,
+			value = 1
 		},		
 	]
 	
