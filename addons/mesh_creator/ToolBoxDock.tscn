@@ -101,13 +101,13 @@ text = "Select"
 
 [node name="Button_ToolMove" type="Button" parent="ToolsList/ToolsButtons"]
 margin_left = 55.0
-margin_right = 102.0
+margin_right = 119.0
 margin_bottom = 20.0
 text = "Move"
 
 [node name="Button_ToolExtrude" type="Button" parent="ToolsList/ToolsButtons"]
-margin_left = 106.0
-margin_right = 166.0
+margin_left = 123.0
+margin_right = 183.0
 margin_bottom = 20.0
 text = "Extrude"
 
@@ -116,3 +116,10 @@ margin_top = 24.0
 margin_right = 51.0
 margin_bottom = 44.0
 text = "Inset"
+
+[node name="Button_ToolRemove" type="Button" parent="ToolsList/ToolsButtons"]
+margin_left = 55.0
+margin_top = 24.0
+margin_right = 119.0
+margin_bottom = 44.0
+text = "Remove"

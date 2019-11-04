@@ -91,3 +91,12 @@ func translate_vertex(vertexId: int, offset: Vector3):
 	if (vtx != null):
 		vtx.set_position(vtx.get_position() + offset)
 	pass
+	
+# does this work and leave a gap?
+func remove_face(faceId: int):	
+	# reindex
+	for i in range(faceId + 1, _faces.size()):
+		var face = _faces[i]
+		face.set_mesh_index(face.get_mesh_index() - 1)
+	# remove
+	_faces.remove(faceId)
