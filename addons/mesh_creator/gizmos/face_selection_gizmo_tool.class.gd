@@ -33,6 +33,10 @@ func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
 			if _selectedFaceIds.has(clickedFaces[0].face.get_mesh_index()):
 				_selectedFaceIds.erase(clickedFaces[0].face.get_mesh_index())
 			else:
+				# only support on face for now. @todo fix this later when cleaned up structure
+				# and ngons are no problem anymore
+				_selectedFaceIds.clear()
+				###########
 				_selectedFaceIds.push_back(clickedFaces[0].face.get_mesh_index())
 			_gizmoController.request_redraw()
 			return true # handled the click
