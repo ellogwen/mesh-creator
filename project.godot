@@ -75,6 +75,11 @@ _global_script_classes=[ {
 "path": "res://addons/mesh_creator/mesh/mesh.class.gd"
 }, {
 "base": "Reference",
+"class": "MeshCreator_Mesh_SelectionStore",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/mesh/selection_store.class.gd"
+}, {
+"base": "Reference",
 "class": "MeshCreator_Mesh_Triangle",
 "language": "GDScript",
 "path": "res://addons/mesh_creator/mesh/triangle.class.gd"
@@ -98,6 +103,7 @@ _global_script_class_icons={
 "MeshCreator_Mesh_EditorFace": "",
 "MeshCreator_Mesh_Face": "",
 "MeshCreator_Mesh_Mesh": "",
+"MeshCreator_Mesh_SelectionStore": "",
 "MeshCreator_Mesh_Triangle": "",
 "MeshCreator_Mesh_Vertex": ""
 }

@@ -16,13 +16,14 @@ var _activeTool: MeshCreator_Gizmos_BaseGizmoTool = null
 var _gizmo
 func get_gizmo(): return _gizmo
 
-var _selectedFacesIds = Array()
 func get_selected_faces_ids() -> Array:
-	return _selectedFacesIds
+	return get_gizmo().get_face_selection_store().get_store()
 	
-var _selectedVerticesIds = Array()
+func _get_selected_faces():
+	return get_gizmo().get_spatial_node().get_mc_mesh().get_faces_selection(get_selected_faces_ids())
+	
 func get_selected_vertices_ids() -> Array:
-	return _selectedVerticesIds
+	return get_gizmo().get_vertex_selection_store().get_store()
 
 func _init(gizmo):
 	_gizmo = gizmo	
@@ -147,11 +148,6 @@ func _move_connected_vertices(fromPos, toPos):
 		for vIndex in vIndices:
 			face.set_point(vIndex, toPos)			
 	pass	
-	
-func _get_selected_faces():
-	return _gizmo.get_spatial_node().get_mc_mesh().get_faces_selection(
-		_gizmo.EDITOR_TOOLS['FACE_SELECTION'].get_selected_face_ids()
-	)
 	
 # @todo does this only work with convex faces?	
 func _extrude_selected_faces():

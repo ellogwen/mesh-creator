@@ -123,7 +123,7 @@ func on_gizmo_get_handle_value(index):
 
 func _get_selected_faces():
 	return _gizmoController.get_gizmo().get_spatial_node().get_mc_mesh().get_faces_selection(
-		_gizmoController.get_gizmo().EDITOR_TOOLS['FACE_SELECTION'].get_selected_face_ids()
+		_gizmoController.get_gizmo().get_face_selection_store().get_store()
 	)
 	
 func _get_handle_draw_position(handleIdx):

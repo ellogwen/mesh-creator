@@ -13,14 +13,24 @@ var EDITOR_TOOLS = {
 	FACE_TRANSLATE = null,
 }
 
+var _faceSelectionStore
+var _edgeSelectionStore
+var _vertexSelectionStore
+func get_face_selection_store(): return _faceSelectionStore
+func get_edge_selection_store(): return _edgeSelectionStore
+func get_vertex_selection_store(): return _vertexSelectionStore
+
 var _cursor3D
 var _active_gizmo_controller = null
 var _vertexModeGizmoController
 var _faceModeModeGizmoController
 
 func _init():
+	_faceSelectionStore = MeshCreator_Mesh_SelectionStore.new()
+	_edgeSelectionStore = MeshCreator_Mesh_SelectionStore.new()
+	_vertexSelectionStore = MeshCreator_Mesh_SelectionStore.new()
 	_vertexModeGizmoController = MeshCreator_Gizmos_VertexModeGizmoController.new(self)
-	_faceModeModeGizmoController = MeshCreator_Gizmos_FaceModeGizmoController.new(self)
+	_faceModeModeGizmoController = MeshCreator_Gizmos_FaceModeGizmoController.new(self)	
 	pass
 	
 func setup(plugin):

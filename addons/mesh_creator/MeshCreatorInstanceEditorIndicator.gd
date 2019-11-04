@@ -33,7 +33,7 @@ func UpdateDraw():
 	
 	# selected faces
 	# @todo erm... nope, this will surely be backfire 
-	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_tool("FACE_SELECTION").get_selected_face_ids())	
+	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_face_selection_store().get_store())	
 	for face in selectedFaces:
 		_render_editor_selected_face(face)
 		

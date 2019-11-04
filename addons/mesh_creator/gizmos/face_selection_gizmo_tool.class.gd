@@ -3,16 +3,15 @@ extends MeshCreator_Gizmos_BaseGizmoTool
 # namespace MeshCreator_Gizmos
 class_name MeshCreator_Gizmos_FaceSelectionGizmoTool
 
-var _selectedFaceIds: Array
-func get_selected_face_ids(): return _selectedFaceIds
+func get_selection_store():
+	return _gizmoController.get_gizmo().get_face_selection_store()
 
 
 #################
 # base overrides
 #################
 
-func _init(gizmoController).(gizmoController) -> void:
-	_selectedFaceIds = Array()
+func _init(gizmoController).(gizmoController) -> void:	
 	pass
 	
 # do preparation before tool switch
@@ -30,19 +29,19 @@ func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
 		var clickedFaces = _get_clicked_on_faces_sorted_by_cam_distance(event.get_position(), camera)
 		if (clickedFaces.size() > 0):
 			prints("clicked on face ", clickedFaces[0].face)
-			if _selectedFaceIds.has(clickedFaces[0].face.get_mesh_index()):
-				_selectedFaceIds.erase(clickedFaces[0].face.get_mesh_index())
+			if get_selection_store().is_selected(clickedFaces[0].face.get_mesh_index()):
+				get_selection_store().remove_from_selection(clickedFaces[0].face.get_mesh_index())
 			else:
 				# only support on face for now. @todo fix this later when cleaned up structure
 				# and ngons are no problem anymore
-				_selectedFaceIds.clear()
+				get_selection_store().clear()
 				###########
-				_selectedFaceIds.push_back(clickedFaces[0].face.get_mesh_index())
+				get_selection_store().add_to_selection(clickedFaces[0].face.get_mesh_index())
 			_gizmoController.request_redraw()
 			return true # handled the click
 	if (event.get_button_index() == BUTTON_RIGHT and event.pressed):		
-		if (not _selectedFaceIds.empty()):
-			_selectedFaceIds.clear()
+		if (not get_selection_store().is_empty()):
+			get_selection_store().clear()
 			_gizmoController.request_redraw()
 			return true # click handled
 	return false
