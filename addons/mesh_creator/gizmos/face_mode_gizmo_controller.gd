@@ -3,6 +3,8 @@ class_name MeshCreator_Gizmos_FaceModeGizmoController
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
 var meshTools = MeshCreator_MeshTools.new()
 
+var _gizmoPlugin
+
 const MATERIALS = {
 	FACE_UNSELECTED = null,
 	FACE_SELECTED = null,
@@ -27,6 +29,7 @@ func _init(gizmo):
 	pass
 	
 func setup(plugin):
+	_gizmoPlugin = plugin
 	_setup_tools()
 	_setup_materials(plugin)
 	
@@ -233,7 +236,7 @@ func _inset_selected_faces():
 			
 		face.refresh() # this makes sure triangulation is done		
 		pass
-		
+	
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
 	pass

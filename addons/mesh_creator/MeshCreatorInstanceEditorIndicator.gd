@@ -42,11 +42,11 @@ func UpdateDraw():
 		for face in MCI.get_mc_mesh().get_faces():
 			var verts = face.get_vertices()
 			var vertsCount = verts.size()
-			for i in range(1, vertsCount):
+			for i in range(0, vertsCount):
 				if (i == vertsCount - 1):
 					_render_fake_line(verts[i].get_position(), verts[0].get_position(), face.get_normal(), ColorN("blue", 0.9))
 				else:
-					_render_fake_line(verts[i -1].get_position(), verts[i].get_position(), face.get_normal(), ColorN("blue", 0.9))
+					_render_fake_line(verts[i].get_position(), verts[i+1].get_position(), face.get_normal(), ColorN("blue", 0.9))
 					
 	
 	# End drawing.
@@ -82,11 +82,12 @@ func _render_line(from, to, color):
 func _render_fake_line(from, to, normal, color, thickness = 0.02):
 	set_color(color)
 		
-	var up = (to - from).normalized()
-	var left = normal.cross(up)
+	var fwd = (to - from).normalized()
+	var up = normal
+	var left = up.cross(fwd)
 	
-	var Ap = from - (normal * 0.005)
-	var Bp = to - (normal * 0.005)
+	var Ap = from - (normal * 0.0001)
+	var Bp = to - (normal * 0.0001)
 	var Cp = (to + (left * thickness)) - (normal * 0.0001)
 	var Dp = (from + (left * thickness)) - (normal * 0.0001)
 	
