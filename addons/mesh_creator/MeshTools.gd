@@ -63,6 +63,15 @@ func CreateMeshFromFaces(facesArray, mesh = null, material = null) -> ArrayMesh:
 	mesh.surface_set_material(0, material)
 	return mesh
 	
+func MeshGenerator_Generate(generator):
+	var mci = preload("res://addons/mesh_creator/MeshCreatorInstance.tscn").instance()
+	var mat = mci.DEFAULT_MATERIAL
+	var mcMesh = generator.generate(generator.get_config())
+	mci.set_mc_mesh(mcMesh)
+	mci.mesh = CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), null, mat)
+	return mci
+	pass
+	
 func MeshGenerator_Cube():
 	var cube = preload("res://addons/mesh_creator/MeshCreatorInstance.tscn").instance()
 	var mat = cube.DEFAULT_MATERIAL	

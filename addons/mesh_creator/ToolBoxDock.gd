@@ -12,10 +12,12 @@ func set_creator(creator):
 	pass
 	
 func _ready():
+	_setup_generators()
 	_connect_signals()
 	
 func _connect_signals():
-	$ToolsList/Button_CreateCube.connect("pressed", self, "_on_ButtonCreateCube_pressed")
+	$ToolsList/GenerateButtons/Button_CreateCube.connect("pressed", self, "_on_ButtonCreateCube_pressed")
+	$ToolsList/GenerateButtons/Button_OpenGenerators.connect("pressed", self, "_on_ButtonOpenGenerators_pressed")
 	$ToolsList/ModesButtons/Button_ModeMesh.connect("toggled", self, "_on_ButtonModeMesh_Toggle")
 	$ToolsList/ModesButtons/Button_ModeVertex.connect("toggled", self, "_on_ButtonModeVertex_Toggle")
 	$ToolsList/ModesButtons/Button_ModeEdge.connect("toggled", self, "_on_ButtonModeEdge_Toggle")
@@ -28,12 +30,41 @@ func _connect_signals():
 	$ToolsList/ToolsButtons/Button_ToolRemove.connect("pressed", self, "_on_ButtonToolRemove_Press")
 	pass
 
+func _setup_generators():
+	$ToolsList/Generators/OptionButton.add_item("Select", 0)
+	$ToolsList/Generators/OptionButton.add_item("Box", 1)
+	$ToolsList/Generators/OptionButton.connect("item_selected", self, "_on_Generators_Select")
+	pass
+
+
+# @todo make this better and reload each panel and just attach remove
+func _on_Generators_Select(selectionIndex):
+	print("switching generator to: " + str(selectionIndex))
+	# remove existing panel
+	var existingPanel = $ToolsList/Generators.get_node_or_null("Generator_Panel")
+	if existingPanel != null:
+		$ToolsList/Generators.remove_child(existingPanel)
+		existingPanel.queue_free()
+			
+	# create new panel
+	if selectionIndex == 1:
+		# box generator
+		var panel = preload("res://addons/mesh_creator/generators/generator_ui_panel.tscn").instance()
+		panel.load_ui(MeshCreator_Generators_BoxMeshGenerator.new())
+		panel.name = "Generator_Panel"		
+		$ToolsList/Generators.add_child(panel)		
+	pass
+
 func _on_CreatorModeChanged():
 	_update_gui()
 	pass
 
 func _on_ButtonCreateCube_pressed():
 	emit_signal("button_create_new_mesh")
+	pass
+	
+func _on_ButtonOpenGenerators_pressed():	
+	print("schänaräd")
 	pass
 	
 func _on_ButtonModeMesh_Toggle(isPressed):

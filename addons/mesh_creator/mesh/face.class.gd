@@ -97,22 +97,6 @@ func set_point_at_index(index: int, p: Vector3) -> void:
 	_calc_normal()
 	_calc_centroid()
 
-func get_edge(fromIndex: int) -> MeshCreator_Mesh_Edge:
-	var vertCount = _vertices.size()
-	if (fromIndex < 0):
-		return null
-	if (fromIndex >= vertCount):
-		return null
-		
-	var toIndex = fromIndex + 1
-	if (fromIndex == vertCount - 1):
-		toIndex = 0
-		
-	var a = _vertices[fromIndex].get_position()
-	var b = _vertices[toIndex].get_position()
-	
-	return MeshCreator_Mesh_Edge.new(a, b)
-
 func get_edge_length(fromIndex: int) -> float:
 	var vertCount = _vertices.size()
 	if (fromIndex < 0):

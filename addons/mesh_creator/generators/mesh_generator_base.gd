@@ -13,10 +13,13 @@ func get_config_values(config: Array) -> Dictionary:
 		d[i] = config[0]["value"]
 	return d
 	
+func set_config_value(index, value):
+	pass
+	
 func is_valid() -> bool:
 	return true
 	pass
 	
-func generate(configValues: Dictionary) -> MeshCreator_Mesh_Mesh:
+func generate(configValues: Array) -> MeshCreator_Mesh_Mesh:
 	return MeshCreator_Mesh_Mesh.new()
 	pass

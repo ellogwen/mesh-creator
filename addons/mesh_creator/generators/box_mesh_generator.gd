@@ -5,8 +5,7 @@ class_name MeshCreator_Generators_BoxMeshGenerator
 func _init().():
 	pass
 	
-func get_config():	
-	return [
+var _config = [
 		{
 			label = "Width",
 			type = "int",
@@ -33,12 +32,18 @@ func get_config():
 		},		
 	]
 	
-func generate(configValues: Dictionary) -> MeshCreator_Mesh_Mesh:
+func get_config():
+	return _config
+	
+func set_config_value(index, value):
+	_config[index].value = value
+	
+func generate(configValues: Array) -> MeshCreator_Mesh_Mesh:
 	var boxMesh = MeshCreator_Mesh_Mesh.new()
 	
-	var width = float(configValues[0])
-	var height = float(configValues[1])
-	var depth = float(configValues[2])
+	var width = float(configValues[0]['value'])
+	var height = float(configValues[1]['value'])
+	var depth = float(configValues[2]['value'])
 		
 	
 	# top

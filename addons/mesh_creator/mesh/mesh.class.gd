@@ -38,15 +38,13 @@ func _nextFaceIdx() -> int:
 func _init():
 	clear()		
 	pass
-
-
 	
 func clear():
 	_faces.clear()
 	_edges.clear()
 	_vertices.clear()
 	_nextVerticesIndex = -1
-	_nextFacesIndex = -1
+	_nextFacesIndex = -1	
 	pass
 	
 func define_face_from_vertices(verts: Array) -> int:

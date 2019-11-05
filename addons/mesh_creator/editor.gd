@@ -22,6 +22,7 @@ func get_gizmo_plugin():
 	return meshCreatorGizmoPlugin
 
 func _enter_tree() -> void:
+	add_autoload_singleton("MeshCreator_Signals", "res://addons/mesh_creator/signals.gd")	
 	meshCreatorGizmoPlugin.set_creator(self)
 	connect("main_screen_changed", self, "_on_editor_main_screen_changed")
 	toolBoxDock = preload("res://addons/mesh_creator/ToolBoxDock.tscn").instance()
@@ -32,12 +33,14 @@ func _enter_tree() -> void:
 	add_spatial_gizmo_plugin(meshCreatorGizmoPlugin)
 	emit_signal("state_changed")
 	set_selection_mode(SelectionModes.MESH)
+	MeshCreator_Signals.connect("UI_GENERATOR_GENERATE_MESH", self, "on_generator_create_mesh")
 	print("[Mesh Creator] Ready to take off!")
 
 func _exit_tree() -> void:
 	remove_control_from_docks(toolBoxDock)
 	remove_spatial_gizmo_plugin(meshCreatorGizmoPlugin)	
 	toolBoxDock.queue_free()
+	remove_autoload_singleton("MeshCreator_Signals")
 	print("[Mesh Creator] Unloaded... Bye!")	
 	
 func forward_spatial_gui_input(camera, event):	
@@ -89,6 +92,19 @@ func _on_toolbox_button_create_new_mesh() -> void:
 	dbg3d.set_owner(root3D)	
 	pass
 
+func on_generator_create_mesh(generator):
+	if (generator == null):
+		return
+	if (not generator.is_valid()):
+		return
+		
+	var mt = MeshCreator_MeshTools.new()
+	var mci = mt.MeshGenerator_Generate(generator)
+	var root3D = get_editor_interface().get_edited_scene_root()	
+	root3D.add_child(mci)
+	mci.set_owner(root3D)
+	mci.SetEditorPlugin(self)
+	
 func _create_new_cube():	
 	var mt = MeshCreator_MeshTools.new()		
 	var cube = mt.MeshGenerator_Cube()
