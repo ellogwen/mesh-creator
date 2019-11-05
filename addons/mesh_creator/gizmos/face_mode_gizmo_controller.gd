@@ -83,8 +83,7 @@ func gizmo_redraw():
 	var lineMat: SpatialMaterial = _gizmo.get_plugin().get_material("face_select_line", self)
 	lineMat.params_line_width = 10.0
 	if (lines.size() > 0):
-	 	_gizmo.add_lines(lines, lineMat, false)		
-	
+	 	_gizmo.add_lines(lines, lineMat, false)			
 	
 	# create handles
 	var matHandleVertex = _gizmo.get_plugin().get_material("handles_vertex", self)
@@ -93,8 +92,7 @@ func gizmo_redraw():
 	var handleIdx = 0			
 	if (_activeTool != null):
 		handleIdx = _activeTool.on_gizmo_add_handles(handleIdx)
-		_activeTool.on_gizmo_redraw(_gizmo)
-		
+		_activeTool.on_gizmo_redraw(_gizmo)		
 	pass
 	
 func gizmo_get_handle_name(index):
@@ -131,64 +129,10 @@ func gizmo_forward_mouse_move(event, camera):
 		return _activeTool.on_input_mouse_move(event, camera)	
 	return false	
 
-
-
-
-
-
-
-
-
-
-func _move_connected_vertices(fromPos, toPos):
-	var spatial = _gizmo.get_spatial_node()
-	var affectedFaces = spatial.GetFacesWithVertex(fromPos)
-	for face in affectedFaces:
-		var vIndices: PoolIntArray = face.GetVertexIndices(fromPos)
-		for vIndex in vIndices:
-			face.set_point(vIndex, toPos)			
-	pass	
-	
-# @todo does this only work with convex faces?	
 func _extrude_selected_faces():
 	var mci = _gizmo.get_spatial_node()
-	for face in _get_selected_faces():
-		var faceNewPts = Array()
-		var faceVerts = face.get_vertices()
-		var faceVertsCount = faceVerts.size()
-		var centroid = face.get_centroid()
-		
-		for n in range(0, faceVertsCount):
-			var vtx = face.get_vertex(n)
-			faceNewPts.push_back(vtx.get_position() - (face.get_normal() * 0.25))
-			
-		# create N new faces (quads)
-		for n in range(0, faceVertsCount):
-			var a = faceVerts[n].get_position()
-			var d = faceNewPts[n]
-			var b
-			var c			
-			if (n + 1 >= faceVertsCount):
-				b = faceVerts[0].get_position()
-				c = faceNewPts[0]
-			else:
-				b = faceVerts[n + 1].get_position()
-				c = faceNewPts[n + 1]
-			
-			mci.get_mc_mesh().add_face_from_points(PoolVector3Array([a, b, c, d]))			
-			pass
-		
-		# overwrite existing verts and define new
-		# introduce new verts
-		var newVerts = Array()
-		for pt in faceNewPts:
-			newVerts.push_back(mci.get_mc_mesh().add_point(pt))
-		face.from_verts(newVerts)
-		
-			
-		face.refresh() # this makes sure triangulation is done		
-		pass
-		
+	for face in _get_selected_faces():		
+		mci.get_mc_mesh().extrude_face(face.get_mesh_index())		
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
 	pass	
@@ -199,47 +143,11 @@ func _remove_selected_faces():
 		mci.get_mc_mesh().remove_face(face.get_mesh_index())
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
-	
-# @todo does this only work with convex faces?	
+
 func _inset_selected_faces():
 	var mci = _gizmo.get_spatial_node()
 	for face in _get_selected_faces():
-		var faceNewPts = Array()
-		var faceVerts = face.get_vertices()
-		var faceVertsCount = faceVerts.size()
-		var centroid = face.get_centroid()
-		
-		for n in range(0, faceVertsCount):
-			var vtx = face.get_vertex(n)
-			faceNewPts.push_back(vtx.get_position() + ((centroid - vtx.get_position()) * 0.25))
-			
-		# create N new faces (quads)
-		for n in range(0, faceVertsCount):
-			var a = faceVerts[n].get_position()
-			var d = faceNewPts[n]
-			var b
-			var c			
-			if (n + 1 >= faceVertsCount):
-				b = faceVerts[0].get_position()
-				c = faceNewPts[0]
-			else:
-				b = faceVerts[n + 1].get_position()
-				c = faceNewPts[n + 1]
-			
-			mci.get_mc_mesh().add_face_from_points(PoolVector3Array([a, b, c, d]))			
-			pass
-		
-		# overwrite existing verts and define new
-		# introduce new verts
-		var newVerts = Array()
-		for pt in faceNewPts:
-			newVerts.push_back(mci.get_mc_mesh().add_point(pt))
-		face.from_verts(newVerts)
-		
-			
-		face.refresh() # this makes sure triangulation is done		
-		pass
-	
+		mci.get_mc_mesh().inset_face(face.get_mesh_index())		
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
 	pass

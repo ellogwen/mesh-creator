@@ -71,13 +71,3 @@ func MeshGenerator_Generate(generator):
 	mci.mesh = CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), null, mat)
 	return mci
 	pass
-	
-func MeshGenerator_Cube():
-	var cube = preload("res://addons/mesh_creator/MeshCreatorInstance.tscn").instance()
-	var mat = cube.DEFAULT_MATERIAL	
-	
-	var boxMeshGen = MeshCreator_Generators_BoxMeshGenerator.new()
-	var boxMesh = boxMeshGen.generate({ 0: 1.0, 1: 1.0, 2: 1.0})
-	cube.set_mc_mesh(boxMesh)
-	cube.mesh = CreateMeshFromFaces(cube.get_mc_mesh().get_faces(), null, mat)
-	return cube	

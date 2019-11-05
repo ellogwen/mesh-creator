@@ -98,3 +98,79 @@ func remove_face(faceId: int):
 		face.set_mesh_index(face.get_mesh_index() - 1)
 	# remove
 	_faces.remove(faceId)
+
+# @todo does this only work with convex faces?		
+func extrude_face(faceId: int):
+	var face = get_face(faceId)
+	var faceNewPts = Array()
+	var faceVerts = face.get_vertices()
+	var faceVertsCount = faceVerts.size()
+	var centroid = face.get_centroid()
+	
+	for n in range(0, faceVertsCount):
+		var vtx = face.get_vertex(n)
+		faceNewPts.push_back(vtx.get_position() - (face.get_normal() * 0.25))
+		
+	# create N new faces (quads)
+	for n in range(0, faceVertsCount):
+		var a = faceVerts[n].get_position()
+		var d = faceNewPts[n]
+		var b
+		var c			
+		if (n + 1 >= faceVertsCount):
+			b = faceVerts[0].get_position()
+			c = faceNewPts[0]
+		else:
+			b = faceVerts[n + 1].get_position()
+			c = faceNewPts[n + 1]
+		
+		add_face_from_points(PoolVector3Array([a, b, c, d]))			
+		pass
+	
+	# overwrite existing verts and define new
+	# introduce new verts
+	var newVerts = Array()
+	for pt in faceNewPts:
+		newVerts.push_back(add_point(pt))
+	face.from_verts(newVerts)
+	
+	face.refresh() # this makes sure triangulation is done		
+	pass
+	
+# @todo does this only work with convex faces?		
+func inset_face(faceId: int):
+	var face = get_face(faceId)
+	var faceNewPts = Array()
+	var faceVerts = face.get_vertices()
+	var faceVertsCount = faceVerts.size()
+	var centroid = face.get_centroid()
+	
+	for n in range(0, faceVertsCount):
+		var vtx = face.get_vertex(n)
+		faceNewPts.push_back(vtx.get_position() + ((centroid - vtx.get_position()) * 0.25))
+		
+	# create N new faces (quads)
+	for n in range(0, faceVertsCount):
+		var a = faceVerts[n].get_position()
+		var d = faceNewPts[n]
+		var b
+		var c			
+		if (n + 1 >= faceVertsCount):
+			b = faceVerts[0].get_position()
+			c = faceNewPts[0]
+		else:
+			b = faceVerts[n + 1].get_position()
+			c = faceNewPts[n + 1]
+		
+		add_face_from_points(PoolVector3Array([a, b, c, d]))			
+		pass
+	
+	# overwrite existing verts and define new
+	# introduce new verts
+	var newVerts = Array()
+	for pt in faceNewPts:
+		newVerts.push_back(add_point(pt))
+	face.from_verts(newVerts)
+		
+	face.refresh() # this makes sure triangulation is done		
+	pass

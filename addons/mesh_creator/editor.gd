@@ -106,7 +106,8 @@ func on_generator_create_mesh(generator):
 	mci.SetEditorPlugin(self)
 	
 func _create_new_cube():	
-	var mt = MeshCreator_MeshTools.new()		
-	var cube = mt.MeshGenerator_Cube()
+	var mt = MeshCreator_MeshTools.new()
+	var cubegen = MeshCreator_Generators_BoxMeshGenerator.new()
+	var cube = mt.MeshGenerator_Generate(cubegen)
 	return cube
 	pass
