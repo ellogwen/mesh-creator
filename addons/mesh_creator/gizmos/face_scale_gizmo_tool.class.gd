@@ -5,7 +5,7 @@ var _fromHandleIndex = -1
 
 var _axisVertical = -Vector3.UP
 var _axisHorizontal = -Vector3.RIGHT
-var _axisBoth = ((_axisVertical + _axisHorizontal) * 0.5).normalized()
+var _axisBoth = (_axisVertical + _axisHorizontal).normalized()
 var _myFace = null
 
 var meshTools = MeshCreator_MeshTools.new()
@@ -19,6 +19,11 @@ func set_active() -> void:
 	var selectedFaces = _get_selected_faces()
 	if not selectedFaces.empty():				
 		_myFace = selectedFaces.front()
+		
+	if (_myFace != null):		
+		_axisHorizontal = (_myFace.get_vertex(0).get_position() - _myFace.get_vertex(1).get_position()).normalized()
+		_axisVertical = _myFace.get_normal().cross(_axisHorizontal)
+		_axisBoth = (_axisVertical + _axisHorizontal).normalized()
 	pass
 	
 # cleanup on tool switch
@@ -94,7 +99,7 @@ func on_gizmo_set_handle(index, camera, screen_pos):
 			else:
 				spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), -step)
 	else:
-		var step = (toAxis * 0.15)
+		var step = toAxis * 0.15
 		step = Vector3(stepify(step.x, 0.1), stepify(step.y, 0.1), stepify(step.z, 0.1))
 		if scaleUp == false:
 			step = -step
@@ -131,6 +136,6 @@ func _get_selected_faces():
 	
 func _get_handle_draw_position(faceCenter, handleIdx):	
 	match(handleIdx):
-		0: return faceCenter + (_axisHorizontal * 0.25)
-		1: return faceCenter - (_axisVertical * 0.25)
-		2: return faceCenter - (_axisBoth * 0.25)
+		0: return faceCenter - (_axisHorizontal * 0.5)
+		1: return faceCenter - (_axisVertical * 0.5)
+		2: return faceCenter - (_axisBoth * 0.5)
