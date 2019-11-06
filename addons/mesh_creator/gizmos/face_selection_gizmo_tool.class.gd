@@ -62,17 +62,23 @@ func on_gui_action(actionCode: String, payload):
 # own stuff
 #################	
 
-func _get_clicked_on_faces_sorted_by_cam_distance(clickPos, camera):
+func _get_clicked_on_faces_sorted_by_cam_distance(clickPos, camera: Camera):		
 	var result = Array()
-	var mci = _gizmoController.get_gizmo().get_spatial_node()
+	var mci: Spatial = _gizmoController.get_gizmo().get_spatial_node()
+	var camRayNormal = camera.project_ray_normal(clickPos)	
+	
 	for face in mci.get_mc_mesh().get_faces():
-		if (_has_clicked_on_face(face, clickPos, camera)):
-			var clickInfo = {
-				face = face,
-				distance_camera = (face.get_centroid() - camera.transform.origin).length()
-			}
-			result.push_back(clickInfo)
-	# sort by distance ascending
+		var normalDot = camRayNormal.dot(face.get_normal())
+		for tri in face.get_triangles():
+			if (normalDot >= 0):
+				var intersection = Geometry.ray_intersects_triangle(camera.transform.origin, camRayNormal, mci.global_transform.xform(tri.get_a()), mci.global_transform.xform(tri.get_b()), mci.global_transform.xform(tri.get_c()))
+				if (intersection != null):
+					var clickInfo = {
+						face = face,
+						distance_camera = (mci.global_transform.xform(face.get_centroid()) - camera.transform.origin).length()
+					}
+					result.push_back(clickInfo)
+					
 	result.sort_custom(self, "_sort_by_distance_camera_asc")
 	return result
 
