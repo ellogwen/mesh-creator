@@ -49,6 +49,7 @@ func set_inactive():
 func _setup_tools():
 	get_gizmo().EDITOR_TOOLS['FACE_SELECTION'] = MeshCreator_Gizmos_FaceSelectionGizmoTool.new(self)
 	get_gizmo().EDITOR_TOOLS['FACE_TRANSLATE'] = MeshCreator_Gizmos_FaceTranslateGizmoTool.new(self)
+	get_gizmo().EDITOR_TOOLS['FACE_SCALE'] = MeshCreator_Gizmos_FaceScaleGizmoTool.new(self)
 	pass
 
 func _setup_materials(plugin):
@@ -159,6 +160,9 @@ func request_action(actionName, params):
 	if (actionName == "TOOL_TRANSLATE"):
 		print("Tool Move")
 		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_TRANSLATE'])
+	if (actionName == "TOOL_SCALE"):
+		print("Tool Scale")
+		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SCALE'])
 	if (actionName == "TOOL_INSET"):
 		print("Action Inset")
 		_inset_selected_faces()

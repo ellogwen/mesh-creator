@@ -25,6 +25,7 @@ func _connect_signals():
 	
 	$ToolsList/ToolsButtons/Button_ToolSelect.connect("pressed", self, "_on_ButtonToolSelect_Press")
 	$ToolsList/ToolsButtons/Button_ToolMove.connect("pressed", self, "_on_ButtonToolMove_Press")
+	$ToolsList/ToolsButtons/Button_ToolScale.connect("pressed", self, "_on_ButtonToolScale_Press")
 	$ToolsList/ToolsButtons/Button_ToolExtrude.connect("pressed", self, "_on_ButtonToolExtrude_Press")
 	$ToolsList/ToolsButtons/Button_ToolInset.connect("pressed", self, "_on_ButtonToolInset_Press")
 	$ToolsList/ToolsButtons/Button_ToolRemove.connect("pressed", self, "_on_ButtonToolRemove_Press")
@@ -94,6 +95,10 @@ func _on_ButtonToolSelect_Press():
 func _on_ButtonToolMove_Press():
 	emit_signal("tool_action", "TOOL_TRANSLATE", null)
 	pass		
+	
+func _on_ButtonToolScale_Press():
+	emit_signal("tool_action", "TOOL_SCALE", null)
+	pass
 	
 func _on_ButtonToolInset_Press():
 	emit_signal("tool_action", "TOOL_INSET", null)

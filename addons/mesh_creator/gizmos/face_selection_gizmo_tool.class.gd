@@ -70,7 +70,7 @@ func _get_clicked_on_faces_sorted_by_cam_distance(clickPos, camera: Camera):
 	for face in mci.get_mc_mesh().get_faces():
 		var normalDot = camRayNormal.dot(face.get_normal())
 		for tri in face.get_triangles():
-			if (normalDot >= 0):
+			if (normalDot >= 0): # only respect faces that are visible for the cam
 				var intersection = Geometry.ray_intersects_triangle(camera.transform.origin, camRayNormal, mci.global_transform.xform(tri.get_a()), mci.global_transform.xform(tri.get_b()), mci.global_transform.xform(tri.get_c()))
 				if (intersection != null):
 					var clickInfo = {
@@ -84,14 +84,3 @@ func _get_clicked_on_faces_sorted_by_cam_distance(clickPos, camera: Camera):
 
 func _sort_by_distance_camera_asc(a, b):
 	return a.distance_camera < b.distance_camera	
-
-func _has_clicked_on_face(face, point, camera):
-	var mci = _gizmoController.get_gizmo().get_spatial_node()
-	for tri in face.get_triangles():
-		var screenA = camera.unproject_position(mci.transform.origin + tri.get_a())
-		var screenB = camera.unproject_position(mci.transform.origin + tri.get_b())
-		var screenC = camera.unproject_position(mci.transform.origin + tri.get_c())		
-		if Geometry.point_is_inside_triangle(point, screenA, screenB, screenC):
-			return true		
-	
-	return false
