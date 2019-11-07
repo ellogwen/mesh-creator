@@ -12,7 +12,7 @@ func get_faces_selection(faceIds: Array) -> Array:
 	return faces
 
 # typeof Array<MeshCreator_Mesh_Edge>
-var _edges: Array  = Array()	
+var _edges: Array  = Array()
 func get_edges() -> Array: return _edges
 
 # typeof Array<MeasCreator_Mesh_Vertex>
@@ -36,7 +36,7 @@ func _nextFaceIdx() -> int:
 	return _nextFacesIndex
 	
 func _init():
-	clear()		
+	clear()
 	pass
 	
 func clear():
@@ -44,7 +44,7 @@ func clear():
 	_edges.clear()
 	_vertices.clear()
 	_nextVerticesIndex = -1
-	_nextFacesIndex = -1	
+	_nextFacesIndex = -1
 	pass
 	
 func define_face_from_vertices(verts: Array) -> int:
@@ -54,7 +54,7 @@ func define_face_from_vertices(verts: Array) -> int:
 		if (vtx.get_mesh_index() < 0):
 			realVtx = add_vertex(vtx)
 		realVerts.push_back(realVtx)
-	var f = MeshCreator_Mesh_Face.new(realVerts)	
+	var f = MeshCreator_Mesh_Face.new(realVerts)
 	f.set_mesh_index(_nextFaceIdx())
 	_faces.push_back(f)
 	return f.get_mesh_index()
@@ -63,17 +63,17 @@ func add_face_from_points(pts: PoolVector3Array, independentVerts = false) -> in
 	var verts = Array()
 	for pt in pts:
 		verts.push_back(get_vertex(add_point(pt, independentVerts).get_mesh_index()))
-	return define_face_from_vertices(verts)	
+	return define_face_from_vertices(verts)
 	
 func add_vertex(vtx: MeshCreator_Mesh_Vertex, independentVerts = false) -> MeshCreator_Mesh_Vertex:
 	if (vtx.get_mesh_index() >= 0):
-		print("[Mesh Creator] Add Vertex Warning. Vertex already indexed: Idx " + str(vtx.get_mesh_index()))		
+		print("[Mesh Creator] Add Vertex Warning. Vertex already indexed: Idx " + str(vtx.get_mesh_index()))
 		return get_vertex(vtx.get_mesh_index())
 	# find duplicate is this the right way? @todo find a good solution for linked vertices
 	if (independentVerts == false):
 		for v in _vertices:
 			if v.equals_position(vtx):
-				vtx.set_mesh_index(v.get_mesh_index())			
+				vtx.set_mesh_index(v.get_mesh_index())
 				return get_vertex(v.get_mesh_index())
 	_vertices.push_back(vtx)
 	vtx.set_mesh_index(_nextVertIdx())
@@ -91,7 +91,7 @@ func translate_vertex(vertexId: int, offset: Vector3):
 	pass
 	
 # does this work and leave a gap?
-func remove_face(faceId: int):	
+func remove_face(faceId: int):
 	# reindex
 	for i in range(faceId + 1, _faces.size()):
 		var face = _faces[i]
@@ -116,7 +116,7 @@ func extrude_face(faceId: int):
 		var a = faceVerts[n].get_position()
 		var d = faceNewPts[n]
 		var b
-		var c			
+		var c
 		if (n + 1 >= faceVertsCount):
 			b = faceVerts[0].get_position()
 			c = faceNewPts[0]
@@ -124,7 +124,7 @@ func extrude_face(faceId: int):
 			b = faceVerts[n + 1].get_position()
 			c = faceNewPts[n + 1]
 		
-		add_face_from_points(PoolVector3Array([a, b, c, d]))			
+		add_face_from_points(PoolVector3Array([a, b, c, d]))
 		pass
 	
 	# overwrite existing verts and define new
@@ -134,7 +134,7 @@ func extrude_face(faceId: int):
 		newVerts.push_back(add_point(pt))
 	face.from_verts(newVerts)
 	
-	face.refresh() # this makes sure triangulation is done		
+	face.refresh() # this makes sure triangulation is done
 	pass
 	
 # @todo does this only work with convex faces?		
@@ -154,7 +154,7 @@ func inset_face(faceId: int):
 		var a = faceVerts[n].get_position()
 		var d = faceNewPts[n]
 		var b
-		var c			
+		var c
 		if (n + 1 >= faceVertsCount):
 			b = faceVerts[0].get_position()
 			c = faceNewPts[0]
@@ -162,7 +162,7 @@ func inset_face(faceId: int):
 			b = faceVerts[n + 1].get_position()
 			c = faceNewPts[n + 1]
 		
-		add_face_from_points(PoolVector3Array([a, b, c, d]))			
+		add_face_from_points(PoolVector3Array([a, b, c, d]))
 		pass
 	
 	# overwrite existing verts and define new
@@ -172,5 +172,136 @@ func inset_face(faceId: int):
 		newVerts.push_back(add_point(pt))
 	face.from_verts(newVerts)
 		
-	face.refresh() # this makes sure triangulation is done		
+	face.refresh() # this makes sure triangulation is done
 	pass
+	
+func loopcut(loopcutChain : Array, startEdgeIndex = 0, factor: float = 0.5):
+	factor = clamp(factor,0.0001, 0.9999)
+	if (loopcutChain.size() < 3):
+		print("Loopcut: Invalid chain size. abort")
+		return
+	var endId = loopcutChain.back()	
+	var inEdgeIndex = (startEdgeIndex + 2) % 4	
+	for i in range(0, loopcutChain.size() - 1):		
+		var outEdgeIndex = (inEdgeIndex + 2) % 4	
+		var currFace = get_face(loopcutChain[i])
+		
+		if (currFace.get_vertex_count() != 4):
+			print("Loopcut: Error - Current implementation only support convex shapes with 4 vertices (quads)")
+			return
+		
+		var inEdgeStartPos = currFace.get_edge_start(inEdgeIndex)
+		var inEdgeEndPos = currFace.get_edge_end(inEdgeIndex)
+		var inEdgeCutPosVec = (inEdgeEndPos - inEdgeStartPos)
+		var inEdgeCutPos = inEdgeStartPos + (inEdgeCutPosVec.normalized() * (inEdgeCutPosVec.length() * factor))
+		
+		var outEdgeStartPos = currFace.get_edge_start(outEdgeIndex)
+		var outEdgeEndPos = currFace.get_edge_end(outEdgeIndex)
+		var outEdgeCutPosVec = (outEdgeEndPos - outEdgeStartPos)		
+		var outEdgeCutPos = outEdgeStartPos + (outEdgeCutPosVec.normalized() * (outEdgeCutPosVec.length() * factor))
+		
+		var currFaceA = currFace.get_vertex(outEdgeIndex).get_position()
+		var currFaceB = outEdgeCutPos
+		var currFaceC = inEdgeCutPos
+		var currFaceD = currFace.get_vertex((outEdgeIndex + 3) % 4).get_position()
+		
+		var newFaceA = outEdgeCutPos
+		var newFaceB = currFace.get_vertex((outEdgeIndex + 1) % 4).get_position()
+		var newFaceC = currFace.get_vertex((outEdgeIndex + 2) % 4).get_position()
+		var newFaceD = inEdgeCutPos		
+		
+		var nextFace = get_face(loopcutChain[i + 1])		
+		
+		currFace.from_verts([add_point(currFaceA), add_point(currFaceB), add_point(currFaceC), add_point(currFaceD)])	
+		currFace.refresh() # this makes sure triangulation is done		
+		add_face_from_points(PoolVector3Array([newFaceA, newFaceB, newFaceC, newFaceD]))		
+		
+		if (loopcutChain[i +1] == endId):
+			break;
+			
+		inEdgeIndex = nextFace.get_edge_index(outEdgeEndPos, outEdgeStartPos) # flip
+		if (inEdgeIndex < 0):			
+			print("Loopcut: Error - Could not detect matching edge")
+			return
+	pass
+	
+# returns a list of faces that build a loopcut chain, first and last
+# element is the start face
+# loopcuts only supported for quads right now
+# empty list if loopcut chain cant be created
+# yes, this look inefficient ^^
+func build_loopcut_chain(fromFaceId, perEdgeIndex = 0) -> Array:
+	var chain = Array()
+	
+	var startFace = get_face(fromFaceId)
+		
+	var outEdgeIndex = perEdgeIndex
+	var edgeA = startFace.get_edge_start(perEdgeIndex)
+	var edgeB = startFace.get_edge_end(perEdgeIndex)
+	
+	var currentFaceId = find_face_with_edge(edgeB, edgeA, fromFaceId) # flip
+	
+	if (currentFaceId < 0):
+		return Array()
+		
+	var process = true
+	var killSwitch = 1000000
+	while(process):
+		killSwitch -= 1
+		
+		if (killSwitch < 0):
+			print("Loopcut: Safety switch. sorry")
+			return Array()
+			
+		if (currentFaceId < 0):
+			print("Loopcut: No current face. Abort")
+			return Array()
+			
+		var currentFace = get_face(currentFaceId)
+		
+		if (currentFace.get_mesh_index() == fromFaceId):
+			print("Loopcut: We reached start")
+			process = false
+			break
+			
+		if chain.has(currentFace.get_mesh_index()):
+			print("Loopcut: Face does already exist in chain. Abort.")
+			return Array()
+		
+		if (currentFace.get_vertex_count() != 4):
+			print("Lookup: Face does not have 4 vertices. abort")
+			return Array()
+			
+		var inEdgeIndex = currentFace.get_edge_index(edgeB, edgeA) #flip
+		if (inEdgeIndex < 0):
+			print("Loopcut: Face does not have a matching edge")
+			return Array()
+		
+		chain.push_back(currentFace.get_mesh_index())
+		
+		outEdgeIndex = (inEdgeIndex + 2) % 4
+		
+		if outEdgeIndex == inEdgeIndex:
+			print("Loopcut: Edge index calculation error. Abort.")
+			return Array()
+		
+		edgeA = currentFace.get_edge_start(outEdgeIndex)
+		edgeB = currentFace.get_edge_end(outEdgeIndex)
+		
+		currentFaceId = find_face_with_edge(edgeB, edgeA, currentFace.get_mesh_index())	# flip
+		pass
+		
+	print ("Loopcut: Finished loopcut with " + str(1000000 - killSwitch) + " iterations.")
+	
+	# loop chain starts and ends with starting face
+	chain.push_front(fromFaceId)
+	chain.push_back(fromFaceId)
+	return chain
+	
+func find_face_with_edge(a, b, ignoreId = -1) -> int:
+	for face in _faces:
+		if (face.get_mesh_index() == ignoreId):
+			continue
+		if (face.has_edge(a, b)):
+			return face.get_mesh_index()
+	return -1

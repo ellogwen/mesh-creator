@@ -127,6 +127,31 @@ func has_vertex_position(position: Vector3) -> bool:
 		if (position == v.get_position()):
 			return true
 	return false
+	
+func get_edge_index(a, b) -> int:	
+	var vertexCount = _vertices.size()
+	for i in range(0, vertexCount):				
+		var endIndex = i + 1
+		if (i == vertexCount - 1):
+			endIndex = 0
+		var ea = _vertices[i].get_position()
+		var eb = _vertices[endIndex].get_position()
+		
+		if (a == ea and b == eb):
+			return i
+	
+	return -1
+	
+# @todo check out of bounds
+func get_edge_start(index) -> Vector3:
+	return _vertices[index].get_position()
+	
+# @todo check out of bounds
+func get_edge_end(index) -> Vector3:
+	return _vertices[(index + 1) % get_vertex_count()].get_position()
+	
+func has_edge(a, b):
+	return (get_edge_index(a, b) >= 0)
 
 func get_vertex_index(position: Vector3) -> int:
 	for i in range(0, _vertices.size()):
@@ -139,6 +164,9 @@ func equals(otherFace: MeshCreator_Mesh_Face) -> bool:
 		if (has_vertex(vtx) == false):
 			return false
 	return true
+	
+func get_vertex_count() -> int:
+	return _vertices.size()
 
 # clone leads to all sorts of problems, remove for now
 #func clone(newId = -1) -> MeshCreator_Mesh_Face:

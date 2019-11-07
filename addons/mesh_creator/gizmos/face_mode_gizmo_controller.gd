@@ -152,6 +152,14 @@ func _inset_selected_faces():
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
 	pass
+	
+func _loopcut_selected_faces():
+	var mci = _gizmo.get_spatial_node()
+	for face in _get_selected_faces():
+		var lpc = mci.get_mc_mesh().build_loopcut_chain(face.get_mesh_index())
+		mci.get_mc_mesh().loopcut(lpc, 0, 0.5) # @todo magic numbers
+	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
+	request_redraw()
 		
 func request_action(actionName, params):
 	if (actionName == "TOOL_SELECT"):
@@ -172,6 +180,9 @@ func request_action(actionName, params):
 	if (actionName == "TOOL_REMOVE"):
 		print("Action Remove Face")
 		_remove_selected_faces()	
+	if (actionName == "TOOL_LOOPCUT"):
+		print("Action LOOPCUT")
+		_loopcut_selected_faces()
 	pass
 	
 func on_tool_request_finish():

@@ -29,6 +29,7 @@ func _connect_signals():
 	$ToolsList/ToolsButtons/Button_ToolExtrude.connect("pressed", self, "_on_ButtonToolExtrude_Press")
 	$ToolsList/ToolsButtons/Button_ToolInset.connect("pressed", self, "_on_ButtonToolInset_Press")
 	$ToolsList/ToolsButtons/Button_ToolRemove.connect("pressed", self, "_on_ButtonToolRemove_Press")
+	$ToolsList/ToolsButtons/Button_ToolLoopcut.connect("pressed", self, "_on_ButtonToolLoopcut_Press")
 	pass
 
 func _setup_generators():
@@ -110,6 +111,10 @@ func _on_ButtonToolExtrude_Press():
 	
 func _on_ButtonToolRemove_Press():
 	emit_signal("tool_action", "TOOL_REMOVE", null)
+	pass	
+	
+func _on_ButtonToolLoopcut_Press():
+	emit_signal("tool_action", "TOOL_LOOPCUT", null)
 	pass	
 
 	
