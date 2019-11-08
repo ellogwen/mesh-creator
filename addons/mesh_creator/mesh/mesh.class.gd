@@ -138,7 +138,7 @@ func extrude_face(faceId: int):
 	pass
 	
 # @todo does this only work with convex faces?		
-func inset_face(faceId: int):
+func inset_face(faceId: int, factor = 0.25):
 	var face = get_face(faceId)
 	var faceNewPts = Array()
 	var faceVerts = face.get_vertices()
@@ -147,7 +147,7 @@ func inset_face(faceId: int):
 	
 	for n in range(0, faceVertsCount):
 		var vtx = face.get_vertex(n)
-		faceNewPts.push_back(vtx.get_position() + ((centroid - vtx.get_position()) * 0.25))
+		faceNewPts.push_back(vtx.get_position() + ((centroid - vtx.get_position()) * factor))
 		
 	# create N new faces (quads)
 	for n in range(0, faceVertsCount):

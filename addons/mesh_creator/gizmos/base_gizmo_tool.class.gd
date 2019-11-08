@@ -11,6 +11,9 @@ func _init(gizmoController) -> void:
 func set_active() -> void:
 	pass
 	
+func get_tool_name() -> String:
+	return ""
+	
 # cleanup on tool switch
 func set_inactive() -> void:
 	pass

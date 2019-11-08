@@ -13,6 +13,9 @@ var meshTools = MeshCreator_MeshTools.new()
 func _init(_gizmoController).(_gizmoController):
 	pass
 	
+func get_tool_name() -> String:
+	return "FACE_SCALE"
+	
 # do preparation before tool switch
 func set_active() -> void:
 	_myFace = null

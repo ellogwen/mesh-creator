@@ -14,6 +14,9 @@ func get_selection_store():
 func _init(gizmoController).(gizmoController) -> void:	
 	pass
 	
+func get_tool_name() -> String:
+	return "FACE_SELECTION"
+	
 # do preparation before tool switch
 func set_active() -> void:
 	pass

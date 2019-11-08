@@ -24,6 +24,14 @@ func _get_selected_faces():
 	
 func get_selected_vertices_ids() -> Array:
 	return get_gizmo().get_vertex_selection_store().get_store()
+	
+func get_active_tool_name() -> String:
+	if (_activeTool != null):
+		return _activeTool.get_tool_name()
+	return ""
+	
+func get_active_tool():	
+	return _activeTool
 
 func _init(gizmo):
 	_gizmo = gizmo	
@@ -50,6 +58,7 @@ func _setup_tools():
 	get_gizmo().EDITOR_TOOLS['FACE_SELECTION'] = MeshCreator_Gizmos_FaceSelectionGizmoTool.new(self)
 	get_gizmo().EDITOR_TOOLS['FACE_TRANSLATE'] = MeshCreator_Gizmos_FaceTranslateGizmoTool.new(self)
 	get_gizmo().EDITOR_TOOLS['FACE_SCALE'] = MeshCreator_Gizmos_FaceScaleGizmoTool.new(self)
+	get_gizmo().EDITOR_TOOLS['FACE_INSET'] = MeshCreator_Gizmos_FaceInsetGizmoTool.new(self)
 	pass
 
 func _setup_materials(plugin):
@@ -65,6 +74,7 @@ func activate_tool(what):
 	what.set_active()
 	_activeTool = what
 	gizmo_redraw()
+	_gizmo.get_spatial_node().ActiveEditorPlugin.notify_state_changed()
 	pass
 
 func gizmo_redraw():
@@ -145,10 +155,10 @@ func _remove_selected_faces():
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
 
-func _inset_selected_faces():
+func inset_selected_faces(factor = 0.25):
 	var mci = _gizmo.get_spatial_node()
 	for face in _get_selected_faces():
-		mci.get_mc_mesh().inset_face(face.get_mesh_index())		
+		mci.get_mc_mesh().inset_face(face.get_mesh_index(), factor)		
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
 	pass
@@ -161,7 +171,10 @@ func _loopcut_selected_faces():
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
 		
-func request_action(actionName, params):
+func request_action(actionName, params = []):
+	if (actionName == "TOOL_CANCEL"):
+		print("Cancel operation")
+		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SELECTION'])
 	if (actionName == "TOOL_SELECT"):
 		print("Tool Select")
 		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SELECTION'])
@@ -172,8 +185,8 @@ func request_action(actionName, params):
 		print("Tool Scale")
 		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SCALE'])
 	if (actionName == "TOOL_INSET"):
-		print("Action Inset")
-		_inset_selected_faces()
+		print("Tool Inset")
+		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_INSET'])
 	if (actionName == "TOOL_EXTRUDE"):
 		print("Action Extrude")
 		_extrude_selected_faces()			

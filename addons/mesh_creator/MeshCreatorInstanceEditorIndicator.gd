@@ -16,6 +16,11 @@ func UpdateDraw():
 	if (Engine.is_editor_hint() == false):
 		return
 		
+	var activeTool = MCI.get_editor_plugin().get_gizmo_plugin().get_active_tool()	
+	# selected faces
+	# @todo erm... nope, this will surely be backfire 
+	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_face_selection_store().get_store())	
+		
 	# Clean up before drawing.
 	clear()
 	
@@ -31,13 +36,15 @@ func UpdateDraw():
 		for face in MCI.get_mc_mesh().get_faces():
 			_render_face_center(face)
 	
-	# selected faces
-	# @todo erm... nope, this will surely be backfire 
-	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_face_selection_store().get_store())	
+	# selected face indicator
 	for face in selectedFaces:
 		_render_editor_selected_face(face)
+		if (activeTool != null):
+			# inset indicator			
+			if (activeTool.get_tool_name() == "FACE_INSET"):
+				_render_face_inset_indicator(face, activeTool.get_inset_factor())
 		
-	# fake lines
+	# face edges
 	if (MCI.get_editor_plugin().SelectionMode != 0):
 		for face in MCI.get_mc_mesh().get_faces():
 			var verts = face.get_vertices()
@@ -46,8 +53,8 @@ func UpdateDraw():
 				if (i == vertsCount - 1):
 					_render_fake_line(verts[i].get_position(), verts[0].get_position(), face.get_normal(), ColorN("blue", 0.9))
 				else:
-					_render_fake_line(verts[i].get_position(), verts[i+1].get_position(), face.get_normal(), ColorN("blue", 0.9))
-					
+					_render_fake_line(verts[i].get_position(), verts[i+1].get_position(), face.get_normal(), ColorN("blue", 0.9))				
+	
 	
 	# End drawing.
 	end()
@@ -123,4 +130,21 @@ func _render_editor_selected_face(face):
 		set_uv(Vector2(0, 0))
 		add_vertex(tri.get_c() - (tri.get_normal() * 0.0001))
 	
+	pass
+	
+func _render_face_inset_indicator(face, insetFactor):
+	var newPts = PoolVector3Array()
+	if insetFactor > 0.01 and insetFactor < 0.99:
+		for vtx in face.get_vertices():
+			newPts.push_back(vtx.get_position() + ((face.get_centroid() - vtx.get_position()) * insetFactor))
+
+	var vtxCount = newPts.size()
+	for i in range(0, vtxCount):
+		_render_fake_line(
+			(newPts[i]),
+			(newPts[(i + 1) % vtxCount]),
+			face.get_normal(),
+			Color.blue,
+			0.01
+		)
 	pass
