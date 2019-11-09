@@ -59,6 +59,7 @@ func _setup_tools():
 	get_gizmo().EDITOR_TOOLS['FACE_TRANSLATE'] = MeshCreator_Gizmos_FaceTranslateGizmoTool.new(self)
 	get_gizmo().EDITOR_TOOLS['FACE_SCALE'] = MeshCreator_Gizmos_FaceScaleGizmoTool.new(self)
 	get_gizmo().EDITOR_TOOLS['FACE_INSET'] = MeshCreator_Gizmos_FaceInsetGizmoTool.new(self)
+	get_gizmo().EDITOR_TOOLS['FACE_LOOPCUT'] = MeshCreator_Gizmos_FaceLoopcutGizmoTool.new(self)
 	pass
 
 func _setup_materials(plugin):
@@ -163,11 +164,11 @@ func inset_selected_faces(factor = 0.25):
 	request_redraw()
 	pass
 	
-func _loopcut_selected_faces():
+func loopcut_selected_faces(edgeIndex = 0, insetFactor = 0.5):
 	var mci = _gizmo.get_spatial_node()
 	for face in _get_selected_faces():
-		var lpc = mci.get_mc_mesh().build_loopcut_chain(face.get_mesh_index())
-		mci.get_mc_mesh().loopcut(lpc, 0, 0.5) # @todo magic numbers
+		var lpc = mci.get_mc_mesh().build_loopcut_chain(face.get_mesh_index(), edgeIndex)
+		mci.get_mc_mesh().loopcut(lpc, edgeIndex, insetFactor)
 	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
 	request_redraw()
 		
@@ -175,27 +176,27 @@ func request_action(actionName, params = []):
 	if (actionName == "TOOL_CANCEL"):
 		print("Cancel operation")
 		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SELECTION'])
-	if (actionName == "TOOL_SELECT"):
+	elif (actionName == "TOOL_SELECT"):
 		print("Tool Select")
 		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SELECTION'])
-	if (actionName == "TOOL_TRANSLATE"):
+	elif (actionName == "TOOL_TRANSLATE"):
 		print("Tool Move")
 		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_TRANSLATE'])
-	if (actionName == "TOOL_SCALE"):
+	elif (actionName == "TOOL_SCALE"):
 		print("Tool Scale")
 		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_SCALE'])
-	if (actionName == "TOOL_INSET"):
+	elif (actionName == "TOOL_INSET"):
 		print("Tool Inset")
 		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_INSET'])
-	if (actionName == "TOOL_EXTRUDE"):
+	elif (actionName == "TOOL_LOOPCUT"):
+		print("Tool Loopcut")
+		activate_tool(get_gizmo().EDITOR_TOOLS['FACE_LOOPCUT'])
+	elif (actionName == "TOOL_EXTRUDE"):
 		print("Action Extrude")
 		_extrude_selected_faces()			
-	if (actionName == "TOOL_REMOVE"):
+	elif (actionName == "TOOL_REMOVE"):
 		print("Action Remove Face")
 		_remove_selected_faces()	
-	if (actionName == "TOOL_LOOPCUT"):
-		print("Action LOOPCUT")
-		_loopcut_selected_faces()
 	pass
 	
 func on_tool_request_finish():

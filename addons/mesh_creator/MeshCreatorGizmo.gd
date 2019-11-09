@@ -12,6 +12,7 @@ var EDITOR_TOOLS = {
 	FACE_SELECTION = null,
 	FACE_TRANSLATE = null,
 	FACE_INSET = null,
+	FACE_LOOPCUT = null,
 }
 
 var _faceSelectionStore
@@ -44,6 +45,7 @@ func get_tool(toolName):
 		"FACE_SELECTION": return EDITOR_TOOLS.FACE_SELECTION
 		"FACE_TRANSLATE": return EDITOR_TOOLS.FACE_TRANSLATE
 		"FACE_INSET": return EDITOR_TOOLS.FACE_INSET
+		"FACE_LOOPCUT": return EDITOR_TOOLS.FACE_LOOPCUT
 	return null
 	
 func _add_editor_helper():

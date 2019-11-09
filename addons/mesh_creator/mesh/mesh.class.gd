@@ -198,7 +198,7 @@ func loopcut(loopcutChain : Array, startEdgeIndex = 0, factor: float = 0.5):
 		var outEdgeStartPos = currFace.get_edge_start(outEdgeIndex)
 		var outEdgeEndPos = currFace.get_edge_end(outEdgeIndex)
 		var outEdgeCutPosVec = (outEdgeEndPos - outEdgeStartPos)		
-		var outEdgeCutPos = outEdgeStartPos + (outEdgeCutPosVec.normalized() * (outEdgeCutPosVec.length() * factor))
+		var outEdgeCutPos = outEdgeStartPos + (outEdgeCutPosVec.normalized() * (outEdgeCutPosVec.length() * (1.0 - factor)))
 		
 		var currFaceA = currFace.get_vertex(outEdgeIndex).get_position()
 		var currFaceB = outEdgeCutPos
@@ -291,11 +291,11 @@ func build_loopcut_chain(fromFaceId, perEdgeIndex = 0) -> Array:
 		currentFaceId = find_face_with_edge(edgeB, edgeA, currentFace.get_mesh_index())	# flip
 		pass
 		
-	print ("Loopcut: Finished loopcut with " + str(1000000 - killSwitch) + " iterations.")
+	print ("Loopcut: Finished loopcut with " + str(1000000 - killSwitch) + " iterations.")	
 	
 	# loop chain starts and ends with starting face
 	chain.push_front(fromFaceId)
-	chain.push_back(fromFaceId)
+	chain.push_back(fromFaceId)	
 	return chain
 	
 func find_face_with_edge(a, b, ignoreId = -1) -> int:

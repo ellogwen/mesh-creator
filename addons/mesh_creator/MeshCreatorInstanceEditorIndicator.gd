@@ -10,6 +10,7 @@ func _ready():
 	indicator_material.flags_transparent = true
 	indicator_material.vertex_color_use_as_albedo = true
 	indicator_material.albedo_color = Color(1, 1, 1, 1)	
+	indicator_material.params_cull_mode = SpatialMaterial.CULL_DISABLED
 	set_material_override(indicator_material)
 
 func UpdateDraw():
@@ -42,7 +43,10 @@ func UpdateDraw():
 		if (activeTool != null):
 			# inset indicator			
 			if (activeTool.get_tool_name() == "FACE_INSET"):
-				_render_face_inset_indicator(face, activeTool.get_inset_factor())					
+				_render_face_inset_indicator(face, activeTool.get_inset_factor())
+			# loopcut indicator			
+			if (activeTool.get_tool_name() == "FACE_LOOPCUT"):
+				_render_face_loopcut_indicator(face, activeTool)						
 		
 	# face edges
 	if (MCI.get_editor_plugin().SelectionMode != 0):
@@ -150,6 +154,47 @@ func _render_face_inset_indicator(face, insetFactor):
 			Color.blue,
 			0.01
 		)
+	pass
+	
+func _render_face_loopcut_indicator(face, faceLoopcutTool):
+	var startEdgeIndex = faceLoopcutTool.get_edge_index()
+	var insetFactor = clamp(faceLoopcutTool.get_inset_factor(), 0.0001, 0.9999)
+	var loopcutChain = MCI.get_mc_mesh().build_loopcut_chain(face.get_mesh_index(), startEdgeIndex)
+	
+	#if (loopcutChain.size() < 3):		
+	#	return
+		
+	var endId = loopcutChain.back()	
+	var inEdgeIndex = (startEdgeIndex + 2) % 4	
+	for i in range(0, loopcutChain.size() - 1):		
+		var outEdgeIndex = (inEdgeIndex + 2) % 4	
+		var currFace = MCI.get_mc_mesh().get_face(loopcutChain[i])
+		
+		if (currFace.get_vertex_count() != 4):			
+			return
+		
+		var inEdgeStartPos = currFace.get_edge_start(inEdgeIndex)
+		var inEdgeEndPos = currFace.get_edge_end(inEdgeIndex)
+		var inEdgeCutPosVec = (inEdgeEndPos - inEdgeStartPos)
+		var inEdgeCutPos = inEdgeStartPos + (inEdgeCutPosVec.normalized() * (inEdgeCutPosVec.length() * insetFactor))
+		
+		var outEdgeStartPos = currFace.get_edge_start(outEdgeIndex)
+		var outEdgeEndPos = currFace.get_edge_end(outEdgeIndex)
+		var outEdgeCutPosVec = (outEdgeEndPos - outEdgeStartPos)		
+		var outEdgeCutPos = outEdgeStartPos + (outEdgeCutPosVec.normalized() * (outEdgeCutPosVec.length() * (1 - insetFactor)))
+		
+		# draw line
+		_render_fake_line(inEdgeCutPos, outEdgeCutPos, currFace.get_normal(), Color.blue, 0.015)
+		
+		var nextFace = MCI.get_mc_mesh().get_face(loopcutChain[i + 1])		
+		
+		if (loopcutChain[i +1] == endId):
+			break;
+			
+		inEdgeIndex = nextFace.get_edge_index(outEdgeEndPos, outEdgeStartPos) # flip
+		if (inEdgeIndex < 0):						
+			return	
+	
 	pass
 	
 func _render_face_translate_indicator(faceTranslateTool):
