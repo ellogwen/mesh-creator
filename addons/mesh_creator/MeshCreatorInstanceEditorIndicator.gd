@@ -54,7 +54,14 @@ func UpdateDraw():
 			var verts = face.get_vertices()
 			var vertsCount = verts.size()
 			for i in range(0, vertsCount):				
-					_render_fake_line(verts[i].get_position(), verts[(i + 1) % vertsCount].get_position(), face.get_normal(), Color.black, 0.015)
+					_render_fake_line(
+						verts[i].get_position(), 
+						verts[(i + 1) % vertsCount].get_position(), 
+						face.get_normal(), 
+						Color.black, 
+						0.015,
+						1
+					)
 					
 	# general tool indicators
 	if (activeTool != null):
@@ -93,17 +100,30 @@ func _render_line(from, to, color):
 	add_vertex(to)	
 	pass
 	
-func _render_fake_line(from, to, normal, color, thickness = 0.02):
+# anchors: 0 = center, 1 = left, 2 = right
+func _render_fake_line(from, to, normal, color, thickness = 0.02, anchor = 0):
 	set_color(color)
 		
 	var fwd = (to - from).normalized()
 	var up = normal
 	var left = up.cross(fwd)
 	
-	var Ap = from - (normal * 0.0001)
-	var Bp = to - (normal * 0.0001)
-	var Cp = (to + (left * thickness)) - (normal * 0.0001)
-	var Dp = (from + (left * thickness)) - (normal * 0.0001)
+	var Ap = (to - (left * (thickness / 2))) - (normal * 0.0001)
+	var Bp = (to + (left * (thickness / 2))) - (normal * 0.0001)
+	var Cp = (from + (left * (thickness / 2))) - (normal * 0.0001)	
+	var Dp = (from - (left * (thickness / 2))) - (normal * 0.0001)
+	
+	if anchor == 1:
+		Ap = Ap + (left * (thickness / 2))
+		Bp = Bp + (left * (thickness / 2))
+		Cp = Cp + (left * (thickness / 2))
+		Dp = Dp + (left * (thickness / 2))
+		
+	if anchor == 2:
+		Ap = Ap - (left * (thickness / 2))
+		Bp = Bp - (left * (thickness / 2))
+		Cp = Cp - (left * (thickness / 2))
+		Dp = Dp - (left * (thickness / 2))		
 	
 	set_normal(normal)
 	add_vertex(Ap)
@@ -202,18 +222,11 @@ func _render_face_translate_indicator(faceTranslateTool):
 	var fwd = faceTranslateTool.get_axis_forward()
 	var up = faceTranslateTool.get_axis_up()
 	var right = faceTranslateTool.get_axis_right()
-	var lineWidth = 0.1
-	var centerOffset = Vector3.ZERO
-	# forward axis	
-	centerOffset = right * (lineWidth/2)
-	_render_fake_line(from + centerOffset, (from + (fwd * 0.25)) + centerOffset, up, ColorN("blue", 0.9), 0.1)	
-	_render_fake_line((from + (fwd * 0.25)) + centerOffset, from + centerOffset, -up, ColorN("blue", 0.9), 0.1)
-	# up axis
-	centerOffset = -right * (lineWidth/2)
-	_render_fake_line(from + centerOffset, from + (-up * 0.25) + centerOffset, -fwd, ColorN("green", 0.9), 0.1)
-	_render_fake_line(from + (-up * 0.25) + centerOffset, from + centerOffset, fwd, ColorN("green", 0.9), 0.1)
-	# right axis
-	centerOffset = -up * (lineWidth/2)
-	_render_fake_line(from + centerOffset, from + (right * 0.25) + centerOffset, -fwd, ColorN("red", 0.9), 0.1)
-	_render_fake_line(from + (right * 0.25) + centerOffset, from + centerOffset, fwd, ColorN("red", 0.9), 0.1)
+	var lineWidth = 0.1	
+	# right axis	
+	_render_fake_line(from, from + (right * 0.25), -fwd, ColorN("red", 0.9), 0.1)	
+	# up axis	
+	_render_fake_line(from, from + (up * 0.25), -fwd, ColorN("green", 0.9), 0.1)	
+	# forward axis		
+	_render_fake_line(from, (from + (fwd * 0.25)), -up, ColorN("blue", 0.9), 0.1)		
 	pass
