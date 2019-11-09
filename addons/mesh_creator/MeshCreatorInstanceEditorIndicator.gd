@@ -42,18 +42,21 @@ func UpdateDraw():
 		if (activeTool != null):
 			# inset indicator			
 			if (activeTool.get_tool_name() == "FACE_INSET"):
-				_render_face_inset_indicator(face, activeTool.get_inset_factor())
+				_render_face_inset_indicator(face, activeTool.get_inset_factor())					
 		
 	# face edges
 	if (MCI.get_editor_plugin().SelectionMode != 0):
 		for face in MCI.get_mc_mesh().get_faces():
 			var verts = face.get_vertices()
 			var vertsCount = verts.size()
-			for i in range(0, vertsCount):
-				if (i == vertsCount - 1):
-					_render_fake_line(verts[i].get_position(), verts[0].get_position(), face.get_normal(), ColorN("blue", 0.9))
-				else:
-					_render_fake_line(verts[i].get_position(), verts[i+1].get_position(), face.get_normal(), ColorN("blue", 0.9))				
+			for i in range(0, vertsCount):				
+					_render_fake_line(verts[i].get_position(), verts[(i + 1) % vertsCount].get_position(), face.get_normal(), Color.black, 0.015)
+					
+	# general tool indicators
+	if (activeTool != null):
+		# translate indicator
+		if (activeTool.get_tool_name() == "FACE_TRANSLATE"):
+			_render_face_translate_indicator(activeTool)
 	
 	
 	# End drawing.
@@ -147,4 +150,25 @@ func _render_face_inset_indicator(face, insetFactor):
 			Color.blue,
 			0.01
 		)
+	pass
+	
+func _render_face_translate_indicator(faceTranslateTool):
+	var from = faceTranslateTool.get_current_position()	
+	var fwd = faceTranslateTool.get_axis_forward()
+	var up = faceTranslateTool.get_axis_up()
+	var right = faceTranslateTool.get_axis_right()
+	var lineWidth = 0.1
+	var centerOffset = Vector3.ZERO
+	# forward axis	
+	centerOffset = right * (lineWidth/2)
+	_render_fake_line(from + centerOffset, (from + (fwd * 0.25)) + centerOffset, up, ColorN("blue", 0.9), 0.1)	
+	_render_fake_line((from + (fwd * 0.25)) + centerOffset, from + centerOffset, -up, ColorN("blue", 0.9), 0.1)
+	# up axis
+	centerOffset = -right * (lineWidth/2)
+	_render_fake_line(from + centerOffset, from + (-up * 0.25) + centerOffset, -fwd, ColorN("green", 0.9), 0.1)
+	_render_fake_line(from + (-up * 0.25) + centerOffset, from + centerOffset, fwd, ColorN("green", 0.9), 0.1)
+	# right axis
+	centerOffset = -up * (lineWidth/2)
+	_render_fake_line(from + centerOffset, from + (right * 0.25) + centerOffset, -fwd, ColorN("red", 0.9), 0.1)
+	_render_fake_line(from + (right * 0.25) + centerOffset, from + centerOffset, fwd, ColorN("red", 0.9), 0.1)
 	pass

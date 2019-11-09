@@ -5,9 +5,9 @@ var _startPosition = Vector3.ZERO
 var _currentPosition = Vector3.ZERO
 var _fromHandleIndex = -1
 
-var _axisForward = -Vector3.FORWARD
-var _axisUp = -Vector3.UP
-var _axisRight = -Vector3.RIGHT
+var _axisRight = Vector3.RIGHT
+var _axisUp = Vector3.UP
+var _axisForward = Vector3.FORWARD
 
 var meshTools = MeshCreator_MeshTools.new()
 
@@ -17,22 +17,70 @@ func _init(_gizmoController).(_gizmoController):
 func get_tool_name() -> String:
 	return "FACE_TRANSLATE"	
 	
+func get_current_position() -> Vector3:
+	return _currentPosition
+	pass
+	
+func get_axis_right() -> Vector3:
+	return _axisRight
+	pass
+	
+func get_axis_up() -> Vector3:
+	return _axisUp
+	pass
+	
+func get_axis_forward() -> Vector3:
+	return _axisForward
+	pass
+	
 # do preparation before tool switch
 func set_active() -> void:	
 	var selectedFaces = _get_selected_faces()
 	# is this right?
 	_startPosition = Vector3.ZERO
 	_currentPosition = Vector3.ZERO
-	for face in selectedFaces:
-		_startPosition += face.get_centroid()
-		_currentPosition += face.get_centroid()
+	#for face in selectedFaces:
+	#	_startPosition += face.get_centroid()
+	#	_currentPosition += face.get_centroid()
+	var spatial: Spatial = _gizmoController.get_gizmo().get_spatial_node()
+	var lastFace = selectedFaces.back()
+	if spatial != null and lastFace != null:		
+		_startPosition = lastFace.get_centroid()
+		_currentPosition = _startPosition
+	use_axis_from_mesh()				
 	pass
 	
 # cleanup on tool switch
 func set_inactive() -> void:
 	_startPosition = Vector3.ZERO
-	_currentPosition = Vector3.ZERO
+	_currentPosition = Vector3.ZERO	
 	pass	
+	
+func use_axis_from_global():
+	_axisRight = Vector3.RIGHT
+	_axisUp = Vector3.UP
+	_axisForward = Vector3.FORWARD
+	
+func use_axis_from_mesh():
+	var spatial: Spatial = _gizmoController.get_gizmo().get_spatial_node()
+	if (spatial != null):		
+		_axisRight = spatial.transform.basis.x
+		_axisUp = spatial.transform.basis.y
+		_axisForward = spatial.transform.basis.z
+		var selectedFaces = _get_selected_faces()
+		# flip to always face outside
+		if (not selectedFaces.empty()):
+			var targetFace = selectedFaces.back()			
+			if (targetFace.get_normal().dot(_axisRight) > 0):
+				_axisRight = -_axisRight		
+			if (targetFace.get_normal().dot(_axisUp) > 0):
+				_axisUp = -_axisUp
+			if (targetFace.get_normal().dot(_axisForward) > 0):				
+				_axisForward = -_axisForward
+	pass
+	
+func use_axis_from_face():
+	pass
 	
 func on_gizmo_add_handles(nextIndex: int) -> int:
 	set_active()
@@ -50,8 +98,7 @@ func on_gizmo_set_handle(index, camera, screen_pos):
 	if (index < _fromHandleIndex or index >= _fromHandleIndex + 3):
 		return
 	var handleIdx = index - _fromHandleIndex
-	var spatial = _gizmoController.get_gizmo().get_spatial_node()
-	var spatialTrans = spatial.global_transform
+	var spatial = _gizmoController.get_gizmo().get_spatial_node()	
 		
 	var sourcePos = camera.unproject_position(_currentPosition)
 	var handlePos = camera.unproject_position(_get_handle_draw_position(handleIdx))
@@ -88,10 +135,10 @@ func on_gizmo_set_handle(index, camera, screen_pos):
 	if (translateForward == true):			
 		toAxis = -toAxis
 		
-	var newPos: Vector3 = _currentPosition + (toAxis * 0.15)
-	newPos = Vector3(stepify(newPos.x, 0.25), stepify(newPos.y, 0.25), stepify(newPos.z, 0.25))
+	var newPos: Vector3 = _currentPosition + (toAxis * 0.05)
+	newPos = Vector3(stepify(newPos.x, 0.05), stepify(newPos.y, 0.05), stepify(newPos.z, 0.05))
 	
-	prints("drag magnitude", mag, "drag direction", dragDir, "use axis forward", translateForward, "use axis", toAxis, "oldPos", _currentPosition, "newPos", newPos)
+	# prints("drag magnitude", mag, "drag direction", dragDir, "use axis forward", translateForward, "use axis", toAxis, "oldPos", _currentPosition, "newPos", newPos)
 	
 	if (_currentPosition != newPos):
 		_currentPosition = newPos		
@@ -132,5 +179,5 @@ func _get_selected_faces():
 func _get_handle_draw_position(handleIdx):
 	match(handleIdx):
 		0: return _currentPosition + (_axisRight * 0.25)
-		1: return _currentPosition - (_axisUp * 0.25)
+		1: return _currentPosition + (_axisUp * 0.25)
 		2: return _currentPosition + (_axisForward * 0.25)

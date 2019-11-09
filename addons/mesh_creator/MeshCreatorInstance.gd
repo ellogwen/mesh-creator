@@ -41,7 +41,7 @@ func _ready():
 		if (has_node("MC_Editor")):
 			var node = get_node("MC_Editor")
 			remove_child(node)
-			node.queue_free()
+			node.queue_free()	
 	
 func SetEditorPlugin(plugin):
 	# disconecct
