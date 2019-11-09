@@ -9,6 +9,8 @@ var _axisRight = Vector3.RIGHT
 var _axisUp = Vector3.UP
 var _axisForward = Vector3.FORWARD
 
+var _useFaceLocalAxis = false
+
 var meshTools = MeshCreator_MeshTools.new()
 
 func _init(_gizmoController).(_gizmoController):
@@ -75,7 +77,7 @@ func use_axis_from_mesh():
 				_axisForward = -_axisForward
 	pass
 	
-func use_axis_from_face():
+func use_axis_from_face():			
 	pass
 	
 func on_gizmo_add_handles(nextIndex: int) -> int:
@@ -161,6 +163,14 @@ func on_gizmo_get_handle_value(index):
 			1: return _currentPosition.y - _startPosition.y
 			2: return _currentPosition.z - _startPosition.z
 	return null
+	
+# return true if event claimed handled		
+func on_input_key(event: InputEventKey, camera):
+	#if event.scancode == KEY_SHIFT and event.pressed:		
+		#print("TRANSLATE: using face axis")
+	#if event.scancode == KEY_SHIFT and not event.pressed:
+		#print("TRANSLATE: using mesh axis")
+	return false	
 
 func _get_selected_faces():
 	return _gizmoController.get_gizmo().get_spatial_node().get_mc_mesh().get_faces_selection(

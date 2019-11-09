@@ -154,3 +154,8 @@ func forward_editor_mouse_motion_input(event, camera) -> bool:
 	if (_active_gizmo_controller != null):
 		return _active_gizmo_controller.gizmo_forward_mouse_move(event, camera)
 	return false
+	
+func forward_editor_key_input(event, camera) -> bool:
+	if (_active_gizmo_controller != null):
+		return _active_gizmo_controller.gizmo_forward_key_input(event, camera)
+	return false

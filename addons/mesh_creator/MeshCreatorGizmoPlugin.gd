@@ -65,6 +65,11 @@ func forward_editor_mouse_motion_input(event, camera) -> bool:
 		return _meshCreatorGizmo.forward_editor_mouse_motion_input(event, camera)
 	return false
 	
+func forward_editor_key_input(event, camera) -> bool:
+	if (_meshCreatorGizmo != null):
+		return _meshCreatorGizmo.forward_editor_key_input(event, camera)
+	return false	
+	
 func get_active_tool_name():
 	return get_mc_gizmo().get_active_gizmo_controller().get_active_tool_name()
 	

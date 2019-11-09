@@ -140,6 +140,13 @@ func gizmo_forward_mouse_move(event, camera):
 	if (_activeTool != null):
 		return _activeTool.on_input_mouse_move(event, camera)	
 	return false	
+	
+# editor keyboard events
+func gizmo_forward_key_input(event, camera):
+	# let active tools handle key input
+	if (_activeTool != null):
+		return _activeTool.on_input_key(event, camera)	
+	return false	
 
 func _extrude_selected_faces():
 	var mci = _gizmo.get_spatial_node()

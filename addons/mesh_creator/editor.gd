@@ -47,7 +47,9 @@ func forward_spatial_gui_input(camera, event):
 	if event is InputEventMouseMotion:				
 		return meshCreatorGizmoPlugin.forward_editor_mouse_motion_input(event, camera)
 	if event is InputEventMouseButton:
-		return meshCreatorGizmoPlugin.forward_editor_mouse_button_input(event, camera)		
+		return meshCreatorGizmoPlugin.forward_editor_mouse_button_input(event, camera)
+	if event is InputEventKey:
+		return meshCreatorGizmoPlugin.forward_editor_key_input(event, camera)
 	return false
 	
 func handles(obj):

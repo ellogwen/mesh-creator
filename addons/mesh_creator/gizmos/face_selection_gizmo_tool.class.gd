@@ -55,7 +55,9 @@ func on_input_mouse_move(event, camera) -> bool:
 	return false
 	pass
 	
-func on_input_key():
+# return true if event claimed handled		
+func on_input_key(event, camera):
+	return false
 	pass	
 
 func on_gui_action(actionCode: String, payload):

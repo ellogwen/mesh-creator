@@ -66,15 +66,35 @@ func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
 	pass
 	
 # return true if event claimed handled	
-func on_input_mouse_move(event: InputEventMouse, camera) -> bool:
-	if (_lastMousePos != null):
-		if event.position.x > _lastMousePos.x:
-			_insetFactor -= 0.05
-		else:
-			_insetFactor += 0.05
-		_insetFactor = clamp(_insetFactor, 0.0, 1.0)	
-	_lastMousePos = event.position
-	_gizmoController.request_redraw()
+func on_input_mouse_move(event: InputEventMouse, camera: Camera) -> bool:	
+	if _myFace == null:
+		return false
+	var camNorm = camera.project_ray_normal(event.position)
+	var camOrign = camera.project_ray_origin(event.position)
+	var edgeStart = _myFace.get_edge_start(_edgeIndex)
+	var edgeEnd = _myFace.get_edge_end(_edgeIndex)
+	var edge = (edgeEnd - edgeStart)
+	var edgeNormal = edge.normalized()
+	var edgeLength = edge.length()
+	var outEdgeNormal = ((edge.normalized() * (edgeLength * 0.5)) - _myFace.get_centroid()).normalized()
+	
+	var p = Plane(_myFace.get_normal(), 0)
+	var intersect = p.intersects_ray(camOrign, camNorm)
+	if (intersect != null):
+		var p2 = Plane(edgeNormal, 0)
+		var distance = clamp(p2.distance_to(intersect), -edgeLength, edgeLength)
+		_insetFactor = clamp(range_lerp(distance, -edgeLength, edgeLength, 1.0, 0.0), 0.0, 1.0)
+		_gizmoController.request_redraw()
+		
+		
+	#f (_lastMousePos != null):
+	#	if event.position.x > _lastMousePos.x:
+	#		_insetFactor -= 0.05
+	#	else:
+	#		_insetFactor += 0.05
+	#	_insetFactor = clamp(_insetFactor, 0.0, 1.0)	
+	#_lastMousePos = event.position
+	#_gizmoController.request_redraw()
 	return false
 	pass	
 
