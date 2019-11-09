@@ -35,13 +35,9 @@ func get_axis_forward() -> Vector3:
 	
 # do preparation before tool switch
 func set_active() -> void:	
-	var selectedFaces = _get_selected_faces()
-	# is this right?
+	var selectedFaces = _get_selected_faces()	
 	_startPosition = Vector3.ZERO
-	_currentPosition = Vector3.ZERO
-	#for face in selectedFaces:
-	#	_startPosition += face.get_centroid()
-	#	_currentPosition += face.get_centroid()
+	_currentPosition = Vector3.ZERO	
 	var spatial: Spatial = _gizmoController.get_gizmo().get_spatial_node()
 	var lastFace = selectedFaces.back()
 	if spatial != null and lastFace != null:		
@@ -94,66 +90,61 @@ func on_gizmo_add_handles(nextIndex: int) -> int:
 		nextIndex += 3
 	return nextIndex
 	
-func on_gizmo_set_handle(index, camera, screen_pos):
+func on_gizmo_set_handle(index, camera: Camera, screen_pos):
 	if (index < _fromHandleIndex or index >= _fromHandleIndex + 3):
 		return
+		
 	var handleIdx = index - _fromHandleIndex
 	var spatial = _gizmoController.get_gizmo().get_spatial_node()	
-		
-	var sourcePos = camera.unproject_position(_currentPosition)
-	var handlePos = camera.unproject_position(_get_handle_draw_position(handleIdx))
-	
-	var axisForwardDir = Vector2.ZERO
-	var axisBackDir = Vector2.ZERO	
+	var camNormal = camera.project_ray_normal(screen_pos)
+	var travelDistance = 0.0
 	var toAxis = Vector3.ZERO
-	if (handleIdx == 0): 	
-		axisForwardDir = camera.unproject_position(_currentPosition - _axisRight).normalized()
-		axisBackDir = camera.unproject_position(_currentPosition + _axisRight).normalized()
-		toAxis = _axisRight
-	elif(handleIdx == 1):
-		axisForwardDir = camera.unproject_position(_currentPosition - _axisUp).normalized()
-		axisBackDir = camera.unproject_position(_currentPosition + _axisUp).normalized()
+	
+	# right/left
+	if (handleIdx == 0):	
+		toAxis = _axisRight	
+		var hpos = _get_handle_draw_position(0)
+		var p = Plane(_axisUp, hpos.y)
+		var inter = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
+		if inter != null:						
+			var dp = Plane(_axisRight, hpos.x)
+			travelDistance = dp.distance_to(inter)			
+	# up/down
+	elif (handleIdx == 1):	
 		toAxis = _axisUp
-	elif(handleIdx == 2):
-		axisForwardDir = camera.unproject_position(_currentPosition - _axisForward).normalized()
-		axisBackDir = camera.unproject_position(_currentPosition + _axisForward).normalized()
-		toAxis = _axisForward
-	else:
-		return
+		var hpos = _get_handle_draw_position(1)
+		var p = Plane(_axisForward, hpos.z)
+		var inter = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
+		if inter != null:						
+			var dp = Plane(_axisUp, hpos.y)
+			travelDistance = dp.distance_to(inter)
 	
-	var dragDir = (screen_pos - handlePos).normalized()
+	elif (handleIdx == 2):		
+		toAxis = _axisForward	
+		var hpos = _get_handle_draw_position(2)
+		var p = Plane(_axisUp, hpos.y)
+		var inter = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
+		if inter != null:						
+			var dp = Plane(_axisForward, hpos.z)
+			travelDistance = dp.distance_to(inter)	
 	
-	var translateForward = true
-	if (dragDir.dot(axisBackDir) > 0):
-		translateForward = false
+	
+	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):
+		var newPos: Vector3 = _currentPosition + (toAxis * travelDistance)
+		newPos = Vector3(stepify(newPos.x, 0.05), stepify(newPos.y, 0.05), stepify(newPos.z, 0.05))
+	
+		if (_currentPosition != newPos):
+			_currentPosition = newPos				
+			var offset = newPos - _startPosition		
+			for face in _get_selected_faces():			
+				for i in range(face.get_vertices().size()):
+					spatial.get_mc_mesh().translate_vertex(face.get_vertex(i).get_mesh_index(), offset)				
+			meshTools.CreateMeshFromFaces(spatial.get_mc_mesh().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))			
+			_gizmoController.request_redraw()
+	
+	pass
 		
-	var mag = (screen_pos - handlePos).length()	
 	
-	if (mag <= 45): #@todo remove magic number
-		return
-		
-	if (translateForward == true):			
-		toAxis = -toAxis
-		
-	var newPos: Vector3 = _currentPosition + (toAxis * 0.05)
-	newPos = Vector3(stepify(newPos.x, 0.05), stepify(newPos.y, 0.05), stepify(newPos.z, 0.05))
-	
-	# prints("drag magnitude", mag, "drag direction", dragDir, "use axis forward", translateForward, "use axis", toAxis, "oldPos", _currentPosition, "newPos", newPos)
-	
-	if (_currentPosition != newPos):
-		_currentPosition = newPos		
-		#_gizmoController.get_gizmo().set_cursor_3d(newPos)
-		# @todo let this handle from someone else
-		var offset = newPos - _startPosition		
-		for face in _get_selected_faces():			
-			for i in range(face.get_vertices().size()):
-				spatial.get_mc_mesh().translate_vertex(face.get_vertex(i).get_mesh_index(), offset)	
-		#	_move_face_to(face.get_mesh_index(), newPos)
-		meshTools.CreateMeshFromFaces(spatial.get_mc_mesh().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))
-		#spatial.get_editor_state().recalculate_edges()
-		#spatial.get_editor_state().notify_state_changed()
-		#gizmo_redraw()	
-		_gizmoController.request_redraw()
 	
 func on_gizmo_get_handle_name(index):
 	if (index >= _fromHandleIndex and index < _fromHandleIndex + 3):
