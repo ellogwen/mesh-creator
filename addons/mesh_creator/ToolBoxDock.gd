@@ -33,9 +33,12 @@ func _connect_signals():
 	pass
 
 func _setup_generators():
-	$ToolsList/Generators/OptionButton.add_item("Select", 0)
-	$ToolsList/Generators/OptionButton.add_item("Box", 1)
-	$ToolsList/Generators/OptionButton.connect("item_selected", self, "_on_Generators_Select")
+	var genOptions: OptionButton = $ToolsList/Generators/OptionButton
+	genOptions.clear()
+	genOptions.add_item("Select", 0)
+	genOptions.add_item("Box", 1)
+	if not genOptions.is_connected("item_selected", self, "_on_Generatos_Select"):
+		genOptions.connect("item_selected", self, "_on_Generators_Select")
 	pass
 
 
