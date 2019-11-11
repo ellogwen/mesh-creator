@@ -16,24 +16,24 @@ func _ready():
 	_connect_signals()
 	
 func _connect_signals():
-	$ToolsList/GenerateButtons/Button_CreateCube.connect("pressed", self, "_on_ButtonCreateCube_pressed")
-	$ToolsList/GenerateButtons/Button_OpenGenerators.connect("pressed", self, "_on_ButtonOpenGenerators_pressed")
-	$ToolsList/ModesButtons/Button_ModeMesh.connect("toggled", self, "_on_ButtonModeMesh_Toggle")
-	$ToolsList/ModesButtons/Button_ModeVertex.connect("toggled", self, "_on_ButtonModeVertex_Toggle")
-	$ToolsList/ModesButtons/Button_ModeEdge.connect("toggled", self, "_on_ButtonModeEdge_Toggle")
-	$ToolsList/ModesButtons/Button_ModeFace.connect("toggled", self, "_on_ButtonModeFace_Toggle")
+	$Scroll/ToolsList/GenerateButtons/Button_CreateCube.connect("pressed", self, "_on_ButtonCreateCube_pressed")
+	$Scroll/ToolsList/GenerateButtons/Button_OpenGenerators.connect("pressed", self, "_on_ButtonOpenGenerators_pressed")
+	$Scroll/ToolsList/ModesButtons/Button_ModeMesh.connect("toggled", self, "_on_ButtonModeMesh_Toggle")
+	$Scroll/ToolsList/ModesButtons/Button_ModeVertex.connect("toggled", self, "_on_ButtonModeVertex_Toggle")
+	$Scroll/ToolsList/ModesButtons/Button_ModeEdge.connect("toggled", self, "_on_ButtonModeEdge_Toggle")
+	$Scroll/ToolsList/ModesButtons/Button_ModeFace.connect("toggled", self, "_on_ButtonModeFace_Toggle")
 	
-	$ToolsList/ToolsButtons/Button_ToolSelect.connect("pressed", self, "_on_ButtonToolSelect_Press")
-	$ToolsList/ToolsButtons/Button_ToolMove.connect("pressed", self, "_on_ButtonToolMove_Press")
-	$ToolsList/ToolsButtons/Button_ToolScale.connect("pressed", self, "_on_ButtonToolScale_Press")
-	$ToolsList/ToolsButtons/Button_ToolExtrude.connect("pressed", self, "_on_ButtonToolExtrude_Press")
-	$ToolsList/ToolsButtons/Button_ToolInset.connect("pressed", self, "_on_ButtonToolInset_Press")
-	$ToolsList/ToolsButtons/Button_ToolRemove.connect("pressed", self, "_on_ButtonToolRemove_Press")
-	$ToolsList/ToolsButtons/Button_ToolLoopcut.connect("pressed", self, "_on_ButtonToolLoopcut_Press")
+	$Scroll/ToolsList/ToolsButtons/Button_ToolSelect.connect("pressed", self, "_on_ButtonToolSelect_Press")
+	$Scroll/ToolsList/ToolsButtons/Button_ToolMove.connect("pressed", self, "_on_ButtonToolMove_Press")
+	$Scroll/ToolsList/ToolsButtons/Button_ToolScale.connect("pressed", self, "_on_ButtonToolScale_Press")
+	$Scroll/ToolsList/ToolsButtons/Button_ToolExtrude.connect("pressed", self, "_on_ButtonToolExtrude_Press")
+	$Scroll/ToolsList/ToolsButtons/Button_ToolInset.connect("pressed", self, "_on_ButtonToolInset_Press")
+	$Scroll/ToolsList/ToolsButtons/Button_ToolRemove.connect("pressed", self, "_on_ButtonToolRemove_Press")
+	$Scroll/ToolsList/ToolsButtons/Button_ToolLoopcut.connect("pressed", self, "_on_ButtonToolLoopcut_Press")
 	pass
 
 func _setup_generators():
-	var genOptions: OptionButton = $ToolsList/Generators/OptionButton
+	var genOptions: OptionButton = $Scroll/ToolsList/Generators/OptionButton
 	genOptions.clear()
 	genOptions.add_item("Select", 0)
 	genOptions.add_item("Box", 1)
@@ -46,9 +46,9 @@ func _setup_generators():
 func _on_Generators_Select(selectionIndex):
 	print("switching generator to: " + str(selectionIndex))
 	# remove existing panel
-	var existingPanel = $ToolsList/Generators.get_node_or_null("Generator_Panel")
+	var existingPanel = $Scroll/ToolsList/Generators.get_node_or_null("Generator_Panel")
 	if existingPanel != null:
-		$ToolsList/Generators.remove_child(existingPanel)
+		$Scroll/ToolsList/Generators.remove_child(existingPanel)
 		existingPanel.queue_free()
 			
 	# create new panel
@@ -57,7 +57,7 @@ func _on_Generators_Select(selectionIndex):
 		var panel = preload("res://addons/mesh_creator/generators/generator_ui_panel.tscn").instance()
 		panel.load_ui(MeshCreator_Generators_BoxMeshGenerator.new())
 		panel.name = "Generator_Panel"		
-		$ToolsList/Generators.add_child(panel)		
+		$Scroll/ToolsList/Generators.add_child(panel)		
 	pass
 
 func _on_CreatorModeChanged():
@@ -131,10 +131,10 @@ func _update_gui():
 	# create buttons
 	
 	# mode buttons
-	$ToolsList/ModesButtons/Button_ModeMesh.set_pressed(_mesh_creator.SelectionMode == _mesh_creator.SelectionModes.MESH)
-	$ToolsList/ModesButtons/Button_ModeVertex.set_pressed(_mesh_creator.SelectionMode == _mesh_creator.SelectionModes.VERTEX)
-	$ToolsList/ModesButtons/Button_ModeEdge.set_pressed(_mesh_creator.SelectionMode == _mesh_creator.SelectionModes.EDGE)
-	$ToolsList/ModesButtons/Button_ModeFace.set_pressed(_mesh_creator.SelectionMode == _mesh_creator.SelectionModes.FACE)
+	$Scroll/ToolsList/ModesButtons/Button_ModeMesh.set_pressed(_mesh_creator.SelectionMode == _mesh_creator.SelectionModes.MESH)
+	$Scroll/ToolsList/ModesButtons/Button_ModeVertex.set_pressed(_mesh_creator.SelectionMode == _mesh_creator.SelectionModes.VERTEX)
+	$Scroll/ToolsList/ModesButtons/Button_ModeEdge.set_pressed(_mesh_creator.SelectionMode == _mesh_creator.SelectionModes.EDGE)
+	$Scroll/ToolsList/ModesButtons/Button_ModeFace.set_pressed(_mesh_creator.SelectionMode == _mesh_creator.SelectionModes.FACE)
 	
 	# tools
 	
