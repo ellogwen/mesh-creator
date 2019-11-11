@@ -125,7 +125,7 @@ func _update_gui():
 	if (_mesh_creator == null):
 		return
 		
-	if (has_node("ToolsList") == false):
+	if (has_node("Scroll/ToolsList") == false):
 		return
 		
 	# create buttons

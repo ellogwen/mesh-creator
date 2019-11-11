@@ -99,7 +99,7 @@ func redraw():
 		# vertex
 		1: _set_active_active_gizmo_controller(_vertexModeGizmoController)
 		# edge
-		2: _set_active_active_gizmo_controller(null)
+		2: _set_active_active_gizmo_controller(_faceModeModeGizmoController) # @todo use a different controller
 		# face
 		3: _set_active_active_gizmo_controller(_faceModeModeGizmoController)
 		# none

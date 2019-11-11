@@ -70,11 +70,6 @@ _global_script_classes=[ {
 "path": "res://addons/mesh_creator/mesh/edge.class.gd"
 }, {
 "base": "Reference",
-"class": "MeshCreator_Mesh_EditorFace",
-"language": "GDScript",
-"path": "res://addons/mesh_creator/mesh/editor_face.gd"
-}, {
-"base": "Reference",
 "class": "MeshCreator_Mesh_Face",
 "language": "GDScript",
 "path": "res://addons/mesh_creator/mesh/face.class.gd"
@@ -112,7 +107,6 @@ _global_script_class_icons={
 "MeshCreator_Gizmos_VertexModeGizmoController": "",
 "MeshCreator_MeshTools": "",
 "MeshCreator_Mesh_Edge": "",
-"MeshCreator_Mesh_EditorFace": "",
 "MeshCreator_Mesh_Face": "",
 "MeshCreator_Mesh_Mesh": "",
 "MeshCreator_Mesh_SelectionStore": "",

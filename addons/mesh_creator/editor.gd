@@ -89,6 +89,9 @@ func _on_toolbox_button_create_new_mesh() -> void:
 	mci.set_owner(root3D)
 	mci.SetEditorPlugin(self)
 	
+	get_editor_interface().get_selection().clear()
+	get_editor_interface().get_selection().add_node(mci)
+	
 	var dbg3d = Position3D.new()
 	dbg3d.name = "__DebugPos3D"
 	dbg3d.hide()
@@ -108,6 +111,8 @@ func on_generator_create_mesh(generator):
 	root3D.add_child(mci)
 	mci.set_owner(root3D)
 	mci.SetEditorPlugin(self)
+	get_editor_interface().get_selection().clear()
+	get_editor_interface().get_selection().add_node(mci)
 	
 func _create_new_cube():	
 	var mt = MeshCreator_MeshTools.new()

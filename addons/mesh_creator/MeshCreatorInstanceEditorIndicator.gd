@@ -48,8 +48,21 @@ func UpdateDraw():
 			if (activeTool.get_tool_name() == "FACE_LOOPCUT"):
 				_render_face_loopcut_indicator(face, activeTool)						
 		
-	# face edges
-	if (MCI.get_editor_plugin().SelectionMode != 0):
+	# face edges in edge mode
+	if (MCI.get_editor_plugin().SelectionMode == 2):
+		for face in MCI.get_mc_mesh().get_faces():
+			for edgeId in face.get_edges():
+					var edge = MCI.get_mc_mesh().get_edge(edgeId)
+					_render_fake_line(
+						edge.get_a().get_position(), 
+						edge.get_b().get_position(), 
+						face.get_normal(), 
+						Color.black, 
+						0.015,
+						1
+					)
+	# face edges in face mode				
+	if (MCI.get_editor_plugin().SelectionMode == 3):
 		for face in MCI.get_mc_mesh().get_faces():
 			var verts = face.get_vertices()
 			var vertsCount = verts.size()
@@ -59,7 +72,7 @@ func UpdateDraw():
 						verts[(i + 1) % vertsCount].get_position(), 
 						face.get_normal(), 
 						Color.black, 
-						0.015,
+						0.0075,
 						1
 					)
 					

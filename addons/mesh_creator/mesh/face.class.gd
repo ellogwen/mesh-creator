@@ -5,6 +5,7 @@ class_name MeshCreator_Mesh_Face
 var _tris: Array = Array() 
 # typeof Array<MeshCreator_Mesh_Vertex>
 var _vertices: Array = Array()
+var _edges: Array = Array()
 
 var _normal: Vector3
 var _centroid: Vector3 = Vector3.ZERO
@@ -13,6 +14,8 @@ var _meshIndex: int = -1
 func _init(verts: Array = Array()) -> void:	
 	for v in verts:
 		_vertices.push_back(v)
+	_edges.clear()
+	_edges.resize(_vertices.size())
 	_triangulate()
 	_calc_normal()
 	_calc_centroid()
@@ -34,18 +37,20 @@ func set_mesh_index(idx: int) -> void:
 	_meshIndex = idx
 	pass	
 
-func from_points(points: PoolVector3Array) -> void:
-	_vertices.clear()
-	for pt in points:		
-		_vertices.push_back(MeshCreator_Mesh_Vertex.new(pt))	
-	_triangulate()
-	_calc_normal()
-	_calc_centroid()
+#func from_points(points: PoolVector3Array) -> void:
+#	_vertices.clear()
+#	for pt in points:		
+#		_vertices.push_back(MeshCreator_Mesh_Vertex.new(pt))
+#	_triangulate()
+#	_calc_normal()
+#	_calc_centroid()
 	
 func from_verts(verts: Array) -> void:
 	_vertices.clear()
 	for vtx in verts:
 		_vertices.push_back(vtx)
+	_edges.clear()
+	_edges.resize(_vertices.size())
 	_triangulate()
 	_calc_normal()
 	_calc_centroid()
@@ -152,6 +157,9 @@ func get_edge_end(index) -> Vector3:
 	
 func has_edge(a, b):
 	return (get_edge_index(a, b) >= 0)
+	
+func get_edges():
+	return _edges
 
 func get_vertex_index(position: Vector3) -> int:
 	for i in range(0, _vertices.size()):
@@ -167,6 +175,9 @@ func equals(otherFace: MeshCreator_Mesh_Face) -> bool:
 	
 func get_vertex_count() -> int:
 	return _vertices.size()
+	
+func set_edge(edgeIndex, edgeId):
+	_edges[edgeIndex] = edgeId
 
 # clone leads to all sorts of problems, remove for now
 #func clone(newId = -1) -> MeshCreator_Mesh_Face:

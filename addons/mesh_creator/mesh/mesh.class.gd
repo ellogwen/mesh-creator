@@ -14,6 +14,12 @@ func get_faces_selection(faceIds: Array) -> Array:
 # typeof Array<MeshCreator_Mesh_Edge>
 var _edges: Array  = Array()
 func get_edges() -> Array: return _edges
+func get_edge(index: int): return _edges[index]
+func get_edges_selection(edgeIds: Array) -> Array:
+	var edges = Array()
+	for eId in edgeIds:
+		edges.push_back(get_edge(eId))
+	return edges
 
 # typeof Array<MeasCreator_Mesh_Vertex>
 var _vertices: Array = Array()
@@ -35,6 +41,11 @@ func _nextFaceIdx() -> int:
 	_nextFacesIndex += 1
 	return _nextFacesIndex
 	
+var _nextEdgeIndex = 0
+func _nextEdgeIdx() -> int:
+	_nextEdgeIndex += 1
+	return _nextEdgeIndex
+	
 func _init():
 	clear()
 	pass
@@ -45,6 +56,7 @@ func clear():
 	_vertices.clear()
 	_nextVerticesIndex = -1
 	_nextFacesIndex = -1
+	_nextEdgeIndex = -1
 	pass
 	
 func define_face_from_vertices(verts: Array) -> int:
@@ -57,6 +69,13 @@ func define_face_from_vertices(verts: Array) -> int:
 	var f = MeshCreator_Mesh_Face.new(realVerts)
 	f.set_mesh_index(_nextFaceIdx())
 	_faces.push_back(f)
+	# register edges
+	var vertexCount = f.get_vertex_count()
+	for i in range(0, vertexCount):
+		var a = f.get_vertex(i)
+		var b = f.get_vertex((i + 1) % vertexCount)
+		var edge = define_edge_from_vertices(a, b)
+		f.set_edge(i, edge.get_mesh_index())
 	return f.get_mesh_index()
 	
 func add_face_from_points(pts: PoolVector3Array, independentVerts = false) -> int:
@@ -78,8 +97,16 @@ func add_vertex(vtx: MeshCreator_Mesh_Vertex, independentVerts = false) -> MeshC
 	_vertices.push_back(vtx)
 	vtx.set_mesh_index(_nextVertIdx())
 	return vtx
-
 	
+func define_edge_from_vertices(vtxA: MeshCreator_Mesh_Vertex, vtxB: MeshCreator_Mesh_Vertex) -> MeshCreator_Mesh_Edge :
+	for e in _edges:
+		if e.matches(vtxA.get_position(), vtxB.get_position(), true):
+			return get_edge(e.get_mesh_index())
+	var edge = MeshCreator_Mesh_Edge.new(vtxA, vtxB)
+	edge.set_mesh_index(_nextEdgeIdx())
+	_edges.push_back(edge)
+	return edge
+		
 func add_point(pt: Vector3, independetVerts = false) -> MeshCreator_Mesh_Vertex:
 	var vtx = MeshCreator_Mesh_Vertex.new(pt)
 	return add_vertex(vtx, independetVerts)
@@ -98,6 +125,28 @@ func remove_face(faceId: int):
 		face.set_mesh_index(face.get_mesh_index() - 1)
 	# remove
 	_faces.remove(faceId)
+	# index
+	#_nextFacesIndex -= 1
+	
+func remove_edge(edgeId: int):
+	#reindex
+	for i in range(edgeId + 1, _edges.size()):
+		var edge = _edges[i]
+		edge.set_mesh_index(edge.get_mesh_index() -1)
+	#remove
+	_edges.remove(edgeId)
+	# index
+	#_nextEdgeIndex -= 1
+	
+func remove_vertex(vtxId: int):
+	#reindex
+	for i in range(vtxId + 1, _vertices.size()):
+		var vtx = _vertices[i]
+		vtx.set_mesh_index(vtx.get_mesh_index() -1)
+	#remove
+	_vertices.remove(vtxId)
+	# index
+	#_nextVerticesIndex -= 1
 
 # @todo does this only work with convex faces?		
 func extrude_face(faceId: int):

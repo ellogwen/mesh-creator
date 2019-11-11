@@ -60,12 +60,6 @@ func get_side_length(index: int) -> float:
 		2: return (_a - _c).length()
 		_: return 0.0
 		
-func get_edge(index: int) -> MeshCreator_Mesh_Edge:
-	match(index):
-		0: return MeshCreator_Mesh_Edge.new(_a, _b)
-		1: return MeshCreator_Mesh_Edge.new(_b, _c)
-		2: return MeshCreator_Mesh_Edge.new(_c, _a)
-		
 func get_center() -> Vector3:
 	return Vector3(
 		(_a.x + _b.x + _c.x) / 3.0,

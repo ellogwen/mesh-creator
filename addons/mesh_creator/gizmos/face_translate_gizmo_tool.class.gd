@@ -43,7 +43,7 @@ func set_active() -> void:
 	var spatial: Spatial = _gizmoController.get_gizmo().get_spatial_node()
 	var lastFace = selectedFaces.back()
 	if spatial != null and lastFace != null:		
-		_startPosition = lastFace.get_centroid()
+		_startPosition = spatial.transform.xform(lastFace.get_centroid())
 		_currentPosition = _startPosition
 	use_axis_from_mesh()				
 	pass
