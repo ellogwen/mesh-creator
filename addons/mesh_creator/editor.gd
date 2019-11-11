@@ -53,7 +53,9 @@ func forward_spatial_gui_input(camera, event):
 	return false
 	
 func handles(obj):
-	return obj is MeshCreatorInstance
+	# handles on spatial so that the 
+	# gui is available
+	return obj is Spatial
 	pass
 	
 func make_visible(visible):
