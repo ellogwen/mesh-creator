@@ -43,7 +43,7 @@ func set_active() -> void:
 	var spatial: Spatial = _gizmoController.get_gizmo().get_spatial_node()
 	var lastFace = selectedFaces.back()
 	if spatial != null and lastFace != null:		
-		_startPosition = spatial.transform.xform(lastFace.get_centroid())
+		_startPosition = lastFace.get_centroid()
 		_currentPosition = _startPosition
 	use_axis_from_mesh()				
 	pass
@@ -98,51 +98,51 @@ func on_gizmo_set_handle(index, camera: Camera, screen_pos):
 		
 	var handleIdx = index - _fromHandleIndex
 	var spatial = _gizmoController.get_gizmo().get_spatial_node()	
-	var camNormal = camera.project_ray_normal(screen_pos)
-	var travelDistance = 0.0
+	var camNormal = camera.project_ray_normal(screen_pos)	
+	var currPosGlobal = spatial.to_global(_currentPosition)
+	var newAxisPos = currPosGlobal
 	var toAxis = Vector3.ZERO
 	
 	# right/left
 	if (handleIdx == 0):	
 		toAxis = _axisRight	
-		var hpos = _get_handle_draw_position(0)
+		var hpos = currPosGlobal + _get_handle_draw_position(0)
 		var p = Plane(_axisUp, hpos.y)
-		var inter = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
-		if inter != null:						
-			var dp = Plane(_axisRight, hpos.x)
-			travelDistance = dp.distance_to(inter)			
-	# up/down
+		var intersection = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
+		if intersection != null:	
+			newAxisPos = (intersection - currPosGlobal).project(toAxis) + currPosGlobal			
+		
+	
 	elif (handleIdx == 1):	
 		toAxis = _axisUp
 		var hpos = _get_handle_draw_position(1)
 		var p = Plane(_axisForward, hpos.z)
-		var inter = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
-		if inter != null:						
-			var dp = Plane(_axisUp, hpos.y)
-			travelDistance = dp.distance_to(inter)
+		var intersection = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
+		if intersection != null:						
+			newAxisPos = (intersection - currPosGlobal).project(toAxis) + currPosGlobal			
+			
 	
 	elif (handleIdx == 2):		
-		toAxis = _axisForward	
+		toAxis = _axisForward		
 		var hpos = _get_handle_draw_position(2)
 		var p = Plane(_axisUp, hpos.y)
-		var inter = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
-		if inter != null:						
-			var dp = Plane(_axisForward, hpos.z)
-			travelDistance = dp.distance_to(inter)	
+		var intersection = p.intersects_ray(camera.project_ray_origin(screen_pos), camera.project_ray_normal(screen_pos))
+		if intersection != null:			
+			newAxisPos = (intersection - currPosGlobal).project(toAxis) + currPosGlobal	
+							
 	
-	
-	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):
-		var newPos: Vector3 = _currentPosition + (toAxis * travelDistance)
-		newPos = Vector3(stepify(newPos.x, 0.05), stepify(newPos.y, 0.05), stepify(newPos.z, 0.05))
-	
-		if (_currentPosition != newPos):
-			_currentPosition = newPos				
-			var offset = newPos - _startPosition		
-			for face in _get_selected_faces():			
-				for i in range(face.get_vertices().size()):
-					spatial.get_mc_mesh().translate_vertex(face.get_vertex(i).get_mesh_index(), offset)				
-			meshTools.CreateMeshFromFaces(spatial.get_mc_mesh().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))			
-			_gizmoController.request_redraw()
+	var offsetGlobal = (newAxisPos - currPosGlobal)
+	var travelDistance = (newAxisPos - currPosGlobal).length()
+	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):		
+		var newPosLocal = spatial.to_local(newAxisPos)		
+		var newPos = Vector3(stepify(newPosLocal.x, 0.05), stepify(newPosLocal.y, 0.05), stepify(newPosLocal.z, 0.05))	
+		
+		var offset = newPos - _currentPosition		
+		for face in _get_selected_faces():			
+			for i in range(face.get_vertices().size()):
+				spatial.get_mc_mesh().translate_vertex(face.get_vertex(i).get_mesh_index(), offset)				
+		meshTools.CreateMeshFromFaces(spatial.get_mc_mesh().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))			
+		_gizmoController.request_redraw()
 	
 	pass
 		
