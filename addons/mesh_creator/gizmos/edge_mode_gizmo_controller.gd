@@ -60,7 +60,7 @@ func request_action(actionName, params = []):
 
 func _setup_tools():
 	get_gizmo().set_editor_tool('EDGE_SELECTION', MeshCreator_Gizmos_EdgeSelectionGizmoTool.new(self))
-	#get_gizmo().set_editor_tool('EDGE_TRANSLATE', MeshCreator_Gizmos_EdgeTranslateGizmoTool.new(self))	
+	get_gizmo().set_editor_tool('EDGE_TRANSLATE', MeshCreator_Gizmos_EdgeTranslateGizmoTool.new(self))	
 	pass
 	
 func _setup_materials(plugin):

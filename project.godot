@@ -40,6 +40,11 @@ _global_script_classes=[ {
 "path": "res://addons/mesh_creator/gizmos/edge_selection_gizmo_tool.class.gd"
 }, {
 "base": "MeshCreator_Gizmos_BaseGizmoTool",
+"class": "MeshCreator_Gizmos_EdgeTranslateGizmoTool",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/gizmos/edge_translate_gizmo_tool.class.gd"
+}, {
+"base": "MeshCreator_Gizmos_BaseGizmoTool",
 "class": "MeshCreator_Gizmos_FaceInsetGizmoTool",
 "language": "GDScript",
 "path": "res://addons/mesh_creator/gizmos/face_inset_gizmo_tool.class.gd"
@@ -116,6 +121,7 @@ _global_script_class_icons={
 "MeshCreator_Gizmos_BaseModeGizmoController": "",
 "MeshCreator_Gizmos_EdgeModeGizmoController": "",
 "MeshCreator_Gizmos_EdgeSelectionGizmoTool": "",
+"MeshCreator_Gizmos_EdgeTranslateGizmoTool": "",
 "MeshCreator_Gizmos_FaceInsetGizmoTool": "",
 "MeshCreator_Gizmos_FaceLoopcutGizmoTool": "",
 "MeshCreator_Gizmos_FaceModeGizmoController": "",
