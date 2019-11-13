@@ -23,6 +23,12 @@ func get_b() -> MeshCreator_Mesh_Vertex:
 func set_mesh_index(idx: int) -> void:
 	_meshIndex = idx
 	pass
+	
+func to_vector() -> Vector3:
+	return _b.get_position() - _a.get_position()
+	
+func get_center() -> Vector3:
+	return _a.get_position() + (_b.get_position() - _a.get_position()).normalized() * (length() * 0.5)
 
 func length() -> float:
 	return (_b.get_position() - _a.get_position()).length()

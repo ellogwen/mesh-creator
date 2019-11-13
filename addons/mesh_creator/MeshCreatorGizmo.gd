@@ -9,12 +9,20 @@ var editorHelperNode
 signal VERTEX_POSITION_CHANGED
 
 var EDITOR_TOOLS = {
+	EDGE_SELECTION = null,
+	EDGE_TRANSLATE = null,
 	FACE_SELECTION = null,
 	FACE_TRANSLATE = null,
 	FACE_INSET = null,
 	FACE_LOOPCUT = null,
 }
 
+func get_editor_tool(name: String):	return EDITOR_TOOLS[name]
+func get_tool(toolName): return get_editor_tool(toolName)
+	
+func set_editor_tool(name, editorTool):
+	EDITOR_TOOLS[name] = editorTool
+	
 var _faceSelectionStore
 var _edgeSelectionStore
 var _vertexSelectionStore
@@ -25,28 +33,23 @@ func get_vertex_selection_store(): return _vertexSelectionStore
 var _cursor3D
 var _active_gizmo_controller = null
 var _vertexModeGizmoController
-var _faceModeModeGizmoController
+var _edgeModeGizmoController
+var _faceModeGizmoController
 
 func _init():
 	_faceSelectionStore = MeshCreator_Mesh_SelectionStore.new()
 	_edgeSelectionStore = MeshCreator_Mesh_SelectionStore.new()
 	_vertexSelectionStore = MeshCreator_Mesh_SelectionStore.new()
 	_vertexModeGizmoController = MeshCreator_Gizmos_VertexModeGizmoController.new(self)
-	_faceModeModeGizmoController = MeshCreator_Gizmos_FaceModeGizmoController.new(self)	
+	_edgeModeGizmoController = MeshCreator_Gizmos_EdgeModeGizmoController.new(self)
+	_faceModeGizmoController = MeshCreator_Gizmos_FaceModeGizmoController.new(self)	
 	pass
 	
 func setup(plugin):
 	_vertexModeGizmoController.setup(plugin)
-	_faceModeModeGizmoController.setup(plugin)
+	_edgeModeGizmoController.setup(plugin)
+	_faceModeGizmoController.setup(plugin)
 	pass
-	
-func get_tool(toolName):
-	match(toolName):
-		"FACE_SELECTION": return EDITOR_TOOLS.FACE_SELECTION
-		"FACE_TRANSLATE": return EDITOR_TOOLS.FACE_TRANSLATE
-		"FACE_INSET": return EDITOR_TOOLS.FACE_INSET
-		"FACE_LOOPCUT": return EDITOR_TOOLS.FACE_LOOPCUT
-	return null
 	
 func _add_editor_helper():
 	var parent = get_spatial_node().get_parent()
@@ -99,9 +102,9 @@ func redraw():
 		# vertex
 		1: _set_active_active_gizmo_controller(_vertexModeGizmoController)
 		# edge
-		2: _set_active_active_gizmo_controller(_faceModeModeGizmoController) # @todo use a different controller
+		2: _set_active_active_gizmo_controller(_edgeModeGizmoController)
 		# face
-		3: _set_active_active_gizmo_controller(_faceModeModeGizmoController)
+		3: _set_active_active_gizmo_controller(_faceModeGizmoController)
 		# none
 		_: _set_active_active_gizmo_controller(null)
 		

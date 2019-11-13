@@ -21,6 +21,7 @@ func UpdateDraw():
 	# selected faces
 	# @todo erm... nope, this will surely be backfire 
 	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_face_selection_store().get_store())	
+	var selectedEdges = MCI.get_mc_mesh().get_edges_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_edge_selection_store().get_store())
 		
 	# Clean up before drawing.
 	clear()
@@ -52,15 +53,26 @@ func UpdateDraw():
 	if (MCI.get_editor_plugin().SelectionMode == 2):
 		for face in MCI.get_mc_mesh().get_faces():
 			for edgeId in face.get_edges():
-					var edge = MCI.get_mc_mesh().get_edge(edgeId)
-					_render_fake_line(
-						edge.get_a().get_position(), 
-						edge.get_b().get_position(), 
-						face.get_normal(), 
-						Color.black, 
-						0.015,
-						1
-					)
+					var edge = MCI.get_mc_mesh().get_edge(edgeId)					
+					
+					if (selectedEdges.has(edge)):
+						_render_fake_line(
+							edge.get_a().get_position(), 
+							edge.get_b().get_position(), 
+							face.get_normal(), 
+							Color.yellow, 
+							0.015,
+							1
+						)						
+					else:
+						_render_fake_line(
+							edge.get_a().get_position(), 
+							edge.get_b().get_position(), 
+							face.get_normal(), 
+							Color.black, 
+							0.015,
+							1
+						)
 	# face edges in face mode				
 	if (MCI.get_editor_plugin().SelectionMode == 3):
 		for face in MCI.get_mc_mesh().get_faces():
