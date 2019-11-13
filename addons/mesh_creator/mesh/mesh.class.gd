@@ -70,13 +70,17 @@ func define_face_from_vertices(verts: Array) -> int:
 	f.set_mesh_index(_nextFaceIdx())
 	_faces.push_back(f)
 	# register edges
-	var vertexCount = f.get_vertex_count()
-	for i in range(0, vertexCount):
-		var a = f.get_vertex(i)
-		var b = f.get_vertex((i + 1) % vertexCount)
-		var edge = define_edge_from_vertices(a, b)
-		f.set_edge(i, edge.get_mesh_index())
+	register_face_edges(f)
 	return f.get_mesh_index()
+	
+func register_face_edges(face):
+	var vertexCount = face.get_vertex_count()
+	for i in range(0, vertexCount):
+		var a = face.get_vertex(i)
+		var b = face.get_vertex((i + 1) % vertexCount)
+		var edge = define_edge_from_vertices(a, b)
+		face.set_edge(i, edge.get_mesh_index())
+	pass
 	
 func add_face_from_points(pts: PoolVector3Array, independentVerts = false) -> int:
 	var verts = Array()
@@ -181,9 +185,9 @@ func extrude_face(faceId: int):
 	var newVerts = Array()
 	for pt in faceNewPts:
 		newVerts.push_back(add_point(pt))
-	face.from_verts(newVerts)
-	
+	face.from_verts(newVerts)	
 	face.refresh() # this makes sure triangulation is done
+	register_face_edges(face)
 	pass
 	
 # @todo does this only work with convex faces?		
@@ -219,9 +223,9 @@ func inset_face(faceId: int, factor = 0.25):
 	var newVerts = Array()
 	for pt in faceNewPts:
 		newVerts.push_back(add_point(pt))
-	face.from_verts(newVerts)
-		
+	face.from_verts(newVerts)		
 	face.refresh() # this makes sure triangulation is done
+	register_face_edges(face)
 	pass
 	
 func loopcut(loopcutChain : Array, startEdgeIndex = 0, factor: float = 0.5):
@@ -263,6 +267,7 @@ func loopcut(loopcutChain : Array, startEdgeIndex = 0, factor: float = 0.5):
 		
 		currFace.from_verts([add_point(currFaceA), add_point(currFaceB), add_point(currFaceC), add_point(currFaceD)])	
 		currFace.refresh() # this makes sure triangulation is done		
+		register_face_edges(currFace)
 		add_face_from_points(PoolVector3Array([newFaceA, newFaceB, newFaceC, newFaceD]))		
 		
 		if (loopcutChain[i +1] == endId):

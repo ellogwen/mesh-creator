@@ -33,21 +33,21 @@ func UpdateDraw():
 	# Begin draw.
 	begin(Mesh.PRIMITIVE_TRIANGLES)
 	
-	# face centers
-	if (MCI.get_editor_plugin().SelectionMode == 3):
-		for face in MCI.get_mc_mesh().get_faces():
-			_render_face_center(face)
 	
-	# selected face indicator
-	for face in selectedFaces:
-		_render_editor_selected_face(face)
-		if (activeTool != null):
-			# inset indicator			
-			if (activeTool.get_tool_name() == "FACE_INSET"):
-				_render_face_inset_indicator(face, activeTool.get_inset_factor())
-			# loopcut indicator			
-			if (activeTool.get_tool_name() == "FACE_LOOPCUT"):
-				_render_face_loopcut_indicator(face, activeTool)						
+	if (MCI.get_editor_plugin().SelectionMode == 3):
+		# face centers
+		for face in MCI.get_mc_mesh().get_faces():
+			_render_face_center(face)	
+		# selected faces
+		for face in selectedFaces:
+			_render_editor_selected_face(face)
+			if (activeTool != null):
+				# inset indicator			
+				if (activeTool.get_tool_name() == "FACE_INSET"):
+					_render_face_inset_indicator(face, activeTool.get_inset_factor())
+				# loopcut indicator			
+				if (activeTool.get_tool_name() == "FACE_LOOPCUT"):
+					_render_face_loopcut_indicator(face, activeTool)						
 		
 	# face edges in edge mode
 	if (MCI.get_editor_plugin().SelectionMode == 2):
