@@ -1,5 +1,5 @@
 # namespace MeshCreator_Mesh
-
+extends Reference
 # clockwise 3d triangle
 class_name MeshCreator_Mesh_Triangle
 

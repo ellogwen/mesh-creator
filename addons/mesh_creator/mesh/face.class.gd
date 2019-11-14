@@ -1,5 +1,6 @@
 # namspace MeshCreator_Mesh
 class_name MeshCreator_Mesh_Face
+extends Reference
 
 # typeof Array<MeshCreator_Mesh_Triangle>
 var _tris: Array = Array() 

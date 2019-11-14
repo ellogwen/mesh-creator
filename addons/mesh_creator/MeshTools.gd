@@ -1,4 +1,5 @@
 class_name MeshCreator_MeshTools
+extends Reference
 
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
 	

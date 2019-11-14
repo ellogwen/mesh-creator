@@ -1,5 +1,6 @@
 # namespace MeshCreator_Mesh
 class_name MeshCreator_Mesh_Mesh
+extends Reference
 	
 # typeof Array<MeshCreator_Mesh_Face>
 var _faces: Array = Array()

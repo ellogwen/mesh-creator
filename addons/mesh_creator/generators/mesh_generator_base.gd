@@ -1,5 +1,6 @@
 # namespace MeshCreator_Generators
 class_name MeshCreator_Generators_MeshGeneratorBase
+extends Reference
 
 func _init():
 	pass

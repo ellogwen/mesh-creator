@@ -24,7 +24,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/mesh_creator/gizmos/base_gizmo_tool.class.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "MeshCreator_Gizmos_BaseModeGizmoController",
 "language": "GDScript",
 "path": "res://addons/mesh_creator/gizmos/base_mode_gizmo_controller.class.gd"

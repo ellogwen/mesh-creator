@@ -1,5 +1,6 @@
 # namespace MeshCreator_Mesh
 class_name MeshCreator_Mesh_Edge
+extends Reference
 
 var _a: MeshCreator_Mesh_Vertex
 var _b: MeshCreator_Mesh_Vertex

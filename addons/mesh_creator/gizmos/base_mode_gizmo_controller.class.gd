@@ -1,5 +1,5 @@
 # namespace MeshCreator_Gizmos
-extends Resource
+extends Reference
 class_name MeshCreator_Gizmos_BaseModeGizmoController
 
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")

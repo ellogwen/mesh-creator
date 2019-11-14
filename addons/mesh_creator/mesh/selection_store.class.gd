@@ -1,4 +1,5 @@
 class_name MeshCreator_Mesh_SelectionStore
+extends Reference
 
 var _store = Array()
 

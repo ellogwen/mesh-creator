@@ -1,5 +1,6 @@
 # namespace MeshCreator_Gizmos
 class_name MeshCreator_Gizmos_BaseGizmoTool
+extends Reference
 
 var _gizmoController
 

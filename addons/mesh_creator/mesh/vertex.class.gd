@@ -1,5 +1,6 @@
 # namespace MeshCreator_Mesh
 class_name MeshCreator_Mesh_Vertex
+extends Reference
 	
 var _position: Vector3
 var _color: Color	
