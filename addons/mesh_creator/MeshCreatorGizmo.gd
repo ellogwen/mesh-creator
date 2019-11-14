@@ -9,6 +9,8 @@ var editorHelperNode
 signal VERTEX_POSITION_CHANGED
 
 var EDITOR_TOOLS = {
+	VERTEX_SELECTION = null,
+	VERTEX_TRANSLATE = null,
 	EDGE_SELECTION = null,
 	EDGE_TRANSLATE = null,
 	FACE_SELECTION = null,

@@ -10,7 +10,7 @@ func _ready():
 	indicator_material.flags_transparent = true
 	indicator_material.vertex_color_use_as_albedo = true
 	indicator_material.albedo_color = Color(1, 1, 1, 1)	
-	indicator_material.params_cull_mode = SpatialMaterial.CULL_DISABLED
+	indicator_material.params_cull_mode = SpatialMaterial.CULL_DISABLED	
 	set_material_override(indicator_material)
 
 func UpdateDraw():
@@ -22,18 +22,22 @@ func UpdateDraw():
 	# @todo erm... nope, this will surely be backfire 
 	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_face_selection_store().get_store())	
 	var selectedEdges = MCI.get_mc_mesh().get_edges_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_edge_selection_store().get_store())
+	var selectedVertices = MCI.get_mc_mesh().get_vertices_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_vertex_selection_store().get_store())
 		
 	# Clean up before drawing.
 	clear()
 	
-	begin(Mesh.PRIMITIVE_LINES)	
-	
+		
+	# line geometry
+	begin(Mesh.PRIMITIVE_LINES)		
 	end()
 
-	# Begin draw.
-	begin(Mesh.PRIMITIVE_TRIANGLES)
+
+	# triangle geometry
+	begin(Mesh.PRIMITIVE_TRIANGLES)		
+				
 	
-	
+	# face mode indicators
 	if (MCI.get_editor_plugin().SelectionMode == 3):
 		# face centers
 		for face in MCI.get_mc_mesh().get_faces():
@@ -49,12 +53,11 @@ func UpdateDraw():
 				if (activeTool.get_tool_name() == "FACE_LOOPCUT"):
 					_render_face_loopcut_indicator(face, activeTool)						
 		
-	# face edges in edge mode
-	if (MCI.get_editor_plugin().SelectionMode == 2):
+	# face edges in edge/vertex mode
+	if (MCI.get_editor_plugin().SelectionMode == 2 or MCI.get_editor_plugin().SelectionMode == 1):
 		for face in MCI.get_mc_mesh().get_faces():
 			for edgeId in face.get_edges():
-					var edge = MCI.get_mc_mesh().get_edge(edgeId)					
-					
+					var edge = MCI.get_mc_mesh().get_edge(edgeId)
 					if (selectedEdges.has(edge)):
 						_render_fake_line(
 							edge.get_a().get_position(), 
@@ -73,6 +76,8 @@ func UpdateDraw():
 							0.015,
 							1
 						)
+					pass
+						
 	# face edges in face mode				
 	if (MCI.get_editor_plugin().SelectionMode == 3):
 		for face in MCI.get_mc_mesh().get_faces():
@@ -87,6 +92,26 @@ func UpdateDraw():
 						0.0075,
 						1
 					)
+					
+	# vertex mode indicators
+	if (MCI.get_editor_plugin().SelectionMode == 1):
+		# vertices
+		for face in MCI.get_mc_mesh().get_faces():
+			for i in range(0, face.get_vertex_count()):
+				var vtx = face.get_vertex(i)
+				var start = face.get_edge_start(i)
+				var end = face.get_edge_end(i)
+				var color = Color.black
+				if selectedVertices.has(vtx):
+					color = Color.yellow
+				_render_fake_line(
+					start,
+					start + (end - start).normalized() * 0.05,
+					face.get_normal(),
+					color,
+					0.05,
+					1
+				)		
 					
 	# general tool indicators
 	if (activeTool != null):
