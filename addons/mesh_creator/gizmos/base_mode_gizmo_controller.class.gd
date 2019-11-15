@@ -71,6 +71,8 @@ func gizmo_redraw():
 	var mci = _gizmo.get_spatial_node()
 	if (not mci is MeshCreatorInstance):
 		return	
+		
+	_gizmo.update_properties_panels()
 	
 	var handleIdx = 0			
 	if (_activeTool != null):

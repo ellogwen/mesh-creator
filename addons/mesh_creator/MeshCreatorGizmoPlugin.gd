@@ -70,6 +70,9 @@ func forward_editor_key_input(event, camera) -> bool:
 		return _meshCreatorGizmo.forward_editor_key_input(event, camera)
 	return false	
 	
+func get_face_properties_panel():
+	return get_creator().get_face_properties_panel()
+	
 func get_active_tool_name():
 	return get_mc_gizmo().get_active_gizmo_controller().get_active_tool_name()
 	

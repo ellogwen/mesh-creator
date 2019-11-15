@@ -64,6 +64,53 @@ func _add_editor_helper():
 	helperNode.set_owner(parent.get_owner())
 	pass
 	
+	
+
+func update_properties_panels():
+	var facePropPanel: Panel = get_plugin().get_face_properties_panel()
+	if facePropPanel != null:		
+		facePropPanel.call_deferred("set_mesh_creator_instance", get_spatial_node())
+		if not facePropPanel.is_connected("USER_INPUT", self, "on_face_property_value_changed"):
+			facePropPanel.connect("USER_INPUT", self, "on_face_property_value_changed")
+		var selectedFacesIds = get_face_selection_store().get_store()
+		if (selectedFacesIds.empty()):			
+			facePropPanel.call_deferred("set_face_id", -1)
+			facePropPanel.hide()			
+		else:			
+			facePropPanel.call_deferred("set_face_id", selectedFacesIds.back())			
+			facePropPanel.call_deferred("update_values")			
+			facePropPanel.show()
+	pass
+	
+func on_face_property_value_changed(context, value):
+	# prints("face property changed", context, value, get_plugin().get_face_properties_panel().get_face_id())
+	var faceId = get_plugin().get_face_properties_panel().get_face_id()
+	if faceId < 0:
+		return
+		
+	var mci = get_spatial_node()
+	if mci == null:
+		return
+		
+	var face = mci.get_mc_mesh().get_face(faceId)
+	if (face == null):
+		return
+	var centroid = face.get_centroid()
+	var offset = Vector3.ZERO
+	if (context == "CENTER_X"):
+		offset.x = value - centroid.x
+	if (context == "CENTER_Y"):
+		offset.y = value - centroid.y
+	if (context == "CENTER_Z"):
+		offset.z = value - centroid.z
+	if offset != Vector3.ZERO:
+		var meshTools = preload("res://addons/mesh_creator/MeshTools.gd").new()
+		for vtx in face.get_vertices():
+			mci.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), offset)
+		meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
+		redraw()
+		
+	
 func set_cursor_3d(pos):
 	if (_cursor3D == null):
 		_cursor3D = Cursor3D.new()
@@ -112,7 +159,9 @@ func redraw():
 		
 	if (_active_gizmo_controller != null):
 		_active_gizmo_controller.gizmo_redraw()
+		
 	
+	update_properties_panels()	
 	_add_editor_helper()
 	pass
 	
