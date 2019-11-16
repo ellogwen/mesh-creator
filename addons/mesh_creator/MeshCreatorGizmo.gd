@@ -66,24 +66,69 @@ func _add_editor_helper():
 	
 	
 
-func update_properties_panels():
+func update_properties_panels():	
 	var facePropPanel: Panel = get_plugin().get_face_properties_panel()
-	if facePropPanel != null:		
-		facePropPanel.call_deferred("set_mesh_creator_instance", get_spatial_node())
+	var edgePropPanel: Panel = get_plugin().get_edge_properties_panel()
+	edgePropPanel.hide()
+	facePropPanel.hide()
+	
+	if (get_plugin().get_creator().SelectionMode == 3):
+		facePropPanel.set_mesh_creator_instance(get_spatial_node())
 		if not facePropPanel.is_connected("USER_INPUT", self, "on_face_property_value_changed"):
 			facePropPanel.connect("USER_INPUT", self, "on_face_property_value_changed")
 		var selectedFacesIds = get_face_selection_store().get_store()
 		if (selectedFacesIds.empty()):			
-			facePropPanel.call_deferred("set_face_id", -1)
+			facePropPanel.set_face_id(-1)
 			facePropPanel.hide()			
 		else:			
-			facePropPanel.call_deferred("set_face_id", selectedFacesIds.back())			
-			facePropPanel.call_deferred("update_values")			
+			facePropPanel.set_face_id(selectedFacesIds.back())
+			facePropPanel.update_values()
 			facePropPanel.show()
+			
+	if (get_plugin().get_creator().SelectionMode == 2):
+		edgePropPanel.set_mesh_creator_instance(get_spatial_node())
+		if not edgePropPanel.is_connected("USER_INPUT", self, "on_edge_property_value_changed"):
+			edgePropPanel.connect("USER_INPUT", self, "on_edge_property_value_changed")
+		var selectedEdgeIds = get_edge_selection_store().get_store()
+		if (selectedEdgeIds.empty()):			
+			edgePropPanel.set_edge_id(-1)
+			edgePropPanel.hide()			
+		else:			
+			edgePropPanel.set_edge_id(selectedEdgeIds.back())
+			edgePropPanel.update_values()
+			edgePropPanel.show()
+			
 	pass
 	
-func on_face_property_value_changed(context, value):
-	# prints("face property changed", context, value, get_plugin().get_face_properties_panel().get_face_id())
+func on_edge_property_value_changed(context, value):
+	var edgeId = get_plugin().get_edge_properties_panel().get_edge_id()
+	if (edgeId < 0):
+		return
+		
+	var mci = get_spatial_node()
+	if (mci == null):
+		return
+		
+	var edge = mci.get_mc_mesh().get_edge(edgeId)
+	if (edge == null):
+		return
+	var center = edge.get_center()
+	var offset = Vector3.ZERO
+	if (context == "EDGE_X"):
+		offset.x = value - center.x
+	if (context == "EDGE_Y"):
+		offset.x = value - center.y
+	if (context == "EDGE_Z"):
+		offset.x = value - center.z
+		
+	if offset != Vector3.ZERO:
+		var meshTools = preload("res://addons/mesh_creator/MeshTools.gd").new()
+		mci.get_mc_mesh().translate_vertex(edge.get_a().get_mesh_index(), offset)
+		mci.get_mc_mesh().translate_vertex(edge.get_b().get_mesh_index(), offset)
+		meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))
+		redraw()
+	
+func on_face_property_value_changed(context, value):	
 	var faceId = get_plugin().get_face_properties_panel().get_face_id()
 	if faceId < 0:
 		return

@@ -16,7 +16,9 @@ var MeshCreatorGizmoPlugin = preload("res://addons/mesh_creator/MeshCreatorGizmo
 var meshCreatorGizmoPlugin = MeshCreatorGizmoPlugin.new()
 var SelectionMode = SelectionModes.VERTEX
 var UIFaceProperties = preload("res://addons/mesh_creator/ui/FaceProperties.tscn")
+var UIEdgeProperties = preload("res://addons/mesh_creator/ui/EdgeProperties.tscn")
 var uiFaceProperties: Panel	
+var uiEdgeProperties: Panel	
 
 var __Debug_Pos3D
 
@@ -37,8 +39,11 @@ func _enter_tree() -> void:
 	set_selection_mode(SelectionModes.MESH)
 	MeshCreator_Signals.connect("UI_GENERATOR_GENERATE_MESH", self, "on_generator_create_mesh")
 	uiFaceProperties = UIFaceProperties.instance()
+	uiEdgeProperties = UIEdgeProperties.instance()
+	uiFaceProperties.hide()
+	uiEdgeProperties.hide()
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
-	print(uiFaceProperties)
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)	
 	print("[Mesh Creator] Ready to take off!")
 
 func _exit_tree() -> void:
@@ -47,8 +52,9 @@ func _exit_tree() -> void:
 	toolBoxDock.queue_free()
 	remove_autoload_singleton("MeshCreator_Signals")
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
-	uiFaceProperties.queue_free()
-	#get_editor_interface().get_viewport().remove_child(uiFaceProperties)
+	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
+	uiFaceProperties.queue_free()	
+	uiEdgeProperties.queue_free()
 	print("[Mesh Creator] Unloaded... Bye!")	
 	
 func forward_spatial_gui_input(camera, event):	
@@ -84,9 +90,11 @@ func set_selection_mode(selectionMode):
 		print("selection mode changed to " + str(SelectionMode))
 	pass
 	
-	
 func get_face_properties_panel():
 	return uiFaceProperties
+	
+func get_edge_properties_panel():
+	return uiEdgeProperties	
 	
 func _on_editor_main_screen_changed(screen_name) -> void:
 	self.current_editor_context = screen_name	
