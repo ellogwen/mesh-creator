@@ -18,29 +18,29 @@ margin_right = 267.0
 margin_bottom = -99.0
 
 [node name="lbl_EdgeMeshId" type="Label" parent="Items"]
-margin_top = 8.0
+margin_top = 5.0
 margin_right = 150.0
-margin_bottom = 22.0
+margin_bottom = 19.0
 text = "Edge Mesh ID: {face_id}"
 
 [node name="lbl_EdgeLength" type="Label" parent="Items"]
 margin_left = 154.0
-margin_top = 8.0
+margin_top = 5.0
 margin_right = 292.0
-margin_bottom = 22.0
+margin_bottom = 19.0
 text = "Length: {edge_length}"
 
 [node name="lbl_EdgePos" type="Label" parent="Items"]
 margin_left = 296.0
-margin_top = 8.0
+margin_top = 5.0
 margin_right = 348.0
-margin_bottom = 22.0
+margin_bottom = 19.0
 text = "Position"
 
 [node name="inp_EdgePosX" type="SpinBox" parent="Items"]
 margin_left = 352.0
 margin_right = 426.0
-margin_bottom = 31.0
+margin_bottom = 24.0
 step = 0.001
 allow_greater = true
 allow_lesser = true
@@ -48,7 +48,7 @@ allow_lesser = true
 [node name="inp_EdgePosY" type="SpinBox" parent="Items"]
 margin_left = 430.0
 margin_right = 504.0
-margin_bottom = 31.0
+margin_bottom = 24.0
 step = 0.001
 allow_greater = true
 allow_lesser = true
@@ -56,7 +56,7 @@ allow_lesser = true
 [node name="inp_EdgePosZ" type="SpinBox" parent="Items"]
 margin_left = 508.0
 margin_right = 582.0
-margin_bottom = 31.0
+margin_bottom = 24.0
 step = 0.001
 allow_greater = true
 allow_lesser = true

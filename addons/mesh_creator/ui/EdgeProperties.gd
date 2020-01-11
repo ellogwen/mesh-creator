@@ -18,6 +18,7 @@ func set_edge_id(edgeId: int):
 func get_edge_id(): return _edgeId
 
 func _ready():
+	hide()
 	var xVal: Range = $Items/inp_EdgePosX
 	if not xVal.is_connected("value_changed", self, "on_user_input"):
 		xVal.connect("value_changed", self, "on_user_input", [ "EDGE_X" ])

@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://addons/mesh_creator/ui/Label3D.gd" type="Script" id=1]
+[ext_resource path="res://addons/mesh_creator/ui/fonts/df_roboto_regular.tres" type="DynamicFont" id=2]
+
+[sub_resource type="ViewportTexture" id=1]
+flags = 4
+
+[sub_resource type="SpatialMaterial" id=2]
+flags_transparent = true
+flags_unshaded = true
+flags_no_depth_test = true
+flags_do_not_receive_shadows = true
+flags_disable_ambient_light = true
+params_cull_mode = 1
+albedo_texture = SubResource( 1 )
+
+[sub_resource type="QuadMesh" id=3]
+
+[sub_resource type="ViewportTexture" id=4]
+flags = 4
+viewport_path = NodePath("RenderSource")
+
+[sub_resource type="SpatialMaterial" id=5]
+resource_local_to_scene = true
+flags_transparent = true
+flags_unshaded = true
+flags_no_depth_test = true
+flags_do_not_receive_shadows = true
+flags_disable_ambient_light = true
+params_cull_mode = 1
+albedo_texture = SubResource( 4 )
+
+[node name="Label3D" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="RenderSource" type="Viewport" parent="."]
+size = Vector2( 512, 512 )
+transparent_bg = true
+hdr = false
+disable_3d = true
+
+[node name="Label" type="Label" parent="RenderSource"]
+margin_right = 40.0
+margin_bottom = 14.0
+custom_fonts/font = ExtResource( 2 )
+text = "NODE: 10
+NODE: 20
+NODE: 30"
+
+[node name="RenderTarget" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0 )
+material_override = SubResource( 2 )
+cast_shadow = 0
+mesh = SubResource( 3 )
+material/0 = SubResource( 5 )

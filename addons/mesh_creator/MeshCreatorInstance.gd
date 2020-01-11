@@ -14,7 +14,7 @@ func set_mc_mesh(mc_mesh: MeshCreator_Mesh_Mesh):
 var ActiveEditorPlugin = null
 
 var _editorIndicator = null
-
+var _editorHoverLabel = null
 	
 func get_editor_plugin():
 	return ActiveEditorPlugin
@@ -30,11 +30,18 @@ func _ready():
 		spatial.name = "MC_Editor"
 		add_child(spatial)
 		spatial.set_owner(get_tree().get_edited_scene_root())
+		
 		_editorIndicator = ImmediateGeometry.new()
 		_editorIndicator.set_script(preload("res://addons/mesh_creator/MeshCreatorInstanceEditorIndicator.gd"))
 		_editorIndicator.name = "MC_EditorIndicator"
 		spatial.add_child(_editorIndicator)
-		_editorIndicator.set_owner(get_tree().get_edited_scene_root())		
+		_editorIndicator.set_owner(get_tree().get_edited_scene_root())
+		
+		_editorHoverLabel = preload("res://addons/mesh_creator/ui/Label3D.tscn").instance()
+		_editorHoverLabel.name = "MC_EditorHoverLabel"
+		spatial.add_child(_editorHoverLabel)
+		_editorHoverLabel.set_owner(get_tree().get_edited_scene_root())
+		_editorHoverLabel.set_text("")		
 	else:
 		# remove editor helpers when running
 		# the game

@@ -18,6 +18,7 @@ func set_face_id(faceId: int):
 func get_face_id(): return _faceId
 
 func _ready():
+	hide()
 	var xVal: Range = $Items/inp_FacePosX
 	if not xVal.is_connected("value_changed", self, "on_user_input"):
 		xVal.connect("value_changed", self, "on_user_input", [ "CENTER_X" ])
