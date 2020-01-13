@@ -123,6 +123,11 @@ _global_script_classes=[ {
 "class": "MeshCreator_Mesh_Vertex",
 "language": "GDScript",
 "path": "res://addons/mesh_creator/mesh/vertex.class.gd"
+}, {
+"base": "Spatial",
+"class": "MeshCreator_UI_Gui3D",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/ui/Gui3D.gd"
 } ]
 _global_script_class_icons={
 "MeshCreator_Generators_BoxMeshGenerator": "",
@@ -147,7 +152,8 @@ _global_script_class_icons={
 "MeshCreator_Mesh_Mesh": "",
 "MeshCreator_Mesh_SelectionStore": "",
 "MeshCreator_Mesh_Triangle": "",
-"MeshCreator_Mesh_Vertex": ""
+"MeshCreator_Mesh_Vertex": "",
+"MeshCreator_UI_Gui3D": ""
 }
 
 [application]
