@@ -20,6 +20,25 @@ var UIEdgeProperties = preload("res://addons/mesh_creator/ui/EdgeProperties.tscn
 var uiFaceProperties: Panel	
 var uiEdgeProperties: Panel	
 
+var _editorRadialMenu: Control
+func get_editor_radial_menu() -> Control:
+	return _editorRadialMenu
+	
+func _create_radial_menu() -> void:
+	_editorRadialMenu = preload("res://addons/mesh_creator/ui/RadialMenu.tscn").instance()
+	_editorRadialMenu.name = "MC_EditorRadialMenu"
+	var spatialEditor = get_spatial_editor_control()
+	spatialEditor.add_child(_editorRadialMenu)
+	_editorRadialMenu.set_owner(spatialEditor.get_owner())
+	_editorRadialMenu.hide_menu()
+	pass
+	
+func _remove_radial_menu() -> void:
+	if _editorRadialMenu != null:		
+		_editorRadialMenu.get_parent().remove_child(_editorRadialMenu)
+		_editorRadialMenu.queue_free()
+	pass
+
 var __Debug_Pos3D
 
 func get_gizmo_plugin():
@@ -44,6 +63,7 @@ func _enter_tree() -> void:
 	uiEdgeProperties.hide()
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)	
+	_create_radial_menu()
 	print("[Mesh Creator] Ready to take off!")
 
 func _exit_tree() -> void:
@@ -55,6 +75,7 @@ func _exit_tree() -> void:
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
 	uiFaceProperties.queue_free()	
 	uiEdgeProperties.queue_free()
+	_remove_radial_menu()
 	print("[Mesh Creator] Unloaded... Bye!")	
 	
 func forward_spatial_gui_input(camera, event):	
@@ -140,3 +161,10 @@ func _create_new_cube():
 	var cube = mt.MeshGenerator_Generate(cubegen)
 	return cube
 	pass
+	
+# @todo this ~~may~~ will break	
+func get_spatial_editor_control():	
+	return get_editor_interface().get_editor_viewport().get_child(1).get_child(1).get_child(0).get_child(0).get_child(0).get_child(1)
+	
+	
+

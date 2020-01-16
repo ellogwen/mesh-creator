@@ -34,8 +34,7 @@ func _ready():
 		spatial.set_owner(get_tree().get_edited_scene_root())
 		
 		_create_editor_indicator(spatial)
-		_create_hover_label(spatial)
-		_create_radial_menu(spatial)
+		_create_hover_label(spatial)		
 		
 		
 	else:
@@ -61,13 +60,6 @@ func _create_hover_label(spatial) -> void:
 	spatial.add_child(_editorHoverLabel)
 	_editorHoverLabel.set_owner(get_tree().get_edited_scene_root())
 	_editorHoverLabel.set_text("")		
-	pass
-
-func _create_radial_menu(spatial) -> void:
-	_editorRadialMenu = preload("res://addons/mesh_creator/ui/RadialMenu.tscn").instance()
-	_editorRadialMenu.name = "MC_EditorRadialMenu"
-	spatial.add_child(_editorRadialMenu)
-	_editorRadialMenu.set_owner(get_tree().get_edited_scene_root())
 	pass
 	
 func SetEditorPlugin(plugin):

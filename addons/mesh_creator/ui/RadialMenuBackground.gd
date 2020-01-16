@@ -14,7 +14,7 @@ func _draw():
 	var center = get_center()	
 	if DrawLine:				
 		var endPoint = center + (Vector2(cos(LineAngle), sin(LineAngle)) * 85)
-		var angleDeg = rad2deg(LineAngle) + 180.0
+		var angleDeg = rad2deg(LineAngle)
 		draw_line(center, endPoint, LineColor)				
 
 func set_line_angle(angle):

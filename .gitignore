@@ -11,5 +11,8 @@ export_presets.cfg
 # Mono-specific ignores
 .mono/
 
+# Development Debugger
+addons/zylann.editor_debugger/
+
 # End of https://www.gitignore.io/api/godot
 
