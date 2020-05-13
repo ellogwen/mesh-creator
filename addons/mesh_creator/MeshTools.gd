@@ -56,7 +56,7 @@ func CreateMeshFromFaces(facesArray, mesh = null, material = null) -> ArrayMesh:
 	# empty mesh
 	if (mesh != null):
 		for s in range(mesh.get_surface_count()):
-    		mesh.surface_remove(s)
+			mesh.surface_remove(s)
 	else:			
 		mesh = ArrayMesh.new()
 	

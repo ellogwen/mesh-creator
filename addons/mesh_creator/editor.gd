@@ -1,7 +1,16 @@
 tool
 extends EditorPlugin
 
+####################
+# ENUMS
+####################
+
 enum SelectionModes { MESH, VERTEX, EDGE, FACE }
+
+
+####################
+# SIGNALS
+####################
 
 signal state_changed
 signal mode_changed
@@ -9,6 +18,86 @@ signal mode_changed
 #signal EDITOR_MOUSE_MOTION
 #signal EDITOR_MOUSE_BUTTON
 
+
+
+####################
+# GODOT LIFECYCLE
+####################
+
+func _enter_tree() -> void:
+	add_autoload_singleton("MeshCreator_Signals", "res://addons/mesh_creator/signals.gd")	
+	meshCreatorGizmoPlugin.set_creator(self)
+	connect("main_screen_changed", self, "_on_editor_main_screen_changed")
+	toolBoxDock = preload("res://addons/mesh_creator/ToolBoxDock.tscn").instance()
+	toolBoxDock.connect("button_create_new_mesh", self, "_on_toolbox_button_create_new_mesh")
+	toolBoxDock.connect("tool_action", meshCreatorGizmoPlugin, "_on_toolbox_tool_action")
+	toolBoxDock.set_creator(self)
+	add_control_to_dock(DOCK_SLOT_LEFT_UL, toolBoxDock)
+	add_spatial_gizmo_plugin(meshCreatorGizmoPlugin)
+	emit_signal("state_changed")
+	set_selection_mode(SelectionModes.MESH)
+	MeshCreator_Signals.connect("UI_GENERATOR_GENERATE_MESH", self, "_on_generator_create_mesh")
+	uiFaceProperties = UIFaceProperties.instance()
+	uiEdgeProperties = UIEdgeProperties.instance()
+	uiFaceProperties.hide()
+	uiEdgeProperties.hide()
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)	
+	_create_radial_menu()
+	print("[Mesh Creator] Ready to take off!")
+
+
+func _exit_tree() -> void:
+	remove_control_from_docks(toolBoxDock)
+	remove_spatial_gizmo_plugin(meshCreatorGizmoPlugin)	
+	toolBoxDock.queue_free()
+	remove_autoload_singleton("MeshCreator_Signals")
+	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
+	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
+	uiFaceProperties.queue_free()	
+	uiEdgeProperties.queue_free()
+	_remove_radial_menu()
+	print("[Mesh Creator] Unloaded... Bye!")	
+
+
+####################
+# GODOT EDITOR PLUGIN OVERWRITES
+####################
+
+func get_gizmo_plugin():
+	return meshCreatorGizmoPlugin
+
+func forward_spatial_gui_input(camera, event):	
+	if event is InputEventMouseMotion:				
+		return meshCreatorGizmoPlugin.forward_editor_mouse_motion_input(event, camera)
+	if event is InputEventMouseButton:
+		return meshCreatorGizmoPlugin.forward_editor_mouse_button_input(event, camera)
+	if event is InputEventKey:
+		return meshCreatorGizmoPlugin.forward_editor_key_input(event, camera)
+	return false
+
+# this methods returns true if the selected node
+# will get handled by this plugin	
+func handles(obj):
+	# handles on spatial so that the 
+	# gui is available
+	return obj is Spatial
+	pass
+	
+func make_visible(visible):
+	if (visible):
+		toolBoxDock.show()
+	else:
+		toolBoxDock.hide()
+	pass
+
+
+
+####################
+# PLUGIN GETTERS SETTERS
+####################
+
+var __Debug_Pos3D
 var toolBoxDock
 var current_editor_context = null
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
@@ -23,7 +112,40 @@ var uiEdgeProperties: Panel
 var _editorRadialMenu: Control
 func get_editor_radial_menu() -> Control:
 	return _editorRadialMenu
+
+# @todo this ~~may~~ will break	
+func get_spatial_editor_control():	
+	return get_editor_interface().get_editor_viewport().get_child(1).get_child(1).get_child(0).get_child(0).get_child(0).get_child(1)
+
+
+
+#########################
+# PLUGIN PUBLIC METHODS
+#########################
+
+func notify_state_changed():
+	emit_signal("state_changed")
+	pass
+
+func set_selection_mode(selectionMode):
+	if (selectionMode != SelectionMode):
+		SelectionMode = selectionMode
+		emit_signal("mode_changed")
+		print("selection mode changed to " + str(SelectionMode))
+	pass
+
+func get_face_properties_panel():
+	return uiFaceProperties
 	
+func get_edge_properties_panel():
+	return uiEdgeProperties	
+
+
+
+#########################
+# PLUGIN PRIVATE METHODS
+#########################
+
 func _create_radial_menu() -> void:
 	_editorRadialMenu = preload("res://addons/mesh_creator/ui/RadialMenu.tscn").instance()
 	_editorRadialMenu.name = "MC_EditorRadialMenu"
@@ -39,84 +161,19 @@ func _remove_radial_menu() -> void:
 		_editorRadialMenu.queue_free()
 	pass
 
-var __Debug_Pos3D
+func _create_new_cube():	
+	var mt = MeshCreator_MeshTools.new()
+	var cubegen = MeshCreator_Generators_BoxMeshGenerator.new()
+	var cube = mt.MeshGenerator_Generate(cubegen)
+	return cube
+	pass
 
-func get_gizmo_plugin():
-	return meshCreatorGizmoPlugin
+	
 
-func _enter_tree() -> void:
-	add_autoload_singleton("MeshCreator_Signals", "res://addons/mesh_creator/signals.gd")	
-	meshCreatorGizmoPlugin.set_creator(self)
-	connect("main_screen_changed", self, "_on_editor_main_screen_changed")
-	toolBoxDock = preload("res://addons/mesh_creator/ToolBoxDock.tscn").instance()
-	toolBoxDock.connect("button_create_new_mesh", self, "_on_toolbox_button_create_new_mesh")
-	toolBoxDock.connect("tool_action", meshCreatorGizmoPlugin, "_on_toolbox_tool_action")
-	toolBoxDock.set_creator(self)
-	add_control_to_dock(DOCK_SLOT_LEFT_UL, toolBoxDock)
-	add_spatial_gizmo_plugin(meshCreatorGizmoPlugin)
-	emit_signal("state_changed")
-	set_selection_mode(SelectionModes.MESH)
-	MeshCreator_Signals.connect("UI_GENERATOR_GENERATE_MESH", self, "on_generator_create_mesh")
-	uiFaceProperties = UIFaceProperties.instance()
-	uiEdgeProperties = UIEdgeProperties.instance()
-	uiFaceProperties.hide()
-	uiEdgeProperties.hide()
-	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
-	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)	
-	_create_radial_menu()
-	print("[Mesh Creator] Ready to take off!")
+###############################
+# PLUGIN SIGNAL CALLBACKS
+###############################
 
-func _exit_tree() -> void:
-	remove_control_from_docks(toolBoxDock)
-	remove_spatial_gizmo_plugin(meshCreatorGizmoPlugin)	
-	toolBoxDock.queue_free()
-	remove_autoload_singleton("MeshCreator_Signals")
-	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
-	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
-	uiFaceProperties.queue_free()	
-	uiEdgeProperties.queue_free()
-	_remove_radial_menu()
-	print("[Mesh Creator] Unloaded... Bye!")	
-	
-func forward_spatial_gui_input(camera, event):	
-	if event is InputEventMouseMotion:				
-		return meshCreatorGizmoPlugin.forward_editor_mouse_motion_input(event, camera)
-	if event is InputEventMouseButton:
-		return meshCreatorGizmoPlugin.forward_editor_mouse_button_input(event, camera)
-	if event is InputEventKey:
-		return meshCreatorGizmoPlugin.forward_editor_key_input(event, camera)
-	return false
-	
-func handles(obj):
-	# handles on spatial so that the 
-	# gui is available
-	return obj is Spatial
-	pass
-	
-func make_visible(visible):
-	if (visible):
-		toolBoxDock.show()
-	else:
-		toolBoxDock.hide()
-	pass
-	
-func notify_state_changed():
-	emit_signal("state_changed")
-	pass
-	
-func set_selection_mode(selectionMode):
-	if (selectionMode != SelectionMode):
-		SelectionMode = selectionMode
-		emit_signal("mode_changed")
-		print("selection mode changed to " + str(SelectionMode))
-	pass
-	
-func get_face_properties_panel():
-	return uiFaceProperties
-	
-func get_edge_properties_panel():
-	return uiEdgeProperties	
-	
 func _on_editor_main_screen_changed(screen_name) -> void:
 	self.current_editor_context = screen_name	
 	
@@ -140,7 +197,7 @@ func _on_toolbox_button_create_new_mesh() -> void:
 	dbg3d.set_owner(root3D)	
 	pass
 
-func on_generator_create_mesh(generator):
+func _on_generator_create_mesh(generator):
 	if (generator == null):
 		return
 	if (not generator.is_valid()):
@@ -154,17 +211,3 @@ func on_generator_create_mesh(generator):
 	mci.SetEditorPlugin(self)
 	get_editor_interface().get_selection().clear()
 	get_editor_interface().get_selection().add_node(mci)
-	
-func _create_new_cube():	
-	var mt = MeshCreator_MeshTools.new()
-	var cubegen = MeshCreator_Generators_BoxMeshGenerator.new()
-	var cube = mt.MeshGenerator_Generate(cubegen)
-	return cube
-	pass
-	
-# @todo this ~~may~~ will break	
-func get_spatial_editor_control():	
-	return get_editor_interface().get_editor_viewport().get_child(1).get_child(1).get_child(0).get_child(0).get_child(0).get_child(1)
-	
-	
-

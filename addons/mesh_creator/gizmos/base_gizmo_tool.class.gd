@@ -20,7 +20,7 @@ func set_inactive() -> void:
 	pass
 	
 # return true if event claimed handled
-func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
+func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:	
 	return false
 	pass
 	

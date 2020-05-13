@@ -1,6 +1,7 @@
 # namespace MeshCreator_Gizmos
-class_name MeshCreator_Gizmos_FaceModeGizmoController
 extends MeshCreator_Gizmos_BaseModeGizmoController
+class_name MeshCreator_Gizmos_FaceModeGizmoController
+
 
 func _init(gizmo).(gizmo):		
 	pass

@@ -32,6 +32,8 @@ func get_n(index: int) -> Vector3:
 		0: return _a
 		1: return _b
 		2: return _c
+	printerr("Invalid triangle index", index)
+	return Vector3.ZERO
 		
 func set_a(p: Vector3) -> void:
 	set_point(0, p)

@@ -18,7 +18,7 @@ func get_creator():
 	return _meshCreator
 
 func get_name():
-    return "MeshCreatorInstance"
+	return "MeshCreatorInstance"
 
 func _init():
 	create_material("face_select_line", Color.yellow, false, false, false)	
