@@ -113,9 +113,14 @@ var _editorRadialMenu: Control
 func get_editor_radial_menu() -> Control:
 	return _editorRadialMenu
 
-# @todo this ~~may~~ will break	
-func get_spatial_editor_control():	
-	return get_editor_interface().get_editor_viewport().get_child(1).get_child(1).get_child(0).get_child(0).get_child(0).get_child(1)
+# workaround to access the the spatial editor control
+# tries to warn if something does look right,
+# however, this ~~may~~ will break	
+func get_spatial_editor_control():
+	var spatial_editor = get_editor_interface().get_editor_viewport().get_child(1).get_child(1).get_child(0).get_child(0).get_child(0).get_child(1)	
+	if (spatial_editor == null or spatial_editor.name == ""):
+		printerr("MeshCreator uses a hacky way to access the spatial editor control, since there is (was) no build in way to do so. However, something went wrong accessing the Spatial Editor Control, maybe a never version changed the UI structure or an parallel installed plugin messes around with the editor as well.", var2str(spatial_editor))
+	return spatial_editor
 
 
 

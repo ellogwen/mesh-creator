@@ -167,7 +167,7 @@ MeshCreator_Signals="*res://addons/mesh_creator/signals.gd"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "mesh_creator", "zylann.editor_debugger" )
+enabled=PoolStringArray( "mesh_creator" )
 
 [rendering]
 
