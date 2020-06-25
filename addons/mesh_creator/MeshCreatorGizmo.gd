@@ -257,8 +257,7 @@ func force_mci_selection() -> void:
 	if (mci != null):
 		var nodeSelection = get_plugin().get_creator().get_editor_interface().get_selection()
 		nodeSelection.clear()
-		nodeSelection.add_node(mci)
-	
+		nodeSelection.add_node(mci)	
 
 func forward_editor_mouse_button_input(event, camera) -> bool:
 	force_mci_selection()

@@ -58,6 +58,8 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT and not event.pressed  and _currentActionIndex >= 0:
 			emit_signal("radial_menu_action", _actions[_currentActionIndex])
+		if (event.button_index == BUTTON_RIGHT and not event.pressed):
+			emit_signal("radial_menu_canceled")
 	if event is InputEventKey:
 		if event.scancode == KEY_ESCAPE and event.pressed:
 			emit_signal("radial_menu_canceled")
