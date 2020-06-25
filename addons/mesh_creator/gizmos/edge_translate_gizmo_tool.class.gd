@@ -132,7 +132,8 @@ func on_gizmo_set_handle(index, camera: Camera, screen_pos):
 		for edge in _get_selected_edges():						
 			spatial.get_mc_mesh().translate_vertex(edge.get_a().get_mesh_index(), offset)				
 			spatial.get_mc_mesh().translate_vertex(edge.get_b().get_mesh_index(), offset)				
-		meshTools.CreateMeshFromFaces(spatial.get_mc_mesh().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))			
+		
+		meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
 		_gizmoController.request_redraw()
 	
 	pass

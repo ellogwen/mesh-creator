@@ -2,6 +2,14 @@ tool
 #class_name MeshCreator_Signals
 extends Node
 
+var _editorPlugin
+
+func get_editor_plugin():
+	return _editorPlugin
+
+func set_editor_plugin(editorPlugin):
+	_editorPlugin = editorPlugin
+
 signal UI_GENERATOR_GENERATE_MESH
 func emit_UI_GENERATOR_GENERATE_MESH(generator):
 	emit_signal("UI_GENERATOR_GENERATE_MESH", generator)

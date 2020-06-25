@@ -55,7 +55,8 @@ func _extrude_selected_faces():
 	var mci = _gizmo.get_spatial_node()
 	for face in get_selected_faces():		
 		mci.get_mc_mesh().extrude_face(face.get_mesh_index())		
-	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
+	
+	meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
 	request_redraw()
 	pass	
 	
@@ -63,14 +64,16 @@ func _remove_selected_faces():
 	var mci = _gizmo.get_spatial_node()
 	for face in get_selected_faces():
 		mci.get_mc_mesh().remove_face(face.get_mesh_index())
-	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
+	
+	meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
 	request_redraw()
 
 func inset_selected_faces(factor = 0.25):
 	var mci = _gizmo.get_spatial_node()
 	for face in get_selected_faces():
 		mci.get_mc_mesh().inset_face(face.get_mesh_index(), factor)		
-	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
+	
+	meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
 	request_redraw()
 	pass
 	
@@ -79,7 +82,8 @@ func loopcut_selected_faces(edgeIndex = 0, insetFactor = 0.5):
 	for face in get_selected_faces():
 		var lpc = mci.get_mc_mesh().build_loopcut_chain(face.get_mesh_index(), edgeIndex)
 		mci.get_mc_mesh().loopcut(lpc, edgeIndex, insetFactor)
-	meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
+	
+	meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
 	request_redraw()
 	
 func on_radial_menu_action(action):

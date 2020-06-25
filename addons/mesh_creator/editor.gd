@@ -25,7 +25,7 @@ signal mode_changed
 ####################
 
 func _enter_tree() -> void:
-	add_autoload_singleton("MeshCreator_Signals", "res://addons/mesh_creator/signals.gd")	
+	add_autoload_singleton("MeshCreator_Signals", "res://addons/mesh_creator/signals.gd")		
 	meshCreatorGizmoPlugin.set_creator(self)
 	connect("main_screen_changed", self, "_on_editor_main_screen_changed")
 	toolBoxDock = preload("res://addons/mesh_creator/ToolBoxDock.tscn").instance()
@@ -37,6 +37,7 @@ func _enter_tree() -> void:
 	emit_signal("state_changed")
 	set_selection_mode(SelectionModes.MESH)
 	MeshCreator_Signals.connect("UI_GENERATOR_GENERATE_MESH", self, "_on_generator_create_mesh")
+	MeshCreator_Signals.set_editor_plugin(self)
 	uiFaceProperties = UIFaceProperties.instance()
 	uiEdgeProperties = UIEdgeProperties.instance()
 	uiFaceProperties.hide()

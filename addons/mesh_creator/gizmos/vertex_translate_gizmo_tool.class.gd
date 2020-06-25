@@ -131,7 +131,8 @@ func on_gizmo_set_handle(index, camera: Camera, screen_pos):
 		var offset = newPos - _currentPosition		
 		for vtx in _get_selected_vertices():						
 			spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), offset)							
-		meshTools.CreateMeshFromFaces(spatial.get_mc_mesh().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))			
+		
+		meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
 		_gizmoController.request_redraw()
 	
 	pass

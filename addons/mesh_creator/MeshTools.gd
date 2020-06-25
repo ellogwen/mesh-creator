@@ -3,7 +3,14 @@ extends Reference
 
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
 	
-func CreateMeshFromFaces(facesArray, mesh = null, material = null) -> ArrayMesh:
+func SetMeshFromMeshCreatorMesh(meshCreatorMesh, meshCreatorMeshInstance, material = null) -> void:
+	if (material == null):
+		material = meshCreatorMeshInstance.mesh.surface_get_material(0)
+	
+	CreateArrayMeshFromMeshCreatorMeshFaces(meshCreatorMesh.get_faces(), meshCreatorMeshInstance.mesh, material)
+	pass
+
+func CreateArrayMeshFromMeshCreatorMeshFaces(facesArray, mesh = null, material = null) -> ArrayMesh:
 	var arrays = Array()
 	arrays.resize(Mesh.ARRAY_MAX)
 	
@@ -69,6 +76,6 @@ func MeshGenerator_Generate(generator):
 	var mat = mci.DEFAULT_MATERIAL
 	var mcMesh = generator.generate(generator.get_config())
 	mci.set_mc_mesh(mcMesh)
-	mci.mesh = CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), null, mat)
+	mci.mesh = CreateArrayMeshFromMeshCreatorMeshFaces(mci.get_mc_mesh().get_faces(), null, mat)
 	return mci
 	pass

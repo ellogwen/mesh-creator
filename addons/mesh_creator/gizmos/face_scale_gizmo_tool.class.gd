@@ -112,8 +112,8 @@ func on_gizmo_set_handle(index, camera, screen_pos):
 				spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), step)
 			else:
 				spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), -step)	
-
-	meshTools.CreateMeshFromFaces(spatial.get_mc_mesh().get_faces(), spatial.mesh, spatial.mesh.surface_get_material(0))
+	
+	meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
 	_gizmoController.request_redraw()
 	
 func on_gizmo_get_handle_name(index):

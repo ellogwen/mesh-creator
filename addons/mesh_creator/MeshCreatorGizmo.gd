@@ -125,7 +125,8 @@ func on_edge_property_value_changed(context, value):
 		var meshTools = preload("res://addons/mesh_creator/MeshTools.gd").new()
 		mci.get_mc_mesh().translate_vertex(edge.get_a().get_mesh_index(), offset)
 		mci.get_mc_mesh().translate_vertex(edge.get_b().get_mesh_index(), offset)
-		meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))
+
+		meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)	
 		redraw()
 	
 func on_face_property_value_changed(context, value):	
@@ -152,7 +153,8 @@ func on_face_property_value_changed(context, value):
 		var meshTools = preload("res://addons/mesh_creator/MeshTools.gd").new()
 		for vtx in face.get_vertices():
 			mci.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), offset)
-		meshTools.CreateMeshFromFaces(mci.get_mc_mesh().get_faces(), mci.mesh, mci.mesh.surface_get_material(0))	
+		
+		meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)		
 		redraw()
 		
 	

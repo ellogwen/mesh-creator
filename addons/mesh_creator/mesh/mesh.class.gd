@@ -116,7 +116,7 @@ func add_point(pt: Vector3, independetVerts = false) -> MeshCreator_Mesh_Vertex:
 	var vtx = MeshCreator_Mesh_Vertex.new(pt)
 	return add_vertex(vtx, independetVerts)
 	
-func translate_vertex(vertexId: int, offset: Vector3):
+func translate_vertex(vertexId: int, offset: Vector3):	
 	var vtx = get_vertex(vertexId)
 	if (vtx != null):
 		vtx.set_position(vtx.get_position() + offset)

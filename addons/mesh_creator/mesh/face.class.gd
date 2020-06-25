@@ -125,6 +125,12 @@ func get_vertex(index: int) -> MeshCreator_Mesh_Vertex:
 func get_vertices() -> Array:
 	return _vertices
 
+func get_points() -> PoolVector3Array:
+	var result = PoolVector3Array()
+	for vtx in get_vertices():
+		result.push_back(vtx.get_position())
+	return result
+
 func has_vertex(vertex: MeshCreator_Mesh_Vertex) -> bool:
 	return has_vertex_position(vertex.get_position())
 	
