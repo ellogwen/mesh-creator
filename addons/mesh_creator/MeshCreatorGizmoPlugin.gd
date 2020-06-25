@@ -55,7 +55,7 @@ func _on_toolbox_tool_action(actionName, params):
 			controller.request_action(actionName, params)	
 	pass
 			
-func forward_editor_mouse_button_input(event, camera) -> bool:	
+func forward_editor_mouse_button_input(event, camera) -> bool:
 	MeshCreator_Signals.emit_UI_VIEWPORT_MOUSE_BUTTON(event, camera)
 	if (_meshCreatorGizmo != null):
 		return _meshCreatorGizmo.forward_editor_mouse_button_input(event, camera)

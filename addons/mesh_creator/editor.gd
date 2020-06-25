@@ -85,6 +85,9 @@ func handles(obj):
 	pass
 	
 func make_visible(visible):
+	if (toolBoxDock == null):
+		return
+		
 	if (visible):
 		toolBoxDock.show()
 	else:

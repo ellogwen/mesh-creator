@@ -244,9 +244,31 @@ func on_creator_mode_changed():
 	redraw()
 	pass
 
+func _is_mci_selected() -> bool:
+	var selectedNodes = get_plugin().get_creator().get_editor_interface().get_selection().get_selected_nodes()
+	var mci = get_spatial_node()
+	for node in selectedNodes:
+		if node == get_spatial_node():
+			return true
+	return false
+
+func force_mci_selection() -> void:
+	var mci = get_spatial_node()
+	if (mci != null):
+		var nodeSelection = get_plugin().get_creator().get_editor_interface().get_selection()
+		nodeSelection.clear()
+		nodeSelection.add_node(mci)
+	
+
 func forward_editor_mouse_button_input(event, camera) -> bool:
+	force_mci_selection()
+	if (not _is_mci_selected()):
+		print("MCI not selected, no key forwarding")
+		return false
+		
 	if (_active_gizmo_controller != null):
 		return _active_gizmo_controller.gizmo_forward_mouse_button(event, camera)
+		
 	return false
 	
 func forward_editor_mouse_motion_input(event, camera) -> bool:
