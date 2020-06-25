@@ -3,9 +3,11 @@ extends ImmediateGeometry
 
 var MCI
 
+var indicator_material: SpatialMaterial
+
 func _ready():
 	MCI = get_parent().get_parent() # parent = MC_Editor parent.parent = MeshCreatorInstance
-	var indicator_material = SpatialMaterial.new()
+	indicator_material = SpatialMaterial.new()
 	indicator_material.flags_unshaded = true
 	indicator_material.flags_transparent = true
 	indicator_material.vertex_color_use_as_albedo = true
@@ -25,6 +27,7 @@ func UpdateDraw():
 	var selectedVertices = MCI.get_mc_mesh().get_vertices_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_vertex_selection_store().get_store())
 		
 	# Clean up before drawing.
+	MCI.mesh.surface_get_material(0).albedo_color = Color(1, 1, 1, 1)
 	clear()
 	
 		
@@ -38,7 +41,10 @@ func UpdateDraw():
 				
 	
 	# face mode indicators
-	if (MCI.get_editor_plugin().SelectionMode == 3):
+	if (MCI.get_editor_plugin().SelectionMode == 3):		
+		# tint mesh when in selection mode		
+		MCI.mesh.surface_get_material(0).albedo_color = Color(0.7, 0.7, 0.7, 1)			
+
 		# face centers
 		for face in MCI.get_mc_mesh().get_faces():
 			_render_face_center(face)	
@@ -49,6 +55,7 @@ func UpdateDraw():
 				# inset indicator			
 				if (activeTool.get_tool_name() == "FACE_INSET"):
 					_render_face_inset_indicator(face, activeTool.get_inset_factor())
+
 				# loopcut indicator			
 				if (activeTool.get_tool_name() == "FACE_LOOPCUT"):
 					_render_face_loopcut_indicator(face, activeTool)						
