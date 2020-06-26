@@ -35,14 +35,15 @@ func CreateArrayMeshFromMeshCreatorMeshFaces(facesArray, mesh = null, material =
 			var edge_bc: float = tri.get_side_length(1)
 			var edge_ca: float = tri.get_side_length(2)
 			var centroid: Vector3 = tri.get_center()
-			var N: Vector3 = tri.get_normal().abs()
+			var N: Vector3 = tri.get_normal().abs()			
 			var Auv = Vector2.ZERO
 			var Buv = Vector2.ZERO
 			var Cuv = Vector2.ZERO
+
 			if (N.x > N.y and N.x > N.z):
 				Auv = Vector2(tri.get_a().z + 0.5, tri.get_a().y + 0.5)
 				Buv = Vector2(tri.get_b().z + 0.5, tri.get_b().y + 0.5)	
-				Cuv = Vector2(tri.get_c().z + 0.5, tri.get_c().y + 0.5)				
+				Cuv = Vector2(tri.get_c().z + 0.5, tri.get_c().y + 0.5)
 			elif (N.y > N.x and N.y > N.z):
 				Auv = Vector2(tri.get_a().x + 0.5, tri.get_a().z + 0.5)
 				Buv = Vector2(tri.get_b().x + 0.5, tri.get_b().z + 0.5)	
@@ -50,7 +51,8 @@ func CreateArrayMeshFromMeshCreatorMeshFaces(facesArray, mesh = null, material =
 			elif (N.z > N.x and N.z > N.y):
 				Auv = Vector2(tri.get_a().x + 0.5, tri.get_a().y + 0.5)
 				Buv = Vector2(tri.get_b().x + 0.5, tri.get_b().y + 0.5)	
-				Cuv = Vector2(tri.get_c().x + 0.5, tri.get_c().y + 0.5)				
+				Cuv = Vector2(tri.get_c().x + 0.5, tri.get_c().y + 0.5)
+
 			uv_array.append(Auv)
 			normal_array.append(tri.get_normal())
 			vertex_array.append(tri.get_a())
@@ -85,4 +87,4 @@ func MeshGenerator_Generate(generator):
 	mci.set_mc_mesh(mcMesh)
 	mci.mesh = CreateArrayMeshFromMeshCreatorMeshFaces(mci.get_mc_mesh().get_faces(), null, mat)
 	return mci
-	pass
+	pass   

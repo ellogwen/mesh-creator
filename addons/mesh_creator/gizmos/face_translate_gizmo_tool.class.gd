@@ -134,13 +134,13 @@ func on_gizmo_set_handle(index, camera: Camera, screen_pos):
 	var offsetGlobal = (newAxisPos - currPosGlobal)
 	var travelDistance = (newAxisPos - currPosGlobal).length()
 	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):	
+		var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+		undo_redo.create_action("Translate Face")
+		
 		var newPosLocal = spatial.to_local(newAxisPos)		
 		var newPos = Vector3(stepify(newPosLocal.x, 0.05), stepify(newPosLocal.y, 0.05), stepify(newPosLocal.z, 0.05))	
 		
 		var offset = newPos - _currentPosition		
-
-		var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
-		undo_redo.create_action("Translate Face")
 		for face in _get_selected_faces():			
 			for i in range(face.get_vertices().size()):
 				#spatial.get_mc_mesh().translate_vertex(face.get_vertex(i).get_mesh_index(), offset)

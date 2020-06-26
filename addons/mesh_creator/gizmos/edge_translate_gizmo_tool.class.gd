@@ -124,17 +124,29 @@ func on_gizmo_set_handle(index, camera: Camera, screen_pos):
 	
 	var offsetGlobal = (newAxisPos - currPosGlobal)
 	var travelDistance = (newAxisPos - currPosGlobal).length()
-	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):		
+	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):
+		var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+		undo_redo.create_action("Translate Edge")
+
 		var newPosLocal = spatial.to_local(newAxisPos)		
 		var newPos = Vector3(stepify(newPosLocal.x, 0.05), stepify(newPosLocal.y, 0.05), stepify(newPosLocal.z, 0.05))	
 		
 		var offset = newPos - _currentPosition		
 		for edge in _get_selected_edges():						
-			spatial.get_mc_mesh().translate_vertex(edge.get_a().get_mesh_index(), offset)				
-			spatial.get_mc_mesh().translate_vertex(edge.get_b().get_mesh_index(), offset)				
+			#spatial.get_mc_mesh().translate_vertex(edge.get_a().get_mesh_index(), offset)		
+			#spatial.get_mc_mesh().translate_vertex(edge.get_b().get_mesh_index(), offset)				
+			undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex",edge.get_a().get_mesh_index(), offset)
+			undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex",edge.get_b().get_mesh_index(), offset)
+			undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex",edge.get_a().get_mesh_index(), -offset)
+			undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex",edge.get_b().get_mesh_index(), -offset)			
 		
-		meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
-		_gizmoController.request_redraw()
+		#meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
+		undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
+		undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
+		#_gizmoController.request_redraw()
+		undo_redo.add_do_method(_gizmoController, "request_redraw")
+		undo_redo.add_undo_method(_gizmoController, "request_redraw")
+		undo_redo.commit_action()
 	
 	pass
 		
