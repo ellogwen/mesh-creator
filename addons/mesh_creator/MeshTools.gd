@@ -10,6 +10,13 @@ func SetMeshFromMeshCreatorMesh(meshCreatorMesh, meshCreatorMeshInstance, materi
 	CreateArrayMeshFromMeshCreatorMeshFaces(meshCreatorMesh.get_faces(), meshCreatorMeshInstance.mesh, material)
 	pass
 
+func SetMeshFromMeshCreatorMeshGeometry(meshCreatorGeometry, meshCreatorMeshInstance, material = null) -> void:
+	if (material == null):
+		material = meshCreatorMeshInstance.mesh.surface_get_material(0)
+	meshCreatorMeshInstance.get_mc_mesh().from_geometry(meshCreatorGeometry)
+	CreateArrayMeshFromMeshCreatorMeshFaces(meshCreatorMeshInstance.get_mc_mesh().get_faces(), meshCreatorMeshInstance.mesh, material)
+	pass
+
 func CreateArrayMeshFromMeshCreatorMeshFaces(facesArray, mesh = null, material = null) -> ArrayMesh:
 	var arrays = Array()
 	arrays.resize(Mesh.ARRAY_MAX)

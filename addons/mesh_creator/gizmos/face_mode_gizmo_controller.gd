@@ -52,39 +52,81 @@ func gizmo_forward_key_input(event, camera):
 	return .gizmo_forward_key_input(event, camera)
 
 func _extrude_selected_faces():
+	var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+	undo_redo.create_action("Extrude Selected Faces")
 	var mci = _gizmo.get_spatial_node()
+	var old_geometry = mci.get_mc_mesh().geometry()
 	for face in get_selected_faces():		
 		mci.get_mc_mesh().extrude_face(face.get_mesh_index())		
 	
-	meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
-	request_redraw()
+	var new_geometry = mci.get_mc_mesh().geometry()
+
+	#meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
+	undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", new_geometry, mci)
+	undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", old_geometry, mci)
+
+	#request_redraw()
+	undo_redo.add_do_method(self, "request_redraw")
+	undo_redo.add_undo_method(self, "request_redraw")
+	undo_redo.commit_action()
 	pass	
 	
 func _remove_selected_faces():
+	var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+	undo_redo.create_action("Remove Selected Faces")
 	var mci = _gizmo.get_spatial_node()
+	var old_geometry = mci.get_mc_mesh().geometry()
 	for face in get_selected_faces():
 		mci.get_mc_mesh().remove_face(face.get_mesh_index())
+	var new_geometry = mci.get_mc_mesh().geometry()
 	
-	meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
-	request_redraw()
+	#meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
+	undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", new_geometry, mci)
+	undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", old_geometry, mci)
+
+	#request_redraw()
+	undo_redo.add_do_method(self, "request_redraw")
+	undo_redo.add_undo_method(self, "request_redraw")
+	undo_redo.commit_action()
+	pass
 
 func inset_selected_faces(factor = 0.25):
+	var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+	undo_redo.create_action("Inset Selected Faces")
 	var mci = _gizmo.get_spatial_node()
+	var old_geometry = mci.get_mc_mesh().geometry()
 	for face in get_selected_faces():
 		mci.get_mc_mesh().inset_face(face.get_mesh_index(), factor)		
+	var new_geometry = mci.get_mc_mesh().geometry()
 	
-	meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
-	request_redraw()
+	#meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
+	undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", new_geometry, mci)
+	undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", old_geometry, mci)
+
+	#request_redraw()
+	undo_redo.add_do_method(self, "request_redraw")
+	undo_redo.add_undo_method(self, "request_redraw")
+	undo_redo.commit_action()
 	pass
 	
 func loopcut_selected_faces(edgeIndex = 0, insetFactor = 0.5):
+	var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+	undo_redo.create_action("Face Loopcut")
 	var mci = _gizmo.get_spatial_node()
+	var old_geometry = mci.get_mc_mesh().geometry()
 	for face in get_selected_faces():
 		var lpc = mci.get_mc_mesh().build_loopcut_chain(face.get_mesh_index(), edgeIndex)
 		mci.get_mc_mesh().loopcut(lpc, edgeIndex, insetFactor)
-	
-	meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
-	request_redraw()
+	var new_geometry = mci.get_mc_mesh().geometry()
+	#meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
+	undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", new_geometry, mci)
+	undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", old_geometry, mci)
+
+	#request_redraw()
+	undo_redo.add_do_method(self, "request_redraw")
+	undo_redo.add_undo_method(self, "request_redraw")
+	undo_redo.commit_action()
+	pass
 	
 func on_radial_menu_action(action):
 	on_radial_menu_canceled()	

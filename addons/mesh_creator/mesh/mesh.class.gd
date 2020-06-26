@@ -59,6 +59,17 @@ func clear():
 	_nextFacesIndex = -1
 	_nextEdgeIndex = -1
 	pass
+
+func geometry():
+	var faces = Array()
+	for face in get_faces():
+		faces.push_back(face.get_points())
+	return faces
+
+func from_geometry(geometry):
+	clear()
+	for facePoints in geometry:
+		add_face_from_points(facePoints)
 	
 func define_face_from_vertices(verts: Array) -> int:
 	var realVerts = Array()
