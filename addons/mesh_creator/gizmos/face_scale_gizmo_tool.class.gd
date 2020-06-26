@@ -92,15 +92,22 @@ func on_gizmo_set_handle(index, camera, screen_pos):
 	
 	if (mag <= 120): #@todo remove magic number
 		return	
+
+	var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+	undo_redo.create_action("Scale Face")
 	
 	if (handleIdx == 2):
 		for vtx in _myFace.get_vertices():
 			var step = (vtx.get_position() - faceCenter).normalized() * 0.15
 			step = Vector3(stepify(step.x, 0.1), stepify(step.y, 0.1), stepify(step.z, 0.1))	
 			if (scaleUp):		
-				spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), step)
+				#spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), step)
+				undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), step)
+				undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), -step)
 			else:
-				spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), -step)
+				#spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), -step)
+				undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), -step)
+				undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), step)
 	else:
 		var step = toAxis * 0.15
 		step = Vector3(stepify(step.x, 0.1), stepify(step.y, 0.1), stepify(step.z, 0.1))
@@ -109,12 +116,21 @@ func on_gizmo_set_handle(index, camera, screen_pos):
 		var p = Plane((toAxis - faceCenter).normalized(), 0)		
 		for vtx in _myFace.get_vertices():
 			if (p.is_point_over(spatialTrans.xform(vtx.get_position()))):
-				spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), step)
+				#spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), step)
+				undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), step)
+				undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), -step)
 			else:
-				spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), -step)	
+				#spatial.get_mc_mesh().translate_vertex(vtx.get_mesh_index(), -step)
+				undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), -step)
+				undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), step)
 	
-	meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
-	_gizmoController.request_redraw()
+	#meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
+	undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
+	undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
+	#_gizmoController.request_redraw()
+	undo_redo.add_do_method(_gizmoController, "request_redraw")
+	undo_redo.add_undo_method(_gizmoController, "request_redraw")
+	undo_redo.commit_action()
 	
 func on_gizmo_get_handle_name(index):
 	if (index >= _fromHandleIndex and index < _fromHandleIndex + 3):
