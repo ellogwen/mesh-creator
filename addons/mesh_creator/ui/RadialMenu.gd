@@ -16,13 +16,16 @@ func show_menu():
 	set_process_input(true)
 	rect_global_position = get_global_mouse_position() - get_center()
 
-func add_action(name: String, label: String, helpText: String = "") -> void:
-	var a = RadialMenuAction.new(name, label)
+func add_action(name: String, label: String, helpText: String = "", scancode = 0) -> void:
+	var a = RadialMenuAction.new(name, label, helpText, scancode)
 	a.helpText = helpText
 	_actions.push_back(a)	
 	
 	var actionLabel = Label.new()	
 	actionLabel.text = a.label
+
+	if (a.scancode > 0):
+		actionLabel.text = actionLabel.text + " (" +  OS.get_scancode_string(a.scancode)  +")"
 	
 	actionLabel.name = "Action_" + str(_actions.size())
 	$Background/Actions.add_child(actionLabel)
@@ -61,8 +64,12 @@ func _input(event):
 		if (event.button_index == BUTTON_RIGHT and not event.pressed):
 			emit_signal("radial_menu_canceled")
 	if event is InputEventKey:
-		if event.scancode == KEY_ESCAPE and event.pressed:
+		if event.scancode == KEY_ESCAPE and not event.pressed:
 			emit_signal("radial_menu_canceled")
+		# check scancodes
+		for a in _actions:
+			if event.scancode == a.scancode:
+				emit_signal("radial_menu_action", a)
 	pass
 	
 func _highlight_current_action():
@@ -93,7 +100,10 @@ class RadialMenuAction:
 	var name: String
 	var label: String
 	var helpText: String
+	var scancode: int
 	
-	func _init(name, label):
+	func _init(name, label, helpText = "", scancode = 0):
 		self.name = name
 		self.label = label
+		self.helpText = helpText		
+		self.scancode = scancode

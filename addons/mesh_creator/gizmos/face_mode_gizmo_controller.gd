@@ -147,11 +147,11 @@ func show_radial_menu():
 	spatialEditorRadialMenu.connect("radial_menu_action", self, "on_radial_menu_action")
 	spatialEditorRadialMenu.connect("radial_menu_canceled", self, "on_radial_menu_canceled")
 	spatialEditorRadialMenu.reset()
-	spatialEditorRadialMenu.add_action("TOOL_TRANSLATE", "Translate")
-	spatialEditorRadialMenu.add_action("TOOL_SCALE", "Scale")
-	spatialEditorRadialMenu.add_action("TOOL_INSET", "Inset")
+	spatialEditorRadialMenu.add_action("TOOL_TRANSLATE", "Translate", "", KEY_G)
+	spatialEditorRadialMenu.add_action("TOOL_SCALE", "Scale", "", KEY_S)
+	spatialEditorRadialMenu.add_action("TOOL_INSET", "Inset", "", KEY_I)
 	spatialEditorRadialMenu.add_action("TOOL_LOOPCUT", "Loopcut")
-	spatialEditorRadialMenu.add_action("TOOL_EXTRUDE", "Extrude")
+	spatialEditorRadialMenu.add_action("TOOL_EXTRUDE", "Extrude", "", KEY_E)
 	spatialEditorRadialMenu.show_menu()
 		
 func request_action(actionName, params = []):
