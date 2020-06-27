@@ -44,14 +44,20 @@ func set_active() -> void:
 	var lastFace = selectedFaces.back()
 	if spatial != null and lastFace != null:		
 		_startPosition = lastFace.get_centroid()
-		_currentPosition = _startPosition
-	use_axis_from_mesh()				
+		_currentPosition = _startPosition		
+	use_axis_from_mesh()	
+	MeshCreator_Indicator.add_line("face_translate_axis_x", _currentPosition, _currentPosition + _axisRight * 10, Color.red)	
+	MeshCreator_Indicator.add_line("face_translate_axis_y", _currentPosition, _currentPosition + _axisUp * 10, Color.green)	
+	MeshCreator_Indicator.add_line("face_translate_axis_z", _currentPosition, _currentPosition + _axisForward * 10, Color.blue)
 	pass
 	
 # cleanup on tool switch
 func set_inactive() -> void:
 	_startPosition = Vector3.ZERO
 	_currentPosition = Vector3.ZERO	
+	MeshCreator_Indicator.remove_line("face_translate_axis_x")
+	MeshCreator_Indicator.remove_line("face_translate_axis_y")
+	MeshCreator_Indicator.remove_line("face_translate_axis_z")
 	pass	
 	
 func use_axis_from_global():

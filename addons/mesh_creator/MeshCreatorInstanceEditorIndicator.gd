@@ -32,7 +32,11 @@ func UpdateDraw():
 	
 		
 	# line geometry
-	begin(Mesh.PRIMITIVE_LINES)		
+	begin(Mesh.PRIMITIVE_LINES)
+
+	for line in MeshCreator_Indicator.get_lines():
+		_render_line(line.from, line.to, line.color)
+
 	end()
 
 

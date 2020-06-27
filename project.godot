@@ -164,6 +164,7 @@ config/icon="res://icon.png"
 [autoload]
 
 MeshCreator_Signals="*res://addons/mesh_creator/signals.gd"
+MeshCreator_Indicator="*res://addons/mesh_creator/gizmos/indicator.singleton.gd"
 
 [editor_plugins]
 

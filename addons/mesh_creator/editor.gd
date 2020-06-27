@@ -25,7 +25,8 @@ signal mode_changed
 ####################
 
 func _enter_tree() -> void:
-	add_autoload_singleton("MeshCreator_Signals", "res://addons/mesh_creator/signals.gd")		
+	add_autoload_singleton("MeshCreator_Signals", "res://addons/mesh_creator/signals.gd")
+	add_autoload_singleton("MeshCreator_Indicator", "res://addons/mesh_creator/gizmos/indicator.singleton.gd")
 	meshCreatorGizmoPlugin.set_creator(self)
 	connect("main_screen_changed", self, "_on_editor_main_screen_changed")
 	toolBoxDock = preload("res://addons/mesh_creator/ToolBoxDock.tscn").instance()
@@ -53,6 +54,7 @@ func _exit_tree() -> void:
 	remove_spatial_gizmo_plugin(meshCreatorGizmoPlugin)	
 	toolBoxDock.queue_free()
 	remove_autoload_singleton("MeshCreator_Signals")
+	remove_autoload_singleton("MeshCreator_Indicator")
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
 	uiFaceProperties.queue_free()	
