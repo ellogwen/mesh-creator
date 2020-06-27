@@ -10,10 +10,11 @@ var font = preload("res://addons/mesh_creator/ui/fonts/df_roboto_regular.tres").
 func _ready():
 	font.size = 24
 
-func _draw():	
+func _draw():
 	var center = get_center()	
-	if DrawLine:				
-		var endPoint = center + (Vector2(cos(LineAngle), sin(LineAngle)) * 85)
+	if DrawLine:	
+		var lineLen = max(5, min(1000, center.distance_to(get_local_mouse_position())))
+		var endPoint = center + (Vector2(cos(LineAngle), sin(LineAngle)) * lineLen)
 		var angleDeg = rad2deg(LineAngle)
 		draw_line(center, endPoint, LineColor)				
 

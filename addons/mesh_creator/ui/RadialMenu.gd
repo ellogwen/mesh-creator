@@ -25,7 +25,7 @@ func add_action(name: String, label: String, helpText: String = "", scancode = 0
 	actionLabel.text = a.label
 
 	if (a.scancode > 0):
-		actionLabel.text = actionLabel.text + " (" +  OS.get_scancode_string(a.scancode)  +")"
+		actionLabel.text = actionLabel.text + "\n(" +  OS.get_scancode_string(a.scancode)  +")"
 	
 	actionLabel.name = "Action_" + str(_actions.size())
 	$Background/Actions.add_child(actionLabel)
