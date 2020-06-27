@@ -27,7 +27,7 @@ func set_active() -> void:
 		_myFace = selectedFaces.front()
 		
 	if (_myFace != null):		
-		_insetFactor = 0.25
+		_insetFactor = 0.5
 	pass
 	
 # cleanup on tool switch
@@ -50,17 +50,36 @@ func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
 			set_inactive()
 			_gizmoController.request_action("TOOL_CANCEL")
 			return true # claim event as handled
+
+	if (event.button_index == BUTTON_WHEEL_UP):
+		_insetFactor += 0.05
+		_insetFactor = clamp(_insetFactor, 0.0, 1.0)
+		_gizmoController.request_redraw()
+		return true
+
+	if (event.button_index == BUTTON_WHEEL_DOWN):
+		_insetFactor -= 0.05
+		_insetFactor = clamp(_insetFactor, 0.0, 1.0)
+		_gizmoController.request_redraw()
+		return true
+	
 	return false
 	pass
 	
 # return true if event claimed handled	
-func on_input_mouse_move(event: InputEventMouse, camera) -> bool:
-	if (_lastMousePos != null):
-		if event.position.x < _lastMousePos.x:
-			_insetFactor -= 0.01
-		else:
-			_insetFactor += 0.01
-		_insetFactor = clamp(_insetFactor, 0.0, 1.0)	
+func on_input_mouse_move(event: InputEventMouse, camera) -> bool:	
+	if (_myFace != null):		
+		# get face center as screen reference
+		var myFaceCenterScreen = camera.unproject_position(_myFace.get_centroid())
+		prints(myFaceCenterScreen, event.position, _lastMousePos)
+		if (_lastMousePos != null):
+			var newDistance = myFaceCenterScreen.distance_to(event.position)
+			var oldDistance = myFaceCenterScreen.distance_to(_lastMousePos)
+			if (newDistance < oldDistance):
+				_insetFactor -= 0.05
+			elif(newDistance > oldDistance):
+				_insetFactor += 0.05
+			_insetFactor = clamp(_insetFactor, 0.0, 1.0)	
 	_lastMousePos = event.position
 	_gizmoController.request_redraw()
 	return false
