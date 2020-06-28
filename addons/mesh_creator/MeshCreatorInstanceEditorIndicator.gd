@@ -70,7 +70,7 @@ func UpdateDraw():
 			for edgeId in face.get_edges():
 					var edge = MCI.get_mc_mesh().get_edge(edgeId)
 					if (selectedEdges.has(edge)):
-						_render_fake_line(
+						_render_stripe(
 							edge.get_a().get_position(), 
 							edge.get_b().get_position(), 
 							face.get_normal(), 
@@ -79,7 +79,7 @@ func UpdateDraw():
 							1
 						)						
 					else:
-						_render_fake_line(
+						_render_stripe(
 							edge.get_a().get_position(), 
 							edge.get_b().get_position(), 
 							face.get_normal(), 
@@ -95,7 +95,7 @@ func UpdateDraw():
 			var verts = face.get_vertices()
 			var vertsCount = verts.size()
 			for i in range(0, vertsCount):				
-					_render_fake_line(
+					_render_stripe(
 						verts[i].get_position(), 
 						verts[(i + 1) % vertsCount].get_position(), 
 						face.get_normal(), 
@@ -115,7 +115,7 @@ func UpdateDraw():
 				var color = Color.black
 				if selectedVertices.has(vtx):
 					color = Color.yellow
-				_render_fake_line(
+				_render_stripe(
 					start,
 					start + (end - start).normalized() * 0.05,
 					face.get_normal(),
@@ -162,7 +162,7 @@ func _render_line(from, to, color):
 	pass
 	
 # anchors: 0 = center, 1 = left, 2 = right
-func _render_fake_line(from, to, normal, color, thickness = 0.02, anchor = 0):
+func _render_stripe(from, to, normal, color, thickness = 0.02, anchor = 0):
 	set_color(color)
 		
 	var fwd = (to - from).normalized()
@@ -228,7 +228,7 @@ func _render_face_inset_indicator(face, insetFactor):
 
 	var vtxCount = newPts.size()
 	for i in range(0, vtxCount):
-		_render_fake_line(
+		_render_stripe(
 			(newPts[i]),
 			(newPts[(i + 1) % vtxCount]),
 			face.get_normal(),
@@ -265,7 +265,7 @@ func _render_face_loopcut_indicator(face, faceLoopcutTool):
 		var outEdgeCutPos = outEdgeStartPos + (outEdgeCutPosVec.normalized() * (outEdgeCutPosVec.length() * (1 - insetFactor)))
 		
 		# draw line
-		_render_fake_line(inEdgeCutPos, outEdgeCutPos, currFace.get_normal(), Color.blue, 0.015)
+		_render_stripe(inEdgeCutPos, outEdgeCutPos, currFace.get_normal(), Color.blue, 0.015)
 		
 		var nextFace = MCI.get_mc_mesh().get_face(loopcutChain[i + 1])		
 		
@@ -285,9 +285,9 @@ func _render_face_translate_indicator(faceTranslateTool):
 	var right = faceTranslateTool.get_axis_right()
 	var lineWidth = 0.1	
 	# right axis	
-	_render_fake_line(from, from + (right * 0.25), -fwd, ColorN("red", 0.9), 0.1)	
+	_render_stripe(from, from + (right * 0.25), -fwd, ColorN("red", 0.9), 0.1)	
 	# up axis	
-	_render_fake_line(from, from + (up * 0.25), -fwd, ColorN("green", 0.9), 0.1)	
+	_render_stripe(from, from + (up * 0.25), -fwd, ColorN("green", 0.9), 0.1)	
 	# forward axis		
-	_render_fake_line(from, (from + (fwd * 0.25)), -up, ColorN("blue", 0.9), 0.1)		
+	_render_stripe(from, (from + (fwd * 0.25)), -up, ColorN("blue", 0.9), 0.1)		
 	pass
