@@ -49,6 +49,8 @@ func set_active():
 	
 # do cleanup here
 func set_inactive():
+	if (_activeTool != null):
+		_activeTool.set_inactive()
 	_gizmo.clear()
 	_gizmo.hide_cursor_3d()
 	pass	
