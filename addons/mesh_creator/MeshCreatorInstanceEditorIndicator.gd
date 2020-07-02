@@ -35,7 +35,7 @@ func UpdateDraw():
 	begin(Mesh.PRIMITIVE_LINES)
 
 	for line in MeshCreator_Indicator.get_lines():
-		_render_line(line.from, line.to, line.color)
+		_render_line(to_local(line.from), to_local(line.to), line.color)
 
 	end()
 
@@ -279,10 +279,10 @@ func _render_face_loopcut_indicator(face, faceLoopcutTool):
 	pass
 	
 func _render_face_translate_indicator(faceTranslateTool):
-	var from = faceTranslateTool.get_current_position()	
-	var fwd = faceTranslateTool.get_axis_forward()
-	var up = faceTranslateTool.get_axis_up()
-	var right = faceTranslateTool.get_axis_right()
+	var from = to_local(faceTranslateTool.get_current_position())
+	var fwd = to_local(faceTranslateTool.get_axis_forward())
+	var up = to_local(faceTranslateTool.get_axis_up())
+	var right = to_local(faceTranslateTool.get_axis_right())
 	var lineWidth = 0.1	
 	# right axis	
 	_render_stripe(from, from + (right * 0.25), -fwd, ColorN("red", 0.9), 0.1)	

@@ -5,7 +5,7 @@ var _indicators = {
     "lines": {},
 }
 
-func add_line(lineId, from_pt, to_pt, color):
+func add_line_global(lineId, from_pt, to_pt, color):
     _indicators.lines[lineId] = {
         "from": from_pt,
         "to": to_pt,
