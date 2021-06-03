@@ -1,3 +1,4 @@
+tool
 extends Position3D
 
 signal transform_changed

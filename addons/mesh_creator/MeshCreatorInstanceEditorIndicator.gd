@@ -125,10 +125,10 @@ func UpdateDraw():
 				)		
 					
 	# general tool indicators
-	if (activeTool != null):
+	#if (activeTool != null):
 		# translate indicator
-		if (activeTool.get_tool_name() == "FACE_TRANSLATE"):
-			_render_face_translate_indicator(activeTool)
+		#if (activeTool.get_tool_name() == "FACE_TRANSLATE"):
+		#	_render_face_translate_indicator(activeTool)
 	
 	
 	# End drawing.

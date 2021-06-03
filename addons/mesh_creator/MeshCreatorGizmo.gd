@@ -159,14 +159,9 @@ func on_face_property_value_changed(context, value):
 		
 	
 func set_cursor_3d(pos):
-	if (_cursor3D == null):
-		_cursor3D = Cursor3D.new()
-		_cursor3D.name = "Cursor3D"
-		get_spatial_node().get_parent().add_child(_cursor3D)
-		_cursor3D.set_owner(get_spatial_node().get_owner())
-		_cursor3D.connect("transform_changed", self, "_on_cursor_3d_transform_changed")
-		_cursor3D.hide()		
+	_cursor3D = get_cursor_3d()
 	_cursor3D.global_transform.origin = pos
+	prints("setting cursor to", pos)
 	pass
 
 func show_cursor_3d():
@@ -176,6 +171,26 @@ func show_cursor_3d():
 func hide_cursor_3d():
 	if (_cursor3D != null):
 		_cursor3D.hide()
+		
+func get_cursor_3d():
+	if (_cursor3D == null):
+		_cursor3D = Cursor3D.new()
+		_cursor3D.name = "Cursor3D"
+		get_spatial_node().get_parent().add_child(_cursor3D)
+		_cursor3D.set_owner(get_spatial_node().get_owner())
+		# _cursor3D.connect("transform_changed", self, "_on_cursor_3d_transform_changed")
+		_cursor3D.hide()
+	return _cursor3D
+	
+func focus_cursor_3d():
+	var selectionModel = get_plugin().get_creator().get_editor_interface().get_selection()
+	selectionModel.clear()
+	selectionModel.add_node(_cursor3D)
+	
+func focus_mesh_instance():
+	var selectionModel = get_plugin().get_creator().get_editor_interface().get_selection()
+	selectionModel.clear()
+	selectionModel.add_node(get_spatial_node())
 		
 func _set_active_active_gizmo_controller(controller):
 	if (_active_gizmo_controller != null):
@@ -258,8 +273,10 @@ func force_mci_selection() -> void:
 	var mci = get_spatial_node()
 	if (mci != null):
 		var nodeSelection = get_plugin().get_creator().get_editor_interface().get_selection()
-		nodeSelection.clear()
-		nodeSelection.add_node(mci)	
+		for node in nodeSelection.get_selected_nodes():
+			prints(node)
+			if (node != mci and node != _cursor3D):
+				nodeSelection.remove_node(node)
 
 func forward_editor_mouse_button_input(event, camera) -> bool:
 	force_mci_selection()

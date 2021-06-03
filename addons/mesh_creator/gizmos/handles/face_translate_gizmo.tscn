@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://addons/mesh_creator/gizmos/handles/face_translate_gizmo.gd" type="Script" id=1]
+[ext_resource path="res://addons/mesh_creator/gizmos/handles/face_translate_handle.gd" type="Script" id=2]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 0.15, 0.05, 0.01 )
+
+[sub_resource type="SpatialMaterial" id=2]
+flags_unshaded = true
+flags_do_not_receive_shadows = true
+params_specular_mode = 4
+params_cull_mode = 2
+albedo_color = Color( 0.929412, 0, 0.937255, 1 )
+
+[sub_resource type="QuadMesh" id=3]
+material = SubResource( 2 )
+size = Vector2( 0.3, 0.1 )
+
+[node name="face_translate_gizmo" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="handle_up" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, 0 )
+monitoring = false
+monitorable = false
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="handle_up"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="handle_up"]
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="handle_down" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="handle_down"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="handle_down"]
+mesh = SubResource( 3 )
+material/0 = null
