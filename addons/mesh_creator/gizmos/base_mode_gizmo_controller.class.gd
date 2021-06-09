@@ -72,7 +72,7 @@ func gizmo_redraw():
 	
 	var mci = _gizmo.get_spatial_node()
 	if (not mci is MeshCreatorInstance):
-		return	
+		return
 		
 	_gizmo.update_properties_panels()
 	

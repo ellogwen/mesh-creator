@@ -79,8 +79,8 @@ func set_active() -> void:
 		cursor3d.connect("transform_changed", self, "_on_cursor_3d_transform_changed")
 		if (not Input.is_mouse_button_pressed(BUTTON_LEFT)):
 			_gizmoController.get_gizmo().set_cursor_3d(_currentGlobalPosition)
+			_gizmoController.get_gizmo().focus_cursor_3d()
 		_gizmoController.get_gizmo().show_cursor_3d()
-		#_gizmoController.get_gizmo().focus_cursor_3d()
 	_calculate_axes()
 	_update_axis_indicators()
 	_create_face_translate_gizmo()
@@ -98,6 +98,7 @@ func set_inactive() -> void:
 	if (cursor3d != null):
 		cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
 	_gizmoController.get_gizmo().hide_cursor_3d()
+	_gizmoController.get_gizmo().focus_mesh_instance()
 	_remove_face_translate_gizmo()
 	pass	
 
@@ -333,7 +334,7 @@ func _on_cursor_3d_transform_changed():
 		undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
 		
 		# reset cursor, force editor to update this way
-		prints("from", _currentGlobalPosition, "to", newPosGlobal, "offset", offsetGlobal)
+		# prints("from", _currentGlobalPosition, "to", newPosGlobal, "offset", offsetGlobal)
 		#undo_redo.add_do_method(_gizmoController.get_gizmo(), "set_cursor_3d", newPosGlobal)
 		
 		#_gizmoController.request_redraw()
