@@ -2,21 +2,21 @@ tool
 extends Node
 
 var _indicators = {
-    "lines": {},
+	"lines": {},
 }
 
 func add_line_global(lineId, from_pt, to_pt, color):
-    _indicators.lines[lineId] = {
-        "from": from_pt,
-        "to": to_pt,
-        "color": color
-    }
-    pass
+	_indicators.lines[lineId] = {
+		"from": from_pt,
+		"to": to_pt,
+		"color": color
+	}
+	pass
 
 func remove_line(lineId):
-    _indicators.lines.erase(lineId)
-    pass
+	_indicators.lines.erase(lineId)
+	pass
 
 func get_lines():
-    return _indicators.lines.values()
+	return _indicators.lines.values()
 

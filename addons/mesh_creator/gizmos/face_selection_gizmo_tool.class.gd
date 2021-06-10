@@ -3,6 +3,10 @@ extends MeshCreator_Gizmos_BaseGizmoTool
 # namespace MeshCreator_Gizmos
 class_name MeshCreator_Gizmos_FaceSelectionGizmoTool
 
+var _startGlobalPosition = Vector3.ZERO
+var _currentGlobalPosition = Vector3.ZERO
+var meshTools = MeshCreator_MeshTools.new()
+
 func get_selection_store():
 	return _gizmoController.get_gizmo().get_face_selection_store()
 
@@ -23,30 +27,60 @@ func set_active() -> void:
 	
 # cleanup on tool switch
 func set_inactive() -> void:
+	var cursor3d = _gizmoController.get_gizmo().get_cursor_3d()
+	_gizmoController.get_gizmo().set_cursor_3d(_currentGlobalPosition)
+	_startGlobalPosition = Vector3.ZERO
+	_currentGlobalPosition = Vector3.ZERO
+	if (cursor3d != null):
+		if cursor3d.is_connected("transform_changed", self, "_on_cursor_3d_transform_changed"):
+			cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
+	_gizmoController.get_gizmo().hide_cursor_3d()
+	_gizmoController.get_gizmo().focus_mesh_instance()
 	pass
 	
 # return true if event claimed handled
 func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
-	if (event.get_button_index() == BUTTON_LEFT and event.pressed):		
+	if (event.get_button_index() == BUTTON_LEFT):
+		
+		#var cursor = _gizmoController.get_gizmo().get_cursor_3d()
+		#cursor.get_gizmo().set_hidden(true)
+		#prints("highlighted?",  cursor.get_gizmo().get_plugin().is_handle_highlighted(0))	
+		
+					
+		if (_gizmoController.get_gizmo().is_cursor_3d_selected()):
+			#prints(Input.get_last_mouse_speed().length_squared())
+			# hacky workaround
+			#if (Input.get_last_mouse_speed().length_squared() < 10.0):
+			return false
+			#else:
+			#	return true
+	
+	if (event.get_button_index() == BUTTON_RIGHT):
 		var mci = _gizmoController.get_gizmo().get_spatial_node()			
 		var clickedFaces = _get_clicked_on_faces_sorted_by_cam_distance(event.get_position(), camera)
 		if (clickedFaces.size() > 0):
-			prints("clicked on face ", clickedFaces[0].face)
-			if get_selection_store().is_selected(clickedFaces[0].face.get_mesh_index()):
-				get_selection_store().remove_from_selection(clickedFaces[0].face.get_mesh_index())
-			else:
-				# only support on face for now. @todo fix this later when cleaned up structure
-				# and ngons are no problem anymore
-				get_selection_store().clear()
-				###########
-				get_selection_store().add_to_selection(clickedFaces[0].face.get_mesh_index())
-			_gizmoController.request_redraw()
+			if (not event.pressed):
+				prints("clicked on face ", clickedFaces[0].face)
+				if get_selection_store().is_selected(clickedFaces[0].face.get_mesh_index()):
+					get_selection_store().remove_from_selection(clickedFaces[0].face.get_mesh_index())
+				else:
+					# only support on face for now. @todo fix this later when cleaned up structure
+					# and ngons are no problem anymore
+					get_selection_store().clear()
+					###########
+					get_selection_store().add_to_selection(clickedFaces[0].face.get_mesh_index())
+				_gizmoController.call_deferred("request_redraw")
 			return true # handled the click
-	if (event.get_button_index() == BUTTON_RIGHT and event.pressed):		
-		if (not get_selection_store().is_empty()):
-			get_selection_store().clear()
-			_gizmoController.request_redraw()
-			return true # click handled
+
+	#if (event.get_button_index() == BUTTON_RIGHT):
+	#	if (not get_selection_store().is_empty()):
+	#		get_selection_store().clear()
+	#		_gizmoController.call_deferred("request_redraw")
+	#		return true # click handled
+			
+	# always handle when editing, to prevent editor from deselecting
+	if (event.get_button_index() == BUTTON_RIGHT or event.get_button_index() == BUTTON_LEFT):
+		return true
 	return false
 	pass
 	
@@ -62,6 +96,10 @@ func on_input_key(event, camera):
 
 func on_gui_action(actionCode: String, payload):
 	pass	
+	
+func on_gizmo_redraw(gizmo):
+	_update_translate_gizmo()
+	pass
 	
 #################
 # own stuff
@@ -88,4 +126,79 @@ func _get_clicked_on_faces_sorted_by_cam_distance(clickPos, camera: Camera):
 	return result
 
 func _sort_by_distance_camera_asc(a, b):
-	return a.distance_camera < b.distance_camera	
+	return a.distance_camera < b.distance_camera
+	
+	
+func _on_cursor_3d_transform_changed():
+	prints("set new transform", _gizmoController.get_gizmo().get_cursor_3d().global_transform.origin)
+	var newPosGlobal = _gizmoController.get_gizmo().get_cursor_3d().global_transform.origin	
+	var offsetGlobal = (newPosGlobal - _currentGlobalPosition)
+	var spatial = _gizmoController.get_gizmo().get_spatial_node()
+	var travelDistance = (newPosGlobal - _currentGlobalPosition).length()
+	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):
+		# disconnect, to prevent editor to not fire event again before we commit
+		if (_gizmoController.get_gizmo().get_cursor_3d().is_connected("transform_changed", self, "_on_cursor_3d_transform_changed")):
+			_gizmoController.get_gizmo().get_cursor_3d().disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
+		
+		var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+		prints("Current Undo Stack:", undo_redo.get_current_action_name())
+		undo_redo.create_action("Translate Face")
+		
+		#var newPosLocal = spatial.to_local(newPosGlobal)
+		#var newPos = Vector3(stepify(newPosLocal.x, 0.05), stepify(newPosLocal.y, 0.05), stepify(newPosLocal.z, 0.05))	
+		#var newPos = Vector3(stepify(newPosGlobal.x, 0.05), stepify(newPosGlobal.y, 0.05), stepify(newPosGlobal.z, 0.05))	
+		var newPos = newPosGlobal
+		#var offset = newPos - spatial.to_local(_currentGlobalPosition)
+		var offset = newPos - _startGlobalPosition
+		for face in _get_selected_faces():			
+			for i in range(face.get_vertices().size()):
+				#spatial.get_mc_mesh().translate_vertex(face.get_vertex(i).get_mesh_index(), offset)
+				undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", face.get_vertex(i).get_mesh_index(), offset)
+				undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", face.get_vertex(i).get_mesh_index(), -offset)
+		
+		#meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
+		undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
+		undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
+		
+		# reset cursor, force editor to update this way
+		# prints("from", _currentGlobalPosition, "to", newPosGlobal, "offset", offsetGlobal)
+		#undo_redo.add_do_method(_gizmoController.get_gizmo(), "set_cursor_3d", newPosGlobal)
+		
+		#_gizmoController.request_redraw()
+		undo_redo.add_do_method(_gizmoController, "request_redraw")
+		undo_redo.add_undo_method(_gizmoController, "request_redraw")	
+		
+		_currentGlobalPosition = newPosGlobal
+
+		undo_redo.commit_action()	
+	pass
+	
+func _get_selected_faces():
+	return _gizmoController.get_gizmo().get_spatial_node().get_mc_mesh().get_faces_selection(
+		get_selection_store().get_store()
+	)
+	
+func _update_translate_gizmo():
+	var selectedFaces : Array = _get_selected_faces()
+	prints("updating translate gizmo", selectedFaces)
+	_startGlobalPosition = Vector3.ZERO
+	_currentGlobalPosition = Vector3.ZERO	
+	var cursor3d = _gizmoController.get_gizmo().get_cursor_3d()
+	var spatial: Spatial = _gizmoController.get_gizmo().get_spatial_node()	
+	if (spatial != null and not selectedFaces.empty()): 
+		var lastFace = selectedFaces.back()
+		_startGlobalPosition = spatial.to_global(lastFace.get_centroid())
+		_currentGlobalPosition = _startGlobalPosition
+		if cursor3d.is_connected("transform_changed", self, "_on_cursor_3d_transform_changed"):
+			cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
+		cursor3d.connect("transform_changed", self, "_on_cursor_3d_transform_changed")
+		if (not Input.is_mouse_button_pressed(BUTTON_LEFT)):
+			_gizmoController.get_gizmo().set_cursor_3d(_currentGlobalPosition)
+			_gizmoController.get_gizmo().focus_cursor_3d()
+		_gizmoController.get_gizmo().show_cursor_3d()
+	else:		
+		if (cursor3d != null):
+			if (cursor3d.is_connected("transform_changed", self, "_on_cursor_3d_transform_changed")):
+				cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
+			_gizmoController.get_gizmo().hide_cursor_3d()
+			_gizmoController.get_gizmo().focus_mesh_instance()

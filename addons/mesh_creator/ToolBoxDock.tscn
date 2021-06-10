@@ -17,14 +17,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="ToolsList" type="VBoxContainer" parent="Scroll"]
-editor/display_folded = true
-margin_right = 211.0
-margin_bottom = 588.0
+margin_right = 219.0
+margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Label_Create" type="Label" parent="Scroll/ToolsList"]
-margin_right = 211.0
+margin_right = 219.0
 margin_bottom = 31.0
 custom_styles/normal = SubResource( 1 )
 text = "
@@ -32,9 +31,8 @@ CREATE"
 align = 1
 
 [node name="GenerateButtons" type="GridContainer" parent="Scroll/ToolsList"]
-editor/display_folded = true
 margin_top = 35.0
-margin_right = 211.0
+margin_right = 219.0
 margin_bottom = 55.0
 columns = 2
 
@@ -51,11 +49,11 @@ text = "Open Generators"
 
 [node name="Generators" type="GridContainer" parent="Scroll/ToolsList"]
 margin_top = 59.0
-margin_right = 211.0
+margin_right = 219.0
 margin_bottom = 79.0
 
 [node name="OptionButton" type="OptionButton" parent="Scroll/ToolsList/Generators"]
-margin_right = 80.0
+margin_right = 68.0
 margin_bottom = 20.0
 text = "Select"
 flat = true
@@ -64,12 +62,12 @@ selected = 0
 
 [node name="HSeparator" type="HSeparator" parent="Scroll/ToolsList"]
 margin_top = 83.0
-margin_right = 211.0
+margin_right = 219.0
 margin_bottom = 87.0
 
 [node name="Label_Mode" type="Label" parent="Scroll/ToolsList"]
 margin_top = 91.0
-margin_right = 211.0
+margin_right = 219.0
 margin_bottom = 122.0
 custom_styles/normal = SubResource( 2 )
 text = "
@@ -78,7 +76,7 @@ align = 1
 
 [node name="ModesButtons" type="GridContainer" parent="Scroll/ToolsList"]
 margin_top = 126.0
-margin_right = 211.0
+margin_right = 219.0
 margin_bottom = 148.0
 columns = 4
 
@@ -111,7 +109,7 @@ text = "FACE"
 
 [node name="Label_Tools" type="Label" parent="Scroll/ToolsList"]
 margin_top = 152.0
-margin_right = 211.0
+margin_right = 219.0
 margin_bottom = 183.0
 custom_styles/normal = SubResource( 2 )
 text = "
@@ -120,7 +118,7 @@ align = 1
 
 [node name="ToolsButtons" type="GridContainer" parent="Scroll/ToolsList"]
 margin_top = 187.0
-margin_right = 211.0
+margin_right = 219.0
 margin_bottom = 255.0
 columns = 3
 

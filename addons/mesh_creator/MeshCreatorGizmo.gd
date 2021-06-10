@@ -261,11 +261,19 @@ func on_creator_mode_changed():
 	redraw()
 	pass
 
-func _is_mci_selected() -> bool:
+func is_mci_selected() -> bool:
 	var selectedNodes = get_plugin().get_creator().get_editor_interface().get_selection().get_selected_nodes()
 	var mci = get_spatial_node()
 	for node in selectedNodes:
 		if node == get_spatial_node():
+			return true
+	return false
+	
+func is_cursor_3d_selected() -> bool:
+	var selectedNodes = get_plugin().get_creator().get_editor_interface().get_selection().get_selected_nodes()
+	var mci = get_spatial_node()
+	for node in selectedNodes:
+		if node == get_cursor_3d():
 			return true
 	return false
 
@@ -280,9 +288,13 @@ func force_mci_selection() -> void:
 
 func forward_editor_mouse_button_input(event, camera) -> bool:
 	force_mci_selection()
-	if (not _is_mci_selected()):
-		print("MCI not selected, no key forwarding")
-		return false
+	if (not is_mci_selected() and not is_cursor_3d_selected()):
+		# don't allow deselection when not on mesh mod
+		if (get_plugin().get_creator().SelectionMode == 0):
+			print("MCI/Cursor not selected, no key forwarding")
+			return false
+		else:
+			return true
 		
 	if (_active_gizmo_controller != null):
 		return _active_gizmo_controller.gizmo_forward_mouse_button(event, camera)

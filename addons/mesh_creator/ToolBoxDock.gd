@@ -68,8 +68,7 @@ func _on_ButtonCreateCube_pressed():
 	emit_signal("button_create_new_mesh")
 	pass
 	
-func _on_ButtonOpenGenerators_pressed():	
-	print("schänaräd")
+func _on_ButtonOpenGenerators_pressed():
 	pass
 	
 func _on_ButtonModeMesh_Toggle(isPressed):
