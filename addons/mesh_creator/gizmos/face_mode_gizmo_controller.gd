@@ -161,9 +161,9 @@ func request_action(actionName, params = []):
 	elif (actionName == "TOOL_SELECT"):
 		print("Tool Select")
 		activate_tool(get_gizmo().get_editor_tool('FACE_SELECTION'))
-	elif (actionName == "TOOL_TRANSLATE"):
-		print("Tool Move")
-		activate_tool(get_gizmo().get_editor_tool('FACE_TRANSLATE'))
+	#elif (actionName == "TOOL_TRANSLATE"):
+	#	print("Tool Move")
+	#	activate_tool(get_gizmo().get_editor_tool('FACE_TRANSLATE'))
 	elif (actionName == "TOOL_SCALE"):
 		print("Tool Scale")
 		activate_tool(get_gizmo().get_editor_tool('FACE_SCALE'))

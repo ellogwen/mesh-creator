@@ -130,15 +130,20 @@ func _sort_by_distance_camera_asc(a, b):
 	
 	
 func _on_cursor_3d_transform_changed():
-	prints("set new transform", _gizmoController.get_gizmo().get_cursor_3d().global_transform.origin)
+	var cursor3d = _gizmoController.get_gizmo().get_cursor_3d()
 	var newPosGlobal = _gizmoController.get_gizmo().get_cursor_3d().global_transform.origin	
 	var offsetGlobal = (newPosGlobal - _currentGlobalPosition)
 	var spatial = _gizmoController.get_gizmo().get_spatial_node()
 	var travelDistance = (newPosGlobal - _currentGlobalPosition).length()
+	
+	prints("set new transform", cursor3d.global_transform.origin, cursor3d.scale)
+	
+	
+	# check translate
 	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):
 		# disconnect, to prevent editor to not fire event again before we commit
-		if (_gizmoController.get_gizmo().get_cursor_3d().is_connected("transform_changed", self, "_on_cursor_3d_transform_changed")):
-			_gizmoController.get_gizmo().get_cursor_3d().disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
+		if (cursor3d.is_connected("transform_changed", self, "_on_cursor_3d_transform_changed")):
+			cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
 		
 		var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
 		prints("Current Undo Stack:", undo_redo.get_current_action_name())
@@ -170,13 +175,32 @@ func _on_cursor_3d_transform_changed():
 		
 		_currentGlobalPosition = newPosGlobal
 
-		undo_redo.commit_action()	
+		undo_redo.commit_action()
+		
+	# check scale	
 	pass
 	
 func _get_selected_faces():
 	return _gizmoController.get_gizmo().get_spatial_node().get_mc_mesh().get_faces_selection(
 		get_selection_store().get_store()
 	)
+
+func _rotate_cursor_to_normal(normal: Vector3):
+	var cursor3d = _gizmoController.get_gizmo().get_cursor_3d()	
+	if (normal.angle_to(Vector3.DOWN) == 0):
+		(cursor3d as Spatial).global_transform.basis = Basis(Vector3.RIGHT, Vector3.DOWN, Vector3.FORWARD)
+	elif (normal.angle_to(Vector3.UP) == 0):
+		(cursor3d as Spatial).global_transform.basis = Basis(Vector3.RIGHT, Vector3.UP, Vector3.FORWARD)
+	else:
+		cursor3d.look_at(cursor3d.global_transform.origin + Vector3.UP, -normal)
+		
+func _scale_cursor_to_face(face):
+	var cursor3d = _gizmoController.get_gizmo().get_cursor_3d()
+	var scale_x = max(face.get_edge_length(0), face.get_edge_length(2))
+	var scale_z = max(face.get_edge_length(1), face.get_edge_length(3))
+	var scale_y = 0.1
+	(cursor3d as Spatial).set_scale(Vector3(scale_x * 2, scale_y * 2, scale_z * 2))
+	pass
 	
 func _update_translate_gizmo():
 	var selectedFaces : Array = _get_selected_faces()
@@ -194,6 +218,10 @@ func _update_translate_gizmo():
 		cursor3d.connect("transform_changed", self, "_on_cursor_3d_transform_changed")
 		if (not Input.is_mouse_button_pressed(BUTTON_LEFT)):
 			_gizmoController.get_gizmo().set_cursor_3d(_currentGlobalPosition)
+			# set rot/scale to match face
+			_rotate_cursor_to_normal(lastFace.get_normal())
+			_scale_cursor_to_face(lastFace)
+			
 			_gizmoController.get_gizmo().focus_cursor_3d()
 		_gizmoController.get_gizmo().show_cursor_3d()
 	else:		

@@ -161,6 +161,9 @@ func on_face_property_value_changed(context, value):
 func set_cursor_3d(pos):
 	_cursor3D = get_cursor_3d()
 	_cursor3D.global_transform.origin = pos
+	# resetting scale/rot
+	(_cursor3D.global_transform as Transform).basis = Vector3.ZERO
+	(_cursor3D as Spatial).set_scale(Vector3.ONE)
 	prints("setting cursor to", pos)
 	pass
 
@@ -176,7 +179,7 @@ func get_cursor_3d():
 	if (_cursor3D == null):
 		_cursor3D = Cursor3D.new()
 		_cursor3D.name = "Cursor3D"
-		get_spatial_node().get_parent().add_child(_cursor3D)
+		get_spatial_node().get_node("MC_Editor").add_child(_cursor3D)
 		_cursor3D.set_owner(get_spatial_node().get_owner())
 		# _cursor3D.connect("transform_changed", self, "_on_cursor_3d_transform_changed")
 		_cursor3D.hide()
