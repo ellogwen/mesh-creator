@@ -162,8 +162,8 @@ func set_cursor_3d(pos):
 	_cursor3D = get_cursor_3d()
 	_cursor3D.global_transform.origin = pos
 	# resetting scale/rot
-	(_cursor3D.global_transform as Transform).basis = Vector3.ZERO
-	(_cursor3D as Spatial).set_scale(Vector3.ONE)
+	#(_cursor3D.global_transform as Transform).basis = Vector3.ZERO
+	#(_cursor3D as Spatial).set_scale(Vector3.ONE)
 	prints("setting cursor to", pos)
 	pass
 

@@ -185,6 +185,12 @@ func get_vertex_count() -> int:
 	
 func set_edge(edgeIndex, edgeId):
 	_edges[edgeIndex] = edgeId
+	
+func get_edge_normal(edgeIndex):
+	var a = get_edge_start(edgeIndex)
+	var b = get_edge_end(edgeIndex)
+	var center = (b - a).normalized() * (get_edge_length(0) * 0.5)
+	return (center - get_centroid()).normalized()
 
 # clone leads to all sorts of problems, remove for now
 #func clone(newId = -1) -> MeshCreator_Mesh_Face:
