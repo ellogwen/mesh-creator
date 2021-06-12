@@ -211,12 +211,19 @@ func _on_toolbox_button_create_new_mesh() -> void:
 func _on_generator_create_mesh(generator):
 	if (generator == null):
 		return
+		
 	if (not generator.is_valid()):
 		return
 		
 	var mt = MeshCreator_MeshTools.new()
 	var mci = mt.MeshGenerator_Generate(generator)
-	var root3D = get_editor_interface().get_edited_scene_root()	
+	var root3D = get_editor_interface().get_edited_scene_root()
+	
+	# @todo add spatial for the user if it's missing
+	if (root3D == null):
+		push_error("Cannot create mesh, please add a spatial to the scene root first")
+		return
+		
 	root3D.add_child(mci)
 	mci.set_owner(root3D)
 	mci.SetEditorPlugin(self)

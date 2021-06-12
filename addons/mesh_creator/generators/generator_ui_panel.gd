@@ -1,7 +1,12 @@
 tool
 extends Container
 
+export(bool) var show_create_button = true
+
+signal input_changed
+
 var _generator
+func get_generator(): return _generator
 
 func load_ui(generator: MeshCreator_Generators_MeshGeneratorBase):
 	_generator = generator
@@ -13,11 +18,12 @@ func load_ui(generator: MeshCreator_Generators_MeshGeneratorBase):
 		pass
 	pass
 	
-	var createButton = Button.new()
-	createButton.name = "Create"
-	createButton.set_text("Create")
-	createButton.connect("pressed", self, "_on_ButtonCreate_pressed")
-	add_child(createButton)
+	if (show_create_button):
+		var createButton = Button.new()
+		createButton.name = "Create"
+		createButton.set_text("Create")
+		createButton.connect("pressed", self, "_on_ButtonCreate_pressed")
+		add_child(createButton)
 	
 func _create_attach_int_field(configIndex, label, minVal, maxVal, defaultVal):
 	var labelInput = Label.new()
@@ -40,5 +46,6 @@ func _on_ButtonCreate_pressed():
 	pass
 	
 func _on_input_change(value, inputId):
-	_generator.set_config_value(inputId, value)	
+	_generator.set_config_value(inputId, value)
+	emit_signal("input_changed")
 	pass

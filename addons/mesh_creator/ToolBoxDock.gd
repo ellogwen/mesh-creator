@@ -57,7 +57,7 @@ func _on_Generators_Select(selectionIndex):
 		var panel = preload("res://addons/mesh_creator/generators/generator_ui_panel.tscn").instance()
 		panel.load_ui(MeshCreator_Generators_BoxMeshGenerator.new())
 		panel.name = "Generator_Panel"		
-		$Scroll/ToolsList/Generators.add_child(panel)		
+		$Scroll/ToolsList/Generators.add_child(panel)
 	pass
 
 func _on_CreatorModeChanged():
@@ -68,7 +68,14 @@ func _on_ButtonCreateCube_pressed():
 	emit_signal("button_create_new_mesh")
 	pass
 	
+var generators_window = null
 func _on_ButtonOpenGenerators_pressed():
+	if (generators_window == null):
+		generators_window = preload("res://addons/mesh_creator/generators/GeneratorWindow.tscn").instance()
+		add_child(generators_window)
+		
+	(generators_window as WindowDialog).popup_centered()
+	(generators_window as WindowDialog).set_as_minsize()
 	pass
 	
 func _on_ButtonModeMesh_Toggle(isPressed):
