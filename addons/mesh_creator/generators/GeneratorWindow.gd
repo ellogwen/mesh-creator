@@ -39,3 +39,9 @@ func on_create_button_pressed():
 		MeshCreator_Signals.emit_UI_GENERATOR_GENERATE_MESH(generator)
 		hide()
 	pass
+
+func _on_PreviewRotation_value_changed(value):
+	var rotDeg = int(value)
+	prints(rotDeg, deg2rad(rotDeg))
+	(preview_model as Spatial).set_rotation_degrees(Vector3(0.0, rotDeg, 0.0))
+	pass

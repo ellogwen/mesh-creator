@@ -14,6 +14,7 @@ environment = SubResource( 2 )
 [sub_resource type="CubeMesh" id=4]
 
 [node name="GeneratorWindow" type="WindowDialog"]
+visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -24.0
@@ -87,7 +88,7 @@ size = Vector2( 320, 320 )
 own_world = true
 world = SubResource( 3 )
 handle_input_locally = false
-render_target_update_mode = 0
+render_target_update_mode = 3
 gui_disable_input = true
 
 [node name="PreviewModel" type="MeshInstance" parent="HBoxContainer/VBoxContainer/ModelPreview/Viewport"]
@@ -97,10 +98,18 @@ material/0 = null
 [node name="Camera" type="Camera" parent="HBoxContainer/VBoxContainer/ModelPreview/Viewport"]
 transform = Transform( 1, 0, 0, 0, 0.868008, 0.49655, 0, -0.49655, 0.868008, 0, 2.64343, 4.4364 )
 
-[node name="CreateButton" type="Button" parent="HBoxContainer/VBoxContainer"]
+[node name="PreviewRotation" type="HSlider" parent="HBoxContainer/VBoxContainer"]
 margin_top = 328.0
 margin_right = 320.0
-margin_bottom = 376.0
+margin_bottom = 344.0
+max_value = 360.0
+rounded = true
+ticks_on_borders = true
+
+[node name="CreateButton" type="Button" parent="HBoxContainer/VBoxContainer"]
+margin_top = 352.0
+margin_right = 320.0
+margin_bottom = 400.0
 rect_min_size = Vector2( 0, 48 )
 text = "CREATE"
 __meta__ = {
@@ -108,4 +117,5 @@ __meta__ = {
 }
 
 [connection signal="pressed" from="HBoxContainer/Types/TypeSelectList/BoxButton" to="." method="on_type_select" binds= [ "box" ]]
+[connection signal="value_changed" from="HBoxContainer/VBoxContainer/PreviewRotation" to="." method="_on_PreviewRotation_value_changed"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/CreateButton" to="." method="on_create_button_pressed"]
