@@ -14,7 +14,6 @@ environment = SubResource( 2 )
 [sub_resource type="CubeMesh" id=4]
 
 [node name="GeneratorWindow" type="WindowDialog"]
-visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -24.0
@@ -56,10 +55,17 @@ margin_bottom = 32.0
 rect_min_size = Vector2( 0, 32 )
 text = "Box"
 
-[node name="StairsButton" type="Button" parent="HBoxContainer/Types/TypeSelectList"]
+[node name="PlaneButton" type="Button" parent="HBoxContainer/Types/TypeSelectList"]
 margin_top = 40.0
 margin_right = 240.0
 margin_bottom = 72.0
+rect_min_size = Vector2( 0, 32 )
+text = "Plane"
+
+[node name="StairsButton" type="Button" parent="HBoxContainer/Types/TypeSelectList"]
+margin_top = 80.0
+margin_right = 240.0
+margin_bottom = 112.0
 rect_min_size = Vector2( 0, 32 )
 text = "Stairs"
 
@@ -88,7 +94,7 @@ size = Vector2( 320, 320 )
 own_world = true
 world = SubResource( 3 )
 handle_input_locally = false
-render_target_update_mode = 3
+render_target_update_mode = 0
 gui_disable_input = true
 
 [node name="PreviewModel" type="MeshInstance" parent="HBoxContainer/VBoxContainer/ModelPreview/Viewport"]
@@ -117,5 +123,6 @@ __meta__ = {
 }
 
 [connection signal="pressed" from="HBoxContainer/Types/TypeSelectList/BoxButton" to="." method="on_type_select" binds= [ "box" ]]
+[connection signal="pressed" from="HBoxContainer/Types/TypeSelectList/PlaneButton" to="." method="on_type_select" binds= [ "plane" ]]
 [connection signal="value_changed" from="HBoxContainer/VBoxContainer/PreviewRotation" to="." method="_on_PreviewRotation_value_changed"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/CreateButton" to="." method="on_create_button_pressed"]

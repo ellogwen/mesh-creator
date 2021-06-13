@@ -2,9 +2,14 @@ tool
 extends WindowDialog
 
 var settings_panel_prefab = preload("res://addons/mesh_creator/generators/generator_ui_panel.tscn")
+var preview_mat = null
 
 onready var settings_panel = $HBoxContainer/GeneratorSettings
 onready var preview_model = $HBoxContainer/VBoxContainer/ModelPreview/Viewport/PreviewModel
+
+func _ready():
+	preview_mat = SpatialMaterial.new()
+	preview_mat.flags_unshaded = true
 
 var settings = null
 func on_type_select(type_string):
@@ -16,18 +21,32 @@ func on_type_select(type_string):
 	settings.show_create_button = false
 	settings.name = "Generator_Panel"
 	settings.connect("input_changed", self, "on_settings_input_changed")
-	settings.load_ui(MeshCreator_Generators_BoxMeshGenerator.new())
+	
+	match (type_string):
+		'box':
+			settings.load_ui(MeshCreator_Generators_BoxMeshGenerator.new())
+		'plane':
+			settings.load_ui(MeshCreator_Generators_PlaneMeshGenerator.new())
+		_:
+			settings.load_ui(MeshCreator_Generators_BoxMeshGenerator.new())
+			
 	settings_panel.add_child(settings)
+	on_settings_input_changed()
 	pass
 	
-func on_settings_input_changed():
+	
+func generate_preview():
 	if (settings == null):
 		return
 	var generator = settings.get_generator()
 	if ((generator as MeshCreator_Generators_MeshGeneratorBase).is_valid()):
 		var mt = MeshCreator_MeshTools.new()
 		var mesh = generator.generate(generator.get_config())
-		preview_model.mesh = mt.CreateArrayMeshFromMeshCreatorMeshFaces(mesh.get_faces(), null, null)
+		preview_model.mesh = mt.CreateArrayMeshFromMeshCreatorMeshFaces(mesh.get_faces(), null, preview_mat)
+	
+	
+func on_settings_input_changed():
+	generate_preview()
 	pass
 
 func on_create_button_pressed():
