@@ -57,3 +57,9 @@ func on_gizmo_set_handle(index, camera, screen_point: Vector2):
 	
 func on_gizmo_commit_handle(index, restore, cancel=false):
 	pass
+
+func get_controller_gizmo():
+	return _gizmoController.get_gizmo()
+
+func get_cursor_3d():
+	return _gizmoController.get_gizmo().get_cursor_3d()

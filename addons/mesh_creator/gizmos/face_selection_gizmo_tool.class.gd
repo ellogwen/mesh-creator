@@ -7,7 +7,7 @@ var _startGlobalPosition = Vector3.ZERO
 var _currentGlobalPosition = Vector3.ZERO
 var _startScale = Vector3.ONE
 var _currentScale = Vector3.ONE
-var is_scaling = false
+var _is_scaling = false
 var meshTools = MeshCreator_MeshTools.new()
 
 func get_selection_store():
@@ -30,7 +30,7 @@ func set_active() -> void:
 	
 # cleanup on tool switch
 func set_inactive() -> void:
-	var cursor3d = _gizmoController.get_gizmo().get_cursor_3d()
+	var cursor3d = get_cursor_3d()
 	_gizmoController.get_gizmo().set_cursor_3d(_currentGlobalPosition)
 	cursor3d.set_scale(Vector3.ONE)
 	_startGlobalPosition = Vector3.ZERO
@@ -54,8 +54,8 @@ func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
 		#prints("highlighted?",  cursor.get_gizmo().get_plugin().is_handle_highlighted(0))	
 		
 		if (not event.pressed):
-			if (is_scaling):
-				is_scaling = false
+			if (_is_scaling):
+				_is_scaling = false
 				_scale_cursor_to_face(_get_selected_faces().back())
 					
 		if (_gizmoController.get_gizmo().is_cursor_3d_selected()):
@@ -201,7 +201,7 @@ func _on_cursor_3d_transform_changed():
 		and (abs(offsetScale.z) < 1.0)
 	):
 		prints("scale face", offsetScale)
-		is_scaling = true
+		_is_scaling = true
 		# disconnect, to prevent editor to not fire event again before we commit
 		if (cursor3d.is_connected("transform_changed", self, "_on_cursor_3d_transform_changed")):
 			cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
@@ -260,7 +260,7 @@ func _rotate_cursor_to_face(face):
 	
 		
 func _scale_cursor_to_face(face):
-	if (is_scaling):
+	if (_is_scaling):
 		return
 	if (face == null):
 		return
