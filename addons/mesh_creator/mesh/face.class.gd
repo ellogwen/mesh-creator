@@ -181,7 +181,7 @@ func equals(otherFace: MeshCreator_Mesh_Face) -> bool:
 	return true
 	
 func get_vertex_count() -> int:
-	return _vertices.size()
+	return _vertices.size() 
 	
 func set_edge(edgeIndex, edgeId):
 	_edges[edgeIndex] = edgeId
@@ -189,7 +189,7 @@ func set_edge(edgeIndex, edgeId):
 func get_edge_normal(edgeIndex):
 	var a = get_edge_start(edgeIndex)
 	var b = get_edge_end(edgeIndex)
-	var center = (b - a).normalized() * (get_edge_length(0) * 0.5)
+	var center = a + ((b - a) * 0.5)
 	return (center - get_centroid()).normalized()
 	
 func get_axis_x():

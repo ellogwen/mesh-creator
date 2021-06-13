@@ -170,36 +170,25 @@ func scale_face(faceId: int, by: Vector2 = Vector2.ZERO):
 	var axis_y = face.get_axis_y()
 	var face_center = face.get_centroid()
 	
-	prints("Scale Face", by)
+	prints("Scale Face", by, axis_x, axis_y)
 	
 	for vtx in face.get_vertices():
 		var vtx_pos = (vtx as MeshCreator_Mesh_Vertex).get_position()
-		var dir_x = (vtx_pos + axis_x).normalized()
-		var dir_y = (vtx_pos + axis_y).normalized()
-			
-		var CA = (vtx_pos - face_center)
+		var CV = (vtx_pos - face_center)
+		var aX = axis_x
+		var aY = axis_y
+		
+		if (CV.dot(axis_x) < 0):
+			aX = -aX
+		
+		if (CV.dot(axis_y) < 0):
+			aY = -aY
+		
+		var newPos = vtx_pos + (aX * by.x) + (aY * by.y)
+		var offset = (newPos - vtx_pos)
 				
-		var offset = Vector3(
-			(dir_x * by.x).length(),
-			(dir_y * by.y).length(),
-			0.0
-		)
-		
-		if (by.x < 0.0):
-			offset.x = -offset.x
-			
-		if (by.y < 0.0):
-			offset.y = -offset.y
-		
-		if (CA.dot(axis_x) < 0.0):
-			offset.x = -offset.x
-		
-		if (CA.dot(axis_y) < 0.0):
-			offset.y = -offset.y
-		
 		#@todo prevent collapsing and overshooting
-		prints("VTX got translated by", offset)
-		
+		prints("VTX got translated by", vtx_pos, offset)
 		translate_vertex(vtx.get_mesh_index(), offset)
 		
 	pass
