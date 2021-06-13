@@ -54,13 +54,13 @@ func CreateArrayMeshFromMeshCreatorMeshFaces(facesArray, mesh = null, material =
 				Cuv = Vector2(tri.get_c().x + 0.5, tri.get_c().y + 0.5)
 
 			uv_array.append(Auv)
-			normal_array.append(tri.get_normal())
+			normal_array.append(-tri.get_normal())
 			vertex_array.append(tri.get_a())
 			uv_array.append(Buv)
-			normal_array.append(tri.get_normal())
+			normal_array.append(-tri.get_normal())
 			vertex_array.append(tri.get_b())
 			uv_array.append(Cuv)
-			normal_array.append(tri.get_normal())
+			normal_array.append(-tri.get_normal())
 			vertex_array.append(tri.get_c())			
 			pass
 		pass

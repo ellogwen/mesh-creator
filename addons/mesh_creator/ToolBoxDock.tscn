@@ -50,9 +50,10 @@ text = "Open Generators"
 [node name="Generators" type="GridContainer" parent="Scroll/ToolsList"]
 margin_top = 59.0
 margin_right = 219.0
-margin_bottom = 79.0
+margin_bottom = 59.0
 
 [node name="OptionButton" type="OptionButton" parent="Scroll/ToolsList/Generators"]
+visible = false
 margin_right = 68.0
 margin_bottom = 20.0
 text = "Select"
@@ -61,23 +62,23 @@ items = [ "Select", null, false, 0, null, "Box", null, false, 1, null ]
 selected = 0
 
 [node name="HSeparator" type="HSeparator" parent="Scroll/ToolsList"]
-margin_top = 83.0
+margin_top = 63.0
 margin_right = 219.0
-margin_bottom = 87.0
+margin_bottom = 67.0
 
 [node name="Label_Mode" type="Label" parent="Scroll/ToolsList"]
-margin_top = 91.0
+margin_top = 71.0
 margin_right = 219.0
-margin_bottom = 122.0
+margin_bottom = 102.0
 custom_styles/normal = SubResource( 2 )
 text = "
 MODE"
 align = 1
 
 [node name="ModesButtons" type="GridContainer" parent="Scroll/ToolsList"]
-margin_top = 126.0
+margin_top = 106.0
 margin_right = 219.0
-margin_bottom = 148.0
+margin_bottom = 128.0
 columns = 4
 
 [node name="Button_ModeMesh" type="ToolButton" parent="Scroll/ToolsList/ModesButtons"]
@@ -108,59 +109,60 @@ toggle_mode = true
 text = "FACE"
 
 [node name="Label_Tools" type="Label" parent="Scroll/ToolsList"]
-margin_top = 152.0
+margin_top = 132.0
 margin_right = 219.0
-margin_bottom = 183.0
+margin_bottom = 163.0
 custom_styles/normal = SubResource( 2 )
 text = "
 TOOLS"
 align = 1
 
 [node name="ToolsButtons" type="GridContainer" parent="Scroll/ToolsList"]
-margin_top = 187.0
+margin_top = 167.0
 margin_right = 219.0
-margin_bottom = 255.0
+margin_bottom = 211.0
 columns = 3
 
 [node name="Button_ToolSelect" type="Button" parent="Scroll/ToolsList/ToolsButtons"]
-margin_right = 63.0
+margin_right = 51.0
 margin_bottom = 20.0
 text = "Select"
 
 [node name="Button_ToolMove" type="Button" parent="Scroll/ToolsList/ToolsButtons"]
+visible = false
 margin_left = 67.0
 margin_right = 114.0
 margin_bottom = 20.0
 text = "Move"
 
 [node name="Button_ToolScale" type="Button" parent="Scroll/ToolsList/ToolsButtons"]
-margin_left = 118.0
-margin_right = 182.0
+margin_left = 55.0
+margin_right = 119.0
 margin_bottom = 20.0
 text = "Scale"
 
 [node name="Button_ToolExtrude" type="Button" parent="Scroll/ToolsList/ToolsButtons"]
-margin_top = 24.0
-margin_right = 63.0
-margin_bottom = 44.0
+margin_left = 123.0
+margin_right = 186.0
+margin_bottom = 20.0
 text = "Extrude"
 
 [node name="Button_ToolInset" type="Button" parent="Scroll/ToolsList/ToolsButtons"]
-margin_left = 67.0
 margin_top = 24.0
-margin_right = 114.0
+margin_right = 51.0
 margin_bottom = 44.0
 text = "Inset"
 
 [node name="Button_ToolRemove" type="Button" parent="Scroll/ToolsList/ToolsButtons"]
-margin_left = 118.0
+margin_left = 55.0
 margin_top = 24.0
-margin_right = 182.0
+margin_right = 119.0
 margin_bottom = 44.0
 text = "Remove"
 
 [node name="Button_ToolLoopcut" type="Button" parent="Scroll/ToolsList/ToolsButtons"]
-margin_top = 48.0
-margin_right = 63.0
-margin_bottom = 68.0
+margin_left = 123.0
+margin_top = 24.0
+margin_right = 186.0
+margin_bottom = 44.0
 text = "Loopcut"
