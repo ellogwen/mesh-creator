@@ -172,6 +172,12 @@ func scale_face(faceId: int, by: Vector2 = Vector2.ZERO):
 	
 	prints("Scale Face", by, axis_x, axis_y)
 	
+	# prevent scaling if any edge is below a certain point
+	if (by.x < 0.0 or by.y < 0.0):
+		for eI in range(face.get_edges().size()):
+			if (face.get_edge_length(eI) / 2 < max(abs(by.x), abs(by.y))):
+				return
+	
 	for vtx in face.get_vertices():
 		var vtx_pos = (vtx as MeshCreator_Mesh_Vertex).get_position()
 		var CV = (vtx_pos - face_center)
@@ -185,10 +191,11 @@ func scale_face(faceId: int, by: Vector2 = Vector2.ZERO):
 			aY = -aY
 		
 		var newPos = vtx_pos + (aX * by.x) + (aY * by.y)
+		
 		var offset = (newPos - vtx_pos)
 				
 		#@todo prevent collapsing and overshooting
-		prints("VTX got translated by", vtx_pos, offset)
+		
 		translate_vertex(vtx.get_mesh_index(), offset)
 		
 	pass

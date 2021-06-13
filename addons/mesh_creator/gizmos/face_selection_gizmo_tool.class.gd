@@ -145,9 +145,9 @@ func _on_cursor_3d_transform_changed():
 	var newPosGlobal = _gizmoController.get_gizmo().get_cursor_3d().global_transform.origin	
 	var offsetGlobal = (newPosGlobal - _currentGlobalPosition)
 	var offsetScale =  Vector3(
-		cursor3d.get_scale().x - _currentScale.x,
-		cursor3d.get_scale().y - _currentScale.y,
-		cursor3d.get_scale().z - _currentScale.z
+		max(0.0, cursor3d.get_scale().x) - max(0.0, _currentScale.x),
+		max(0.0, cursor3d.get_scale().y) - max(0.0, _currentScale.y),
+		max(0.0, cursor3d.get_scale().z) - max(0.0, _currentScale.z)
 	)
 	var spatial = _gizmoController.get_gizmo().get_spatial_node()
 	var travelDistance = (newPosGlobal - _currentGlobalPosition).length()
@@ -194,7 +194,12 @@ func _on_cursor_3d_transform_changed():
 		return
 		
 	# check scale
-	if (abs(offsetScale.x) > 0.1 or abs(offsetScale.y) > 0.1 or abs(offsetScale.z) > 0.1):
+	if (
+		(abs(offsetScale.x) > 0.1 or abs(offsetScale.y) > 0.1 or abs(offsetScale.z) > 0.1)
+		and (abs(offsetScale.x) < 1.0)
+		and (abs(offsetScale.y) < 1.0)
+		and (abs(offsetScale.z) < 1.0)
+	):
 		prints("scale face", offsetScale)
 		is_scaling = true
 		# disconnect, to prevent editor to not fire event again before we commit
@@ -251,7 +256,7 @@ func _rotate_cursor_to_face(face):
 	#cursor3d.rotate(x_normal.cross(basis.x).normalized(),basis.x.angle_to(x_normal))
 	#cursor3d.rotate(y_normal.cross(basis.y).normalized(),basis.y.angle_to(y_normal))
 	#cursor3d.rotate(z_normal.cross(basis.z).normalized(),basis.z.angle_to(z_normal))
-	(cursor3d as Spatial).rotate(basis.z.normalized(), basis.x.angle_to(y_normal) - PI/2)
+	(cursor3d as Spatial).rotate(basis.z.normalized(), basis.x.angle_to(y_normal))
 	
 		
 func _scale_cursor_to_face(face):
@@ -280,8 +285,15 @@ func _update_translate_gizmo():
 		var lastFace = selectedFaces.back()
 		_startGlobalPosition = spatial.to_global(lastFace.get_centroid())
 		_currentGlobalPosition = _startGlobalPosition
+			
 		_startScale = cursor3d.get_scale()
+		
+		_startScale.x = max(0.0, _startScale.x)
+		_startScale.y = max(0.0, _startScale.y)
+		_startScale.z = max(0.0, _startScale.z)
+		
 		_currentScale = _startScale
+		
 		if cursor3d.is_connected("transform_changed", self, "_on_cursor_3d_transform_changed"):
 			cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
 		
