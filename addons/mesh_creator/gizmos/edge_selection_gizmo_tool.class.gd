@@ -46,21 +46,20 @@ func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
 		if (_gizmoController.get_gizmo().is_cursor_3d_selected()):
 			return false
 			
-	if (event.get_button_index() == BUTTON_RIGHT):
+	if (event.get_button_index() == BUTTON_RIGHT and not event.pressed):
 		var mci = _gizmoController.get_gizmo().get_spatial_node()			
 		var clickedEdgeIds = _get_clicked_on_edges_ids_sorted_by_cam_distance(event.get_position(), camera)
-		if (clickedEdgeIds.size() > 0):
-			if (not event.pressed):
-				prints("clicked on edge ", clickedEdgeIds[0])
-				if get_selection_store().is_selected(clickedEdgeIds[0]):
-					get_selection_store().remove_from_selection(clickedEdgeIds[0])
-				else:
-					# only support on edge for now. @todo fix this later when cleaned up structure				
-					get_selection_store().clear()
-					###########
-					get_selection_store().add_to_selection(clickedEdgeIds[0])
-				_gizmoController.call_deferred("request_redraw")
-				return true # handled the click
+		if (clickedEdgeIds.size() > 0):			
+			prints("clicked on edge ", clickedEdgeIds[0])
+			if get_selection_store().is_selected(clickedEdgeIds[0]):
+				get_selection_store().remove_from_selection(clickedEdgeIds[0])
+			else:
+				# only support on edge for now. @todo fix this later when cleaned up structure				
+				get_selection_store().clear()
+				###########
+				get_selection_store().add_to_selection(clickedEdgeIds[0])
+			_gizmoController.call_deferred("request_redraw")
+			return true # handled the click
 				
 	#if (event.get_button_index() == BUTTON_RIGHT and event.pressed):		
 	#	if (not get_selection_store().is_empty()):
