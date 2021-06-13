@@ -7,6 +7,7 @@ var _startGlobalPosition = Vector3.ZERO
 var _currentGlobalPosition = Vector3.ZERO
 var _startScale = Vector3.ONE
 var _currentScale = Vector3.ONE
+var is_scaling = false
 var meshTools = MeshCreator_MeshTools.new()
 
 func get_selection_store():
@@ -52,6 +53,10 @@ func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
 		#cursor.get_gizmo().set_hidden(true)
 		#prints("highlighted?",  cursor.get_gizmo().get_plugin().is_handle_highlighted(0))	
 		
+		if (not event.pressed):
+			if (is_scaling):
+				is_scaling = false
+				_scale_cursor_to_face(_get_selected_faces().back())
 					
 		if (_gizmoController.get_gizmo().is_cursor_3d_selected()):
 			#prints(Input.get_last_mouse_speed().length_squared())
@@ -148,8 +153,7 @@ func _on_cursor_3d_transform_changed():
 	var travelDistance = (newPosGlobal - _currentGlobalPosition).length()
 	
 	prints("set new transform", cursor3d.global_transform.origin, cursor3d.scale)
-	
-	
+		
 	# check translate
 	if ((travelDistance > 0.1 or travelDistance < -0.1) and abs(travelDistance) < 10):
 		# disconnect, to prevent editor to not fire event again before we commit
@@ -181,37 +185,52 @@ func _on_cursor_3d_transform_changed():
 		
 		#_gizmoController.request_redraw()
 		undo_redo.add_do_method(_gizmoController, "request_redraw")
-		undo_redo.add_undo_method(_gizmoController, "request_redraw")	
+		undo_redo.add_undo_method(_gizmoController, "request_redraw")
 		
 		_currentGlobalPosition = newPosGlobal
-
+		_currentScale = cursor3d.get_scale()
+		
 		undo_redo.commit_action()
 		return
 		
 	# check scale
 	if (abs(offsetScale.x) > 0.1 or abs(offsetScale.y) > 0.1 or abs(offsetScale.z) > 0.1):
 		prints("scale face", offsetScale)
+		is_scaling = true
 		# disconnect, to prevent editor to not fire event again before we commit
 		if (cursor3d.is_connected("transform_changed", self, "_on_cursor_3d_transform_changed")):
 			cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
 		
 		var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()		
-		undo_redo.create_action("Translate Face")
+		undo_redo.create_action("Scale Face")
+		
+		# z scales both axis at once, combine
+		var offset = Vector2(
+			offsetScale.x + offsetScale.z,
+			offsetScale.y + offsetScale.z
+		)
+		
+		for face in _get_selected_faces():
+			undo_redo.add_do_method(spatial.get_mc_mesh(), "scale_face", face.get_mesh_index(), offset)
+			undo_redo.add_undo_method(spatial.get_mc_mesh(), "scale_face", face.get_mesh_index(), -offset)
 		
 		# both axis
-		for face in _get_selected_faces():
-			for vtx in face.get_vertices():
-				var vtx_center_dist = (vtx.get_position() - face.get_centroid())
-				if (vtx_center_dist.length() > abs(offsetScale.y)):
-					var step = vtx_center_dist.normalized() * offsetScale.y
-					undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), step)
-					undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), -step)
+		#for face in _get_selected_faces():
+		#	for vtx in face.get_vertices():
+		#		var vtx_center_dist = (vtx.get_position() - face.get_centroid())
+		#		if (vtx_center_dist.length() > abs(offsetScale.y)):
+		#			var step = vtx_center_dist.normalized() * offsetScale.y
+		#			undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), step)
+		#			undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", vtx.get_mesh_index(), -step)
 				
 		undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
 		undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)
 		undo_redo.add_do_method(_gizmoController, "request_redraw")
 		undo_redo.add_undo_method(_gizmoController, "request_redraw")
+		
+		_currentGlobalPosition = newPosGlobal
 		_currentScale = cursor3d.get_scale()
+		
 		undo_redo.commit_action()
 		return
 	pass
@@ -228,13 +247,18 @@ func _rotate_cursor_to_face(face):
 	var z_normal = face.get_edge_normal(1)
 	
 	cursor3d.look_at(cursor3d.global_transform.origin + y_normal, z_normal)
-	#var basis = Basis(cursor3d.global_transform.basis)
+	var basis = Basis(cursor3d.global_transform.basis)
 	#cursor3d.rotate(x_normal.cross(basis.x).normalized(),basis.x.angle_to(x_normal))
 	#cursor3d.rotate(y_normal.cross(basis.y).normalized(),basis.y.angle_to(y_normal))
 	#cursor3d.rotate(z_normal.cross(basis.z).normalized(),basis.z.angle_to(z_normal))
+	(cursor3d as Spatial).rotate(basis.z.normalized(), basis.x.angle_to(y_normal) - PI/2)
 	
 		
 func _scale_cursor_to_face(face):
+	if (is_scaling):
+		return
+	if (face == null):
+		return
 	var cursor3d = _gizmoController.get_gizmo().get_cursor_3d()
 	var scale_x = max(face.get_edge_length(0), face.get_edge_length(2))
 	var scale_y = max(face.get_edge_length(1), face.get_edge_length(3))

@@ -191,6 +191,15 @@ func get_edge_normal(edgeIndex):
 	var b = get_edge_end(edgeIndex)
 	var center = (b - a).normalized() * (get_edge_length(0) * 0.5)
 	return (center - get_centroid()).normalized()
+	
+func get_axis_x():
+	return get_edge_normal(0)
+	
+func get_axis_y():
+	return (get_axis_x().cross(get_axis_z())).normalized()
+	
+func get_axis_z():
+	return get_normal()
 
 # clone leads to all sorts of problems, remove for now
 #func clone(newId = -1) -> MeshCreator_Mesh_Face:

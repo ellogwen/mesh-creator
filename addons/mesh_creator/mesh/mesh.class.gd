@@ -163,6 +163,46 @@ func remove_vertex(vtxId: int):
 	_vertices.remove(vtxId)
 	# index
 	#_nextVerticesIndex -= 1
+	
+func scale_face(faceId: int, by: Vector2 = Vector2.ZERO):
+	var face = get_face(faceId)
+	var axis_x = face.get_axis_x()
+	var axis_y = face.get_axis_y()
+	var face_center = face.get_centroid()
+	
+	prints("Scale Face", by)
+	
+	for vtx in face.get_vertices():
+		var vtx_pos = (vtx as MeshCreator_Mesh_Vertex).get_position()
+		var dir_x = (vtx_pos + axis_x).normalized()
+		var dir_y = (vtx_pos + axis_y).normalized()
+			
+		var CA = (vtx_pos - face_center)
+				
+		var offset = Vector3(
+			(dir_x * by.x).length(),
+			(dir_y * by.y).length(),
+			0.0
+		)
+		
+		if (by.x < 0.0):
+			offset.x = -offset.x
+			
+		if (by.y < 0.0):
+			offset.y = -offset.y
+		
+		if (CA.dot(axis_x) < 0.0):
+			offset.x = -offset.x
+		
+		if (CA.dot(axis_y) < 0.0):
+			offset.y = -offset.y
+		
+		#@todo prevent collapsing and overshooting
+		prints("VTX got translated by", offset)
+		
+		translate_vertex(vtx.get_mesh_index(), offset)
+		
+	pass
 
 # @todo does this only work with convex faces?		
 func extrude_face(faceId: int):
