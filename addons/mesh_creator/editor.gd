@@ -43,8 +43,12 @@ func _enter_tree() -> void:
 	uiEdgeProperties = UIEdgeProperties.instance()
 	uiFaceProperties.hide()
 	uiEdgeProperties.hide()
+	toolbarButton = UIToolbarButton.instance()
+	toolbarButton.get_popup().connect("id_pressed", self, "on_toolbar_id_pressed")
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
-	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)	
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbarButton)
+	
 	_create_radial_menu()
 	print("[Mesh Creator] Ready to take off!")
 
@@ -57,6 +61,7 @@ func _exit_tree() -> void:
 	remove_autoload_singleton("MeshCreator_Indicator")
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
+	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbarButton)
 	uiFaceProperties.queue_free()	
 	uiEdgeProperties.queue_free()
 	_remove_radial_menu()
@@ -105,6 +110,7 @@ func make_visible(visible):
 
 var __Debug_Pos3D
 var toolBoxDock
+var toolbarButton
 var current_editor_context = null
 var MeshCreatorInstance = preload("res://addons/mesh_creator/MeshCreatorInstance.gd")
 var MeshCreatorGizmoPlugin = preload("res://addons/mesh_creator/MeshCreatorGizmoPlugin.gd")
@@ -112,6 +118,7 @@ var meshCreatorGizmoPlugin = MeshCreatorGizmoPlugin.new()
 var SelectionMode = SelectionModes.VERTEX
 var UIFaceProperties = preload("res://addons/mesh_creator/ui/FaceProperties.tscn")
 var UIEdgeProperties = preload("res://addons/mesh_creator/ui/EdgeProperties.tscn")
+var UIToolbarButton = preload("res://addons/mesh_creator/ui/ToolbarMenu.tscn")
 var uiFaceProperties: Panel	
 var uiEdgeProperties: Panel	
 
@@ -229,3 +236,12 @@ func _on_generator_create_mesh(generator):
 	mci.SetEditorPlugin(self)
 	get_editor_interface().get_selection().clear()
 	get_editor_interface().get_selection().add_node(mci)
+
+func on_toolbar_id_pressed(id):
+	match (id):
+		100: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(0) # dark
+		101: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(1) # light
+		102: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(2) # red
+		103: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(3) # green
+		104: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(4) # purple
+		105: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(5) # orange

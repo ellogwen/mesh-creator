@@ -82,3 +82,41 @@ func _on_editorplugin_mode_changed():
 	if (_editorIndicator != null):
 		_editorIndicator.UpdateDraw()
 	pass
+	
+func set_texture_id(texture_id):
+	match (texture_id):
+		# dark
+		0: 
+			var mat = DEFAULT_MATERIAL.duplicate()
+			mat.albedo_texture = preload("res://addons/mesh_creator/materials/kenney_prototype/Dark/texture_13.png")
+			(mesh as ArrayMesh).surface_set_material(0, mat)
+		# light
+		1: 
+			var mat = DEFAULT_MATERIAL.duplicate()
+			mat.albedo_texture = preload("res://addons/mesh_creator/materials/kenney_prototype/Light/texture_12.png")
+			(mesh as ArrayMesh).surface_set_material(0, mat)
+			
+		# green
+		2: 
+			var mat = DEFAULT_MATERIAL.duplicate()
+			mat.albedo_texture = preload("res://addons/mesh_creator/materials/kenney_prototype/Green/texture_01.png")
+			(mesh as ArrayMesh).surface_set_material(0, mat)
+			
+		# red
+		3: 
+			var mat = DEFAULT_MATERIAL.duplicate()
+			mat.albedo_texture = preload("res://addons/mesh_creator/materials/kenney_prototype/Red/texture_01.png")
+			(mesh as ArrayMesh).surface_set_material(0, mat)
+			
+		# purple
+		4: 
+			var mat = DEFAULT_MATERIAL.duplicate()
+			mat.albedo_texture = preload("res://addons/mesh_creator/materials/kenney_prototype/Purple/texture_01.png")
+			(mesh as ArrayMesh).surface_set_material(0, mat)
+			
+		# orange
+		5: 
+			var mat = DEFAULT_MATERIAL.duplicate()
+			mat.albedo_texture = preload("res://addons/mesh_creator/materials/kenney_prototype/Orange/texture_01.png")
+			(mesh as ArrayMesh).surface_set_material(0, mat)
+			

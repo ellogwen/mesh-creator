@@ -51,6 +51,7 @@ func setup(plugin):
 	_vertexModeGizmoController.setup(plugin)
 	_edgeModeGizmoController.setup(plugin)
 	_faceModeGizmoController.setup(plugin)
+	MeshCreator_Signals.connect("UI_MESH_CHANGE_TEXTURE", self, "on_ui_mesh_change_texture")
 	pass
 	
 func _add_editor_helper():
@@ -313,3 +314,10 @@ func forward_editor_key_input(event, camera) -> bool:
 	if (_active_gizmo_controller != null):
 		return _active_gizmo_controller.gizmo_forward_key_input(event, camera)
 	return false
+	
+func on_ui_mesh_change_texture(texture_id):
+	if (get_plugin().get_creator().SelectionMode == 0):
+		if (is_mci_selected()):
+			var spatial = get_spatial_node()
+			if (spatial != null and spatial.has_method("set_texture_id")):
+				spatial.set_texture_id(texture_id)

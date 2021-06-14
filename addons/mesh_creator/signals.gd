@@ -22,3 +22,7 @@ signal UI_VIEWPORT_MOUSE_BUTTON
 func emit_UI_VIEWPORT_MOUSE_BUTTON(event, camera):
 	emit_signal("UI_VIEWPORT_MOUSE_BUTTON", event, camera)
 	
+signal UI_MESH_CHANGE_TEXTURE(texture_id)
+func emit_UI_MESH_CHANGE_TEXTURE(texture_id):
+	emit_signal("UI_MESH_CHANGE_TEXTURE", texture_id)
+	
