@@ -124,5 +124,6 @@ __meta__ = {
 
 [connection signal="pressed" from="HBoxContainer/Types/TypeSelectList/BoxButton" to="." method="on_type_select" binds= [ "box" ]]
 [connection signal="pressed" from="HBoxContainer/Types/TypeSelectList/PlaneButton" to="." method="on_type_select" binds= [ "plane" ]]
+[connection signal="pressed" from="HBoxContainer/Types/TypeSelectList/StairsButton" to="." method="on_type_select" binds= [ "stairs" ]]
 [connection signal="value_changed" from="HBoxContainer/VBoxContainer/PreviewRotation" to="." method="_on_PreviewRotation_value_changed"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/CreateButton" to="." method="on_create_button_pressed"]

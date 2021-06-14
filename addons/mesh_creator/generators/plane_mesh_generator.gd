@@ -51,7 +51,7 @@ func generate(configValues: Array) -> MeshCreator_Mesh_Mesh:
 	
 	var width = float(configValues[0]['value'])
 	var depth = float(configValues[1]['value'])
-	var columns = float(configValues[2]['value'])
+	var columns = int(configValues[2]['value'])
 	var rows = int(configValues[3]['value'])
 	var cutSize = Vector3(width / float((columns + 1)), 0.0, depth / float((rows + 1)))
 	var halfCut = Vector3(cutSize.x / 2.0, cutSize.y / 2.0, cutSize.z / 2.0)

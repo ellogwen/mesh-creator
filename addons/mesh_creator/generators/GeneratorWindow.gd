@@ -27,6 +27,8 @@ func on_type_select(type_string):
 			settings.load_ui(MeshCreator_Generators_BoxMeshGenerator.new())
 		'plane':
 			settings.load_ui(MeshCreator_Generators_PlaneMeshGenerator.new())
+		'stairs':
+			settings.load_ui(MeshCreator_Generators_StairsMeshGenerator.new())
 		_:
 			settings.load_ui(MeshCreator_Generators_BoxMeshGenerator.new())
 			

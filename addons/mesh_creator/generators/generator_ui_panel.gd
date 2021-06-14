@@ -14,7 +14,9 @@ func load_ui(generator: MeshCreator_Generators_MeshGeneratorBase):
 	for i in range(0, fields.size()):
 		var field = fields[i]
 		match (field.type):
+			"label": _create_attach_input_label(i, field.label)
 			"int": _create_attach_int_field(i, field.label, field.minValue, field.maxValue, field.default)
+			"float": _create_attach_float_field(i, field.label, field.minValue, field.maxValue, field.default, field.stepSize)
 		pass
 	pass
 	
@@ -26,10 +28,7 @@ func load_ui(generator: MeshCreator_Generators_MeshGeneratorBase):
 		add_child(createButton)
 	
 func _create_attach_int_field(configIndex, label, minVal, maxVal, defaultVal):
-	var labelInput = Label.new()
-	labelInput.name = "label_" + str(configIndex)
-	labelInput.set_text(label)
-	add_child(labelInput)
+	_create_attach_input_label(configIndex, label)
 	
 	var input = SpinBox.new()
 	input.name = "input_" + str(configIndex)
@@ -40,6 +39,24 @@ func _create_attach_int_field(configIndex, label, minVal, maxVal, defaultVal):
 	input.connect("value_changed", self, "_on_input_change", [configIndex])
 	add_child(input)
 	pass
+	
+func _create_attach_float_field(configIndex, label, minVal, maxVal, defaultVal, stepSize):
+	_create_attach_input_label(configIndex, label)
+	
+	var input = SpinBox.new()
+	input.name = "input_" + str(configIndex)
+	input.set_min(minVal)
+	input.set_max(maxVal)
+	input.set_step(stepSize)
+	input.set_value(defaultVal)
+	input.connect("value_changed", self, "_on_input_change", [configIndex])
+	add_child(input)
+	
+func _create_attach_input_label(configIndex, text):
+	var labelInput = Label.new()
+	labelInput.name = "label_" + str(configIndex)
+	labelInput.set_text(text)
+	add_child(labelInput)
 	
 func _on_ButtonCreate_pressed():
 	MeshCreator_Signals.emit_UI_GENERATOR_GENERATE_MESH(_generator)

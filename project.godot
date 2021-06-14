@@ -24,6 +24,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/mesh_creator/generators/plane_mesh_generator.gd"
 }, {
+"base": "MeshCreator_Generators_MeshGeneratorBase",
+"class": "MeshCreator_Generators_StairsMeshGenerator",
+"language": "GDScript",
+"path": "res://addons/mesh_creator/generators/stairs_mesh_generator.gd"
+}, {
 "base": "Reference",
 "class": "MeshCreator_Gizmos_BaseGizmoTool",
 "language": "GDScript",
@@ -138,6 +143,7 @@ _global_script_class_icons={
 "MeshCreator_Generators_BoxMeshGenerator": "",
 "MeshCreator_Generators_MeshGeneratorBase": "",
 "MeshCreator_Generators_PlaneMeshGenerator": "",
+"MeshCreator_Generators_StairsMeshGenerator": "",
 "MeshCreator_Gizmos_BaseGizmoTool": "",
 "MeshCreator_Gizmos_BaseModeGizmoController": "",
 "MeshCreator_Gizmos_EdgeModeGizmoController": "",
