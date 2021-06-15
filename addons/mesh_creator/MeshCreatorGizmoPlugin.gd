@@ -47,6 +47,7 @@ func create_gizmo(spatial):
 			gizmo.setup(self)
 			spatial.set_mc_gizmo(gizmo)
 			_meshCreatorGizmos.push_back(gizmo)
+			gizmo.set_spatial_node(spatial)
 		return spatial.get_mc_gizmo()
 	return null
 		
@@ -90,6 +91,7 @@ func get_edge_properties_panel():
 	
 func on_editor_handles(obj):
 	for g in _meshCreatorGizmos:
+		prints(g.get_spatial_node(), obj)
 		if (g.get_spatial_node() == obj):
 			g.is_getting_handled = true
 		else:

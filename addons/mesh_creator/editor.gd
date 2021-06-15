@@ -207,6 +207,9 @@ func _on_toolbox_button_create_new_mesh() -> void:
 	mci.set_owner(root3D)
 	mci.SetEditorPlugin(self)
 	
+	if (meshCreatorGizmoPlugin != null):
+		meshCreatorGizmoPlugin.create_gizmo(mci)
+	
 	get_editor_interface().get_selection().clear()
 	get_editor_interface().get_selection().add_node(mci)
 	get_editor_interface().edit_node(mci) # this hopefully triggers plugin ecosystem callbacks like make_visible
@@ -232,6 +235,10 @@ func _on_generator_create_mesh(generator):
 	root3D.add_child(mci)
 	mci.set_owner(root3D)
 	mci.SetEditorPlugin(self)
+	
+	if (meshCreatorGizmoPlugin != null):
+		meshCreatorGizmoPlugin.create_gizmo(mci)
+		
 	get_editor_interface().get_selection().clear()
 	get_editor_interface().get_selection().add_node(mci)
 	get_editor_interface().edit_node(mci) # this hopefully triggers plugin ecosystem callbacks like make_visible
