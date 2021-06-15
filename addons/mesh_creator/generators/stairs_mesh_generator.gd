@@ -59,56 +59,58 @@ func generate(configValues: Array) -> MeshCreator_Mesh_Mesh:
 	var half_width = width / 2.0
 	var half_step_depth = step_depth / 2.0
 	
+	var offset_pivot = Vector3(0.0, 0.0, (((steps - 1) * step_depth) * 0.5))
+	
 	for s in range(steps):
 			
 		# actual step
 		
 		# top
 		if true:
-			var a = Vector3(-half_width, (s * step_height) + step_height, -half_step_depth - (s * step_depth))
-			var b = Vector3(half_width, (s * step_height) + step_height, -half_step_depth - (s * step_depth))
-			var c = Vector3(half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth))
-			var d = Vector3(-half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth))
+			var a = Vector3(-half_width, (s * step_height) + step_height, -half_step_depth - (s * step_depth)) + offset_pivot
+			var b = Vector3(half_width, (s * step_height) + step_height, -half_step_depth - (s * step_depth)) + offset_pivot
+			var c = Vector3(half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth)) + offset_pivot
+			var d = Vector3(-half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth)) + offset_pivot
 			stairsMesh.add_face_from_points(PoolVector3Array([a, b, c, d]))	
 			
 		# right
 		if true:
-			var a = Vector3(half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth))
-			var b = Vector3(half_width, (s * step_height) + step_height, -half_step_depth - (s * step_depth))
-			var c = Vector3(half_width, 0.0, -half_step_depth - (s * step_depth))
-			var d = Vector3(half_width, 0.0, half_step_depth - (s * step_depth))
+			var a = Vector3(half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth)) + offset_pivot
+			var b = Vector3(half_width, (s * step_height) + step_height, -half_step_depth - (s * step_depth)) + offset_pivot
+			var c = Vector3(half_width, 0.0, -half_step_depth - (s * step_depth)) + offset_pivot
+			var d = Vector3(half_width, 0.0, half_step_depth - (s * step_depth)) + offset_pivot
 			stairsMesh.add_face_from_points(PoolVector3Array([a, b, c, d]))	
 		
 		# left
 		if true:
-			var a = Vector3(-half_width, (s * step_height) + step_height, -half_step_depth - (s * step_depth))
-			var b = Vector3(-half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth))
-			var c = Vector3(-half_width, 0.0, half_step_depth - (s * step_depth))
-			var d = Vector3(-half_width, 0.0, -half_step_depth - (s * step_depth))
+			var a = Vector3(-half_width, (s * step_height) + step_height, -half_step_depth - (s * step_depth)) + offset_pivot
+			var b = Vector3(-half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth)) + offset_pivot
+			var c = Vector3(-half_width, 0.0, half_step_depth - (s * step_depth)) + offset_pivot
+			var d = Vector3(-half_width, 0.0, -half_step_depth - (s * step_depth)) + offset_pivot
 			stairsMesh.add_face_from_points(PoolVector3Array([a, b, c, d]))	
 		
 		# front
 		if true:
-			var a = Vector3(-half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth))
-			var b = Vector3(half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth))
-			var c = Vector3(half_width, (s * step_height), half_step_depth - (s * step_depth))
-			var d = Vector3(-half_width, (s * step_height), half_step_depth - (s * step_depth))
-			stairsMesh.add_face_from_points(PoolVector3Array([a, b, c, d]))	
+			var a = Vector3(-half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth)) + offset_pivot
+			var b = Vector3(half_width, (s * step_height) + step_height, half_step_depth - (s * step_depth)) + offset_pivot
+			var c = Vector3(half_width, (s * step_height), half_step_depth - (s * step_depth)) + offset_pivot
+			var d = Vector3(-half_width, (s * step_height), half_step_depth - (s * step_depth)) + offset_pivot
+			stairsMesh.add_face_from_points(PoolVector3Array([a, b, c, d]))
 			
 	# closing bottom
 	if true:
-		var a = Vector3(-half_width, 0.0, +half_step_depth)
-		var b = Vector3(half_width, 0.0, +half_step_depth)
-		var c = Vector3(half_width, 0.0, -half_step_depth - ((steps - 1) * step_depth))
-		var d = Vector3(-half_width, 0.0, -half_step_depth - ((steps - 1) * step_depth))
+		var a = Vector3(-half_width, 0.0, +half_step_depth) + offset_pivot
+		var b = Vector3(half_width, 0.0, +half_step_depth) + offset_pivot
+		var c = Vector3(half_width, 0.0, -half_step_depth - ((steps - 1) * step_depth)) + offset_pivot
+		var d = Vector3(-half_width, 0.0, -half_step_depth - ((steps - 1) * step_depth)) + offset_pivot
 		stairsMesh.add_face_from_points(PoolVector3Array([a, b, c, d]))	
 		
 	# closing back
 	if true:
-		var a = Vector3(half_width, (steps * step_height), -half_step_depth - ((steps - 1) * step_depth))
-		var b = Vector3(-half_width, (steps * step_height), -half_step_depth - ((steps - 1) * step_depth))
-		var c = Vector3(-half_width, 0.0, -half_step_depth - ((steps - 1) * step_depth))
-		var d = Vector3(half_width, 0.0, -half_step_depth - ((steps - 1) * step_depth))
+		var a = Vector3(half_width, (steps * step_height), -half_step_depth - ((steps - 1) * step_depth)) + offset_pivot
+		var b = Vector3(-half_width, (steps * step_height), -half_step_depth - ((steps - 1) * step_depth)) + offset_pivot
+		var c = Vector3(-half_width, 0.0, -half_step_depth - ((steps - 1) * step_depth)) + offset_pivot
+		var d = Vector3(half_width, 0.0, -half_step_depth - ((steps - 1) * step_depth)) + offset_pivot
 		stairsMesh.add_face_from_points(PoolVector3Array([a, b, c, d]))	
 	
 	return stairsMesh
