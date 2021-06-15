@@ -16,3 +16,6 @@ addons/zylann.editor_debugger/
 
 # End of https://www.gitignore.io/api/godot
 
+.vscode/
+.vs-code/
+
