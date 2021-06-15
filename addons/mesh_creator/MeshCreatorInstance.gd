@@ -5,6 +5,9 @@ extends MeshInstance
 var DEFAULT_MATERIAL = preload("res://addons/mesh_creator/materials/mc_default.material")
 
 var ActiveEditorPlugin = null
+var MCEditorGizmo = null
+func get_mc_gizmo(): return MCEditorGizmo
+func set_mc_gizmo(gizmo): MCEditorGizmo = gizmo
 
 var _mc_mesh: MeshCreator_Mesh_Mesh
 func get_mc_mesh() -> MeshCreator_Mesh_Mesh:
@@ -34,7 +37,7 @@ func _ready():
 		spatial.set_owner(get_tree().get_edited_scene_root())
 		
 		_create_editor_indicator(spatial)
-		_create_hover_label(spatial)		
+		_create_hover_label(spatial)
 		
 		
 	else:

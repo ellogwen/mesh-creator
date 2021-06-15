@@ -6,6 +6,9 @@ var Cursor3D = preload("res://addons/mesh_creator/Cursor3D.gd")
 var EditorHelperScript = preload("res://addons/mesh_creator/MCEditorHelper.gd")
 var editorHelperNode
 
+# used do determine, if this gizmo is active or not
+var is_getting_handled = false
+
 signal VERTEX_POSITION_CHANGED
 
 var EDITOR_TOOLS = {
@@ -51,7 +54,6 @@ func setup(plugin):
 	_vertexModeGizmoController.setup(plugin)
 	_edgeModeGizmoController.setup(plugin)
 	_faceModeGizmoController.setup(plugin)
-	MeshCreator_Signals.connect("UI_MESH_CHANGE_TEXTURE", self, "on_ui_mesh_change_texture")
 	pass
 	
 func _add_editor_helper():
@@ -67,7 +69,8 @@ func _add_editor_helper():
 	
 	
 
-func update_properties_panels():	
+func update_properties_panels():
+	return
 	var facePropPanel: Panel = get_plugin().get_face_properties_panel()
 	var edgePropPanel: Panel = get_plugin().get_edge_properties_panel()
 	edgePropPanel.hide()
@@ -158,7 +161,7 @@ func on_face_property_value_changed(context, value):
 		meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)		
 		redraw()
 		
-	
+
 func set_cursor_3d(pos):
 	_cursor3D = get_cursor_3d()
 	_cursor3D.global_transform.origin = pos
@@ -245,8 +248,8 @@ func get_handle_value(index):
 
 func set_handle(index, camera, screen_point):
 	if (_active_gizmo_controller != null):
-		_active_gizmo_controller.gizmo_set_handle(index, camera, screen_point)	
-
+		_active_gizmo_controller.gizmo_set_handle(index, camera, screen_point)
+		
 # Commit a handle being edited (handles must have been previously added by add_handles()).
 # If the cancel parameter is true, an option to restore the edited value to the original is provided.
 func commit_handle(index, restore, cancel=false ):
@@ -287,12 +290,15 @@ func force_mci_selection() -> void:
 		var nodeSelection = get_plugin().get_creator().get_editor_interface().get_selection()
 		for node in nodeSelection.get_selected_nodes():
 			prints(node)
-			if (node != mci and node != _cursor3D):
+			if (node != mci and node != _cursor3D and not node is MeshCreatorInstance):
 				nodeSelection.remove_node(node)
 
 func forward_editor_mouse_button_input(event, camera) -> bool:
-	force_mci_selection()
-	if (not is_mci_selected() and not is_cursor_3d_selected()):
+	if (not is_getting_handled):
+		return false
+	if (not is_mci_selected() and not is_cursor_3d_selected()):		
+		if (not get_plugin().get_creator().SelectionMode == 0):
+			force_mci_selection()
 		# don't allow deselection when not on mesh mod
 		if (get_plugin().get_creator().SelectionMode == 0):
 			print("MCI/Cursor not selected, no key forwarding")
@@ -306,18 +312,15 @@ func forward_editor_mouse_button_input(event, camera) -> bool:
 	return false
 	
 func forward_editor_mouse_motion_input(event, camera) -> bool:
+	if (not is_getting_handled):
+		return false
 	if (_active_gizmo_controller != null):
 		return _active_gizmo_controller.gizmo_forward_mouse_move(event, camera)
 	return false
 	
 func forward_editor_key_input(event, camera) -> bool:
+	if (not is_getting_handled):
+		return false
 	if (_active_gizmo_controller != null):
 		return _active_gizmo_controller.gizmo_forward_key_input(event, camera)
 	return false
-	
-func on_ui_mesh_change_texture(texture_id):
-	if (get_plugin().get_creator().SelectionMode == 0):
-		if (is_mci_selected()):
-			var spatial = get_spatial_node()
-			if (spatial != null and spatial.has_method("set_texture_id")):
-				spatial.set_texture_id(texture_id)

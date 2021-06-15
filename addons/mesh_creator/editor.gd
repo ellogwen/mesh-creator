@@ -75,8 +75,8 @@ func _exit_tree() -> void:
 func get_gizmo_plugin():
 	return meshCreatorGizmoPlugin
 
-func forward_spatial_gui_input(camera, event):	
-	if event is InputEventMouseMotion:				
+func forward_spatial_gui_input(camera, event):
+	if event is InputEventMouseMotion:
 		return meshCreatorGizmoPlugin.forward_editor_mouse_motion_input(event, camera)
 	if event is InputEventMouseButton:
 		return meshCreatorGizmoPlugin.forward_editor_mouse_button_input(event, camera)
@@ -87,6 +87,8 @@ func forward_spatial_gui_input(camera, event):
 # this methods returns true if the selected node
 # will get handled by this plugin	
 func handles(obj):
+	if (meshCreatorGizmoPlugin != null):
+		meshCreatorGizmoPlugin.on_editor_handles(obj)
 	# handles on spatial so that the 
 	# gui is available
 	return obj is Spatial

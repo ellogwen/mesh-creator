@@ -19,12 +19,14 @@ func UpdateDraw():
 	if (Engine.is_editor_hint() == false):
 		return
 		
-	var activeTool = MCI.get_editor_plugin().get_gizmo_plugin().get_active_tool()	
+	var activeTool = null
+	if (MCI.get_mc_gizmo().get_active_gizmo_controller() != null):
+		activeTool = MCI.get_mc_gizmo().get_active_gizmo_controller().get_active_tool()
 	# selected faces
 	# @todo erm... nope, this will surely be backfire 
-	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_face_selection_store().get_store())	
-	var selectedEdges = MCI.get_mc_mesh().get_edges_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_edge_selection_store().get_store())
-	var selectedVertices = MCI.get_mc_mesh().get_vertices_selection(MCI.get_editor_plugin().get_gizmo_plugin().get_mc_gizmo().get_vertex_selection_store().get_store())
+	var selectedFaces = MCI.get_mc_mesh().get_faces_selection(MCI.get_mc_gizmo().get_face_selection_store().get_store())	
+	var selectedEdges = MCI.get_mc_mesh().get_edges_selection(MCI.get_mc_gizmo().get_edge_selection_store().get_store())
+	var selectedVertices = MCI.get_mc_mesh().get_vertices_selection(MCI.get_mc_gizmo().get_vertex_selection_store().get_store())
 		
 	# Clean up before drawing.
 	MCI.mesh.surface_get_material(0).albedo_color = Color(1, 1, 1, 1)
