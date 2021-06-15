@@ -19,6 +19,10 @@ func UpdateDraw():
 	if (Engine.is_editor_hint() == false):
 		return
 		
+	if (not MCI.get_mc_gizmo().is_getting_handled):
+		clear()
+		return
+		
 	var activeTool = null
 	if (MCI.get_mc_gizmo().get_active_gizmo_controller() != null):
 		activeTool = MCI.get_mc_gizmo().get_active_gizmo_controller().get_active_tool()

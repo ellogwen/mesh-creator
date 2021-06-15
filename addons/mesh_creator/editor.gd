@@ -209,13 +209,9 @@ func _on_toolbox_button_create_new_mesh() -> void:
 	
 	get_editor_interface().get_selection().clear()
 	get_editor_interface().get_selection().add_node(mci)
+	get_editor_interface().edit_node(mci) # this hopefully triggers plugin ecosystem callbacks like make_visible
+	handles(mci) # just to be sure
 	
-	var dbg3d = Position3D.new()
-	dbg3d.name = "__DebugPos3D"
-	dbg3d.hide()
-	mci.add_child(dbg3d)
-	dbg3d.set_owner(root3D)	
-	pass
 
 func _on_generator_create_mesh(generator):
 	if (generator == null):
@@ -238,6 +234,9 @@ func _on_generator_create_mesh(generator):
 	mci.SetEditorPlugin(self)
 	get_editor_interface().get_selection().clear()
 	get_editor_interface().get_selection().add_node(mci)
+	get_editor_interface().edit_node(mci) # this hopefully triggers plugin ecosystem callbacks like make_visible
+	handles(mci) # just to be sure
+	
 
 func on_toolbar_id_pressed(id):
 	match (id):
