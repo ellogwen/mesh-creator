@@ -1,14 +1,9 @@
-# Mesh Creator
-# License: Private, Not yet published
-# Godot: https://godotengine.org
+# Godot Mesh Creator Plugin
 
+**License**: Private, No Release Yet, Later probably MIT
+**Godot**: https://godotengine.org
 
+# Introduction
 
-### ROADMAP
-
-
-
-### Known Issues
-
-- The default spatial gizmo (translate, rotate) is still showing. I could not find a way to disabled it. I did a quick look at the godot source but as far as I know it is hardcoded for spatials somehow. If someone knows a way to hide it, please let me know!
-
+This plugin provides mesh creation and in editor editing for the Godot Game Engine 3.3
+This plugin is still heavily a work and progress and NOT YET RELEASED
