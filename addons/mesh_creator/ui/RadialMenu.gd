@@ -69,6 +69,7 @@ func _input(event):
 		# check scancodes
 		for a in _actions:
 			if event.scancode == a.scancode:
+				get_tree().set_input_as_handled()
 				emit_signal("radial_menu_action", a)
 	pass
 	
