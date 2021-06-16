@@ -1,10 +1,64 @@
-[gd_scene format=2]
+[gd_scene load_steps=3 format=2]
 
-[node name="MCToolbarMenu" type="MenuButton"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-text = "MC Mesh"
-items = [ "Dark Texture", null, 0, false, false, 100, 0, null, "", false, "Light Texture", null, 0, false, false, 101, 0, null, "", false, "Green Texture", null, 0, false, false, 102, 0, null, "", false, "Red Texture", null, 0, false, false, 103, 0, null, "", false, "Purple Texture", null, 0, false, false, 104, 0, null, "", false, "Orange Texture", null, 0, false, false, 105, 0, null, "", false ]
+[ext_resource path="res://addons/mesh_creator/ui/Toolbar.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 1 )
+
+[node name="MCToolbar" type="PanelContainer"]
+margin_right = 85.0
+margin_bottom = 40.0
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="HBox" type="HBoxContainer" parent="."]
+margin_right = 267.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Menu" type="MenuButton" parent="HBox"]
+margin_right = 71.0
+margin_bottom = 40.0
+text = "MC Mesh"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VSeparator" type="VSeparator" parent="HBox"]
+margin_left = 75.0
+margin_right = 79.0
+margin_bottom = 40.0
+
+[node name="MODE_MESH" type="ToolButton" parent="HBox"]
+margin_left = 83.0
+margin_right = 131.0
+margin_bottom = 40.0
+toggle_mode = true
+text = "MESH"
+
+[node name="MODE_VTX" type="ToolButton" parent="HBox"]
+margin_left = 135.0
+margin_right = 170.0
+margin_bottom = 40.0
+toggle_mode = true
+text = "VTX"
+
+[node name="MODE_EDGE" type="ToolButton" parent="HBox"]
+margin_left = 174.0
+margin_right = 220.0
+margin_bottom = 40.0
+toggle_mode = true
+text = "EDGE"
+
+[node name="MODE_FACE" type="ToolButton" parent="HBox"]
+margin_left = 224.0
+margin_right = 267.0
+margin_bottom = 40.0
+toggle_mode = true
+text = "FACE"

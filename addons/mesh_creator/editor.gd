@@ -44,12 +44,13 @@ func _enter_tree() -> void:
 	uiFaceProperties.hide()
 	uiEdgeProperties.hide()
 	toolbarButton = UIToolbarButton.instance()
-	toolbarButton.get_popup().connect("id_pressed", self, "on_toolbar_id_pressed")
+	toolbarButton.connect("action", self, "on_toolbar_action")
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbarButton)
 	
 	_create_radial_menu()
+	set_selection_mode(SelectionModes.MESH)
 	print("[Mesh Creator] Ready to take off!")
 
 
@@ -62,7 +63,8 @@ func _exit_tree() -> void:
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiFaceProperties)
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, uiEdgeProperties)
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbarButton)
-	uiFaceProperties.queue_free()	
+	toolbarButton.queue_free()
+	uiFaceProperties.queue_free()
 	uiEdgeProperties.queue_free()
 	_remove_radial_menu()
 	print("[Mesh Creator] Unloaded... Bye!")	
@@ -160,6 +162,15 @@ func get_face_properties_panel():
 func get_edge_properties_panel():
 	return uiEdgeProperties	
 
+var generators_window = null
+func open_generators():
+	if (generators_window == null):
+		generators_window = preload("res://addons/mesh_creator/generators/GeneratorWindow.tscn").instance()
+		add_child(generators_window)
+		
+	(generators_window as WindowDialog).popup_centered()
+	(generators_window as WindowDialog).set_as_minsize()
+	pass
 
 
 #########################
@@ -245,11 +256,12 @@ func _on_generator_create_mesh(generator):
 	handles(mci) # just to be sure
 	
 
-func on_toolbar_id_pressed(id):
-	match (id):
-		100: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(0) # dark
-		101: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(1) # light
-		102: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(2) # red
-		103: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(3) # green
-		104: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(4) # purple
-		105: MeshCreator_Signals.emit_UI_MESH_CHANGE_TEXTURE(5) # orange
+func on_toolbar_action(action):
+	match(action):
+		"ADD_CUBE": _on_toolbox_button_create_new_mesh()
+		"OPEN_GENERATORS": open_generators()
+		"MODE_MESH": set_selection_mode(SelectionModes.MESH)
+		"MODE_VERTEX": set_selection_mode(SelectionModes.VERTEX)
+		"MODE_EDGE": set_selection_mode(SelectionModes.EDGE)
+		"MODE_FACE": set_selection_mode(SelectionModes.FACE)
+	pass
