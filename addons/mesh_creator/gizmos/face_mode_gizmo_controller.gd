@@ -51,6 +51,25 @@ func gizmo_forward_key_input(event, camera):
 		show_radial_menu()
 	return .gizmo_forward_key_input(event, camera)
 
+func _subdivide_selected_faces():
+	var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
+	undo_redo.create_action("Subdivide Selected Faces")
+	var mci = _gizmo.get_spatial_node()
+	var old_geometry = mci.get_mc_mesh().geometry()
+	
+	for face in get_selected_faces():
+		mci.get_mc_mesh().subdivide_face(face.get_mesh_index())
+	
+	var new_geometry = mci.get_mc_mesh().geometry()
+	
+	undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", new_geometry, mci)
+	undo_redo.add_undo_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", old_geometry, mci)
+
+	#request_redraw()
+	undo_redo.add_do_method(self, "request_redraw")
+	undo_redo.add_undo_method(self, "request_redraw")
+	undo_redo.commit_action()
+
 func _extrude_selected_faces():
 	var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
 	undo_redo.create_action("Extrude Selected Faces")
@@ -59,7 +78,7 @@ func _extrude_selected_faces():
 	for face in get_selected_faces():		
 		mci.get_mc_mesh().extrude_face(face.get_mesh_index())		
 	
-	var new_geometry = mci.get_mc_mesh().geometry()
+	var new_geometry = mci.get_mc_mesh().geometry()	
 
 	#meshTools.SetMeshFromMeshCreatorMesh(mci.get_mc_mesh(), mci)
 	undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMeshGeometry", new_geometry, mci)
@@ -152,6 +171,7 @@ func show_radial_menu():
 	spatialEditorRadialMenu.add_action("TOOL_INSET", "Inset", "", KEY_I)
 	spatialEditorRadialMenu.add_action("TOOL_LOOPCUT", "Loopcut")
 	spatialEditorRadialMenu.add_action("TOOL_EXTRUDE", "Extrude", "", KEY_E)
+	spatialEditorRadialMenu.add_action("TOOL_SUBDIVIDE", "Subdivide")
 	spatialEditorRadialMenu.show_menu()
 		
 func request_action(actionName, params = []):
@@ -175,7 +195,10 @@ func request_action(actionName, params = []):
 		activate_tool(get_gizmo().get_editor_tool('FACE_LOOPCUT'))
 	elif (actionName == "TOOL_EXTRUDE"):
 		print("Action Extrude")
-		_extrude_selected_faces()			
+		_extrude_selected_faces()
+	elif (actionName == "TOOL_SUBDIVIDE"):
+		print("Action Subdivide")
+		_subdivide_selected_faces()
 	elif (actionName == "TOOL_REMOVE"):
 		print("Action Remove Face")
 		_remove_selected_faces()	

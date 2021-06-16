@@ -237,6 +237,50 @@ func extrude_face(faceId: int):
 	face.refresh() # this makes sure triangulation is done
 	register_face_edges(face)
 	pass
+
+# @todo this does only work with convex, not n-gon faces?
+func subdivide_face(faceId: int):
+	var face = get_face(faceId)
+	
+	# create 4 new faces
+	if (face.get_vertices().size() != 4):
+		push_error("Could not subdivide face %s. Face must have exactly 4 vertices, currently has %s" % [ faceId, face.get_vertices().size()])
+		return
+		
+	var face_center = face.get_centroid()
+	
+	# create 4 new faces
+	if true:
+		var a = face.get_vertex(0).get_position()
+		var b = (face as MeshCreator_Mesh_Face).get_edge_center(0)
+		var c = face_center
+		var d = (face as MeshCreator_Mesh_Face).get_edge_center(3)
+		add_face_from_points(PoolVector3Array([a, b, c, d]))
+		
+	if true:
+		var a = (face as MeshCreator_Mesh_Face).get_edge_center(0)
+		var b = face.get_vertex(1).get_position()
+		var c = (face as MeshCreator_Mesh_Face).get_edge_center(1)
+		var d = face_center
+		add_face_from_points(PoolVector3Array([a, b, c, d]))
+		
+	if true:
+		var a = face_center
+		var b = (face as MeshCreator_Mesh_Face).get_edge_center(1)
+		var c = face.get_vertex(2).get_position()
+		var d = (face as MeshCreator_Mesh_Face).get_edge_center(2)
+		add_face_from_points(PoolVector3Array([a, b, c, d]))
+		
+	if true:
+		var a = (face as MeshCreator_Mesh_Face).get_edge_center(3)
+		var b = face_center
+		var c = (face as MeshCreator_Mesh_Face).get_edge_center(2)
+		var d = face.get_vertex(3).get_position()
+		add_face_from_points(PoolVector3Array([a, b, c, d]))
+		
+	# remove old face
+	remove_face(faceId)
+	
 	
 # @todo does this only work with convex faces?		
 func inset_face(faceId: int, factor = 0.25):
@@ -275,6 +319,7 @@ func inset_face(faceId: int, factor = 0.25):
 	face.refresh() # this makes sure triangulation is done
 	register_face_edges(face)
 	pass
+	
 	
 func loopcut(loopcutChain : Array, startEdgeIndex = 0, factor: float = 0.5):
 	factor = clamp(factor,0.0001, 0.9999)

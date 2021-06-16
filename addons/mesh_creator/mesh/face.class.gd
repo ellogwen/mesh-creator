@@ -192,6 +192,12 @@ func get_edge_normal(edgeIndex):
 	var center = a + ((b - a) * 0.5)
 	return (center - get_centroid()).normalized()
 	
+func get_edge_center(edgeIndex):
+	var a = get_edge_start(edgeIndex)
+	var b = get_edge_end(edgeIndex)
+	var ab = (b - a)
+	return a + ab.normalized() * (ab.length() * 0.5)
+	
 func get_axis_x():
 	return get_edge_normal(0)
 	
