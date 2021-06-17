@@ -31,7 +31,8 @@ func to_vector() -> Vector3:
 	return _b.get_position() - _a.get_position()
 	
 func get_center() -> Vector3:
-	return _a.get_position() + (_b.get_position() - _a.get_position()).normalized() * (length() * 0.5)
+	return _a.get_position() + (to_vector().normalized() * 0.5)
+	#return _a.get_position() + (_b.get_position() - _a.get_position()).normalized() * (length() * 0.5)
 
 func length() -> float:
 	return (_b.get_position() - _a.get_position()).length()

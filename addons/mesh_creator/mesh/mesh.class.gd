@@ -1,11 +1,15 @@
 # namespace MeshCreator_Mesh
 class_name MeshCreator_Mesh_Mesh
 extends Reference
+
+# OPTIONS
+var AUTO_CUT_FACE_EDGES = true
 	
 # typeof Array<MeshCreator_Mesh_Face>
-var _faces: Array = Array()
+#var _faces: Array = Array()
+var _faces: Dictionary = {}
 func get_face(index: int): return _faces[index]
-func get_faces() -> Array: return _faces
+func get_faces() -> Array: return _faces.values()
 func get_faces_selection(faceIds: Array) -> Array:
 	var faces = Array()
 	for fId in faceIds:
@@ -13,8 +17,9 @@ func get_faces_selection(faceIds: Array) -> Array:
 	return faces
 
 # typeof Array<MeshCreator_Mesh_Edge>
-var _edges: Array  = Array()
-func get_edges() -> Array: return _edges
+#var _edges: Array  = Array()
+var _edges: Dictionary = {}
+func get_edges() -> Array: return _edges.values()
 func get_edge(index: int): return _edges[index]
 func get_edges_selection(edgeIds: Array) -> Array:
 	var edges = Array()
@@ -23,9 +28,10 @@ func get_edges_selection(edgeIds: Array) -> Array:
 	return edges
 
 # typeof Array<MeasCreator_Mesh_Vertex>
-var _vertices: Array = Array()
+#var _vertices: Array = Array()
+var _vertices: Dictionary = {}
 func get_vertex(index: int): return _vertices[index]
-func get_vertices() -> Array: return _vertices
+func get_vertices() -> Array: return _vertices.values()
 func get_vertices_selection(vtxIds: Array) -> Array:
 	var verts = Array()
 	for vId in vtxIds:
@@ -67,9 +73,12 @@ func geometry():
 	return faces
 
 func from_geometry(geometry):
+	var old_auto = AUTO_CUT_FACE_EDGES
+	AUTO_CUT_FACE_EDGES = false
 	clear()
 	for facePoints in geometry:
 		add_face_from_points(facePoints)
+	AUTO_CUT_FACE_EDGES = old_auto
 	
 func define_face_from_vertices(verts: Array) -> int:
 	var realVerts = Array()
@@ -80,9 +89,11 @@ func define_face_from_vertices(verts: Array) -> int:
 		realVerts.push_back(realVtx)
 	var f = MeshCreator_Mesh_Face.new(realVerts)
 	f.set_mesh_index(_nextFaceIdx())
-	_faces.push_back(f)
+	#_faces.push_back(f)
+	_faces[f.get_mesh_index()] = f
 	# register edges
 	register_face_edges(f)
+	prints("Added Face ID", f.get_mesh_index())
 	return f.get_mesh_index()
 	
 func register_face_edges(face):
@@ -91,7 +102,8 @@ func register_face_edges(face):
 		var a = face.get_vertex(i)
 		var b = face.get_vertex((i + 1) % vertexCount)
 		var edge = define_edge_from_vertices(a, b)
-		face.set_edge(i, edge.get_mesh_index())
+		if (edge != null):
+			face.set_edge(i, edge.get_mesh_index())
 	pass
 	
 func add_face_from_points(pts: PoolVector3Array, independentVerts = false) -> int:
@@ -106,21 +118,30 @@ func add_vertex(vtx: MeshCreator_Mesh_Vertex, independentVerts = false) -> MeshC
 		return get_vertex(vtx.get_mesh_index())
 	# find duplicate is this the right way? @todo find a good solution for linked vertices
 	if (independentVerts == false):
-		for v in _vertices:
+		for v in get_vertices():
 			if v.equals_position(vtx):
 				vtx.set_mesh_index(v.get_mesh_index())
 				return get_vertex(v.get_mesh_index())
-	_vertices.push_back(vtx)
 	vtx.set_mesh_index(_nextVertIdx())
+	_vertices[vtx.get_mesh_index()] = vtx
+	
+	# cut edges on existing faces
+	if AUTO_CUT_FACE_EDGES:
+		for edge in get_edges():
+			if edge.is_point_on_edge(vtx.get_position()):
+				cut_edge(edge.get_mesh_index(), vtx.get_position())
+		
 	return vtx
 	
 func define_edge_from_vertices(vtxA: MeshCreator_Mesh_Vertex, vtxB: MeshCreator_Mesh_Vertex) -> MeshCreator_Mesh_Edge :
-	for e in _edges:
+	for e in get_edges():
 		if e.matches(vtxA.get_position(), vtxB.get_position(), true):
 			return get_edge(e.get_mesh_index())
 	var edge = MeshCreator_Mesh_Edge.new(vtxA, vtxB)
 	edge.set_mesh_index(_nextEdgeIdx())
-	_edges.push_back(edge)
+	#_edges.push_back(edge)
+	_edges[edge.get_mesh_index()] = edge
+	prints("Adding Edge ID", edge.get_mesh_index())
 	return edge
 		
 func add_point(pt: Vector3, independetVerts = false) -> MeshCreator_Mesh_Vertex:
@@ -158,31 +179,50 @@ func translate_edges(edgeIds: PoolIntArray, offset: Vector3, associations = true
 # does this work and leave a gap?
 func remove_face(faceId: int):
 	# reindex
-	for i in range(faceId + 1, _faces.size()):
-		var face = _faces[i]
-		face.set_mesh_index(face.get_mesh_index() - 1)
+	#for i in range(faceId + 1, _faces.size()):
+	#	var face = _faces[i]
+	#	face.set_mesh_index(face.get_mesh_index() - 1)
 	# remove
-	_faces.remove(faceId)
+	if (_faces.has(faceId)):
+		_faces[faceId] = null
+	_faces.erase(faceId)
+	prints("Removed Face ID", faceId)
 	# index
 	#_nextFacesIndex -= 1
 	
+func remove_faces(faceIds: Array):
+	faceIds.sort()
+	for i in range(faceIds.size() - 1, -1, -1):
+		remove_face(faceIds[i])
+	
 func remove_edge(edgeId: int):
 	#reindex
-	for i in range(edgeId + 1, _edges.size()):
-		var edge = _edges[i]
-		edge.set_mesh_index(edge.get_mesh_index() -1)
+	#for i in range(edgeId + 1, _edges.size()):
+	#	var edge = _edges[i]
+	#	edge.set_mesh_index(edge.get_mesh_index() -1)
 	#remove
-	_edges.remove(edgeId)
+	if (_edges.has(edgeId)):
+		_edges[edgeId] = null
+	_edges.erase(edgeId)
+	prints("Removed Edge ID", edgeId)
 	# index
 	#_nextEdgeIndex -= 1
 	
+func remove_edges(edgeIds: Array):
+	edgeIds.sort()
+	for i in range(edgeIds.size() - 1, -1, -1):
+		remove_edge(edgeIds[i])
+	
 func remove_vertex(vtxId: int):
 	#reindex
-	for i in range(vtxId + 1, _vertices.size()):
-		var vtx = _vertices[i]
-		vtx.set_mesh_index(vtx.get_mesh_index() -1)
+	#for i in range(vtxId + 1, _vertices.size()):
+	#	var vtx = _vertices[i]
+	#	vtx.set_mesh_index(vtx.get_mesh_index() -1)
 	#remove
-	_vertices.remove(vtxId)
+	if (_vertices.has(vtxId)):
+		_vertices[vtxId] = null
+	_vertices.erase(vtxId)
+	prints("Removed Vertex ID", vtxId)
 	# index
 	#_nextVerticesIndex -= 1
 	
@@ -271,6 +311,19 @@ func subdivide_face(faceId: int):
 		
 	var face_center = face.get_centroid()
 	
+	prints("Subdivide Face ID", faceId)
+	
+	var old_autocut = AUTO_CUT_FACE_EDGES
+	AUTO_CUT_FACE_EDGES = false
+	
+	var edgeIds = (face as MeshCreator_Mesh_Face).get_edges()
+	var cutAt = [
+		face.get_edge_center(0),
+		face.get_edge_center(1),
+		face.get_edge_center(2),
+		face.get_edge_center(3)
+	]
+		
 	# create 4 new faces
 	if true:
 		var a = face.get_vertex(0).get_position()
@@ -284,7 +337,7 @@ func subdivide_face(faceId: int):
 		var b = face.get_vertex(1).get_position()
 		var c = (face as MeshCreator_Mesh_Face).get_edge_center(1)
 		var d = face_center
-		add_face_from_points(PoolVector3Array([a, b, c, d]))
+		add_face_from_points(PoolVector3Array([a, b, c, d]))		
 		
 	if true:
 		var a = face_center
@@ -302,6 +355,12 @@ func subdivide_face(faceId: int):
 		
 	# remove old face
 	remove_face(faceId)
+	
+	AUTO_CUT_FACE_EDGES = old_autocut
+	
+	for i in range(edgeIds.size()):
+		cut_edge(edgeIds[i], cutAt[i])
+		
 	
 	
 # @todo does this only work with convex faces?		
@@ -408,10 +467,12 @@ func build_loopcut_chain(fromFaceId, perEdgeIndex = 0) -> Array:
 	var edgeA = startFace.get_edge_start(perEdgeIndex)
 	var edgeB = startFace.get_edge_end(perEdgeIndex)
 	
-	var currentFaceId = find_face_with_edge(edgeB, edgeA, fromFaceId) # flip
+	var currentFaceIds = find_faces_with_edge(edgeB, edgeA, fromFaceId) # flip
 	
-	if (currentFaceId < 0):
+	if (currentFaceIds.size() != 11):
 		return Array()
+		
+	var currentFaceId = currentFaceIds[0]
 		
 	var process = true
 	var killSwitch = 1000000
@@ -457,7 +518,11 @@ func build_loopcut_chain(fromFaceId, perEdgeIndex = 0) -> Array:
 		edgeA = currentFace.get_edge_start(outEdgeIndex)
 		edgeB = currentFace.get_edge_end(outEdgeIndex)
 		
-		currentFaceId = find_face_with_edge(edgeB, edgeA, currentFace.get_mesh_index())	# flip
+		var faceIds = find_faces_with_edge(edgeB, edgeA, currentFace.get_mesh_index())	# flip
+		if (faceIds.size() == 1):
+			currentFaceId = faceIds[0]
+		else:
+			currentFaceId = -1
 		pass
 		
 	print ("Loopcut: Finished loopcut with " + str(1000000 - killSwitch) + " iterations.")	
@@ -467,10 +532,48 @@ func build_loopcut_chain(fromFaceId, perEdgeIndex = 0) -> Array:
 	chain.push_back(fromFaceId)	
 	return chain
 	
-func find_face_with_edge(a, b, ignoreId = -1) -> int:
-	for face in _faces:
+func find_faces_with_edge(a, b, ignoreId = -1) -> PoolIntArray:
+	var result = PoolIntArray()
+	for face in get_faces():
 		if (face.get_mesh_index() == ignoreId):
 			continue
 		if (face.has_edge(a, b)):
-			return face.get_mesh_index()
-	return -1
+			result.push_back(face.get_mesh_index())
+	return result
+	
+func cut_edge(edgeId, at_point: Vector3) -> PoolIntArray:
+	var edge = get_edge(edgeId)
+	
+	prints("Cutting edge", edgeId, at_point)
+	
+	if (at_point.is_equal_approx(edge.get_a().get_position())):
+		return PoolIntArray([ edgeId ])
+	
+	if (at_point.is_equal_approx(edge.get_b().get_position())):
+		return PoolIntArray([ edgeId ])
+		
+	if (not edge.is_point_on_edge(at_point)):
+		return PoolIntArray([ edgeId ])
+	
+	var assoc_face_ids = find_faces_with_edge(edge.get_a().get_position(), edge.get_b().get_position())
+		
+	prints("Associated Cut Faces:", assoc_face_ids)
+		
+	var aVtx = edge.get_a()
+	var bVtx = edge.get_b()
+	var newVtx = add_point(at_point)
+	
+	var newAId = define_edge_from_vertices(aVtx, newVtx)
+	var newBId = define_edge_from_vertices(newVtx, bVtx)
+	
+	for faceId in assoc_face_ids:
+		var face = get_face(faceId)
+		var points = face.get_points()
+		var oldAIdx = face.get_vertex_index(aVtx.get_position())
+		if (oldAIdx >= 0):
+			points.insert(oldAIdx, newVtx.get_position())
+			add_face_from_points(points)
+			
+	remove_faces(Array(assoc_face_ids))
+	remove_edge(edge.get_mesh_index())
+	return PoolIntArray([ newAId, newBId ])
