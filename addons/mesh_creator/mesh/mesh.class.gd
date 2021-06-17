@@ -132,6 +132,28 @@ func translate_vertex(vertexId: int, offset: Vector3):
 	if (vtx != null):
 		vtx.set_position(vtx.get_position() + offset)
 	pass
+
+# associations: translates all vertices along the edge with it
+func translate_edges(edgeIds: PoolIntArray, offset: Vector3, associations = true):
+	var verts = {}
+	
+	for edgeId in edgeIds:
+		var edge = get_edge(edgeId)
+		if (edge != null):
+			var aVtx = (edge as MeshCreator_Mesh_Edge).get_a()
+			var bVtx = (edge as MeshCreator_Mesh_Edge).get_b()
+			
+			verts[aVtx.get_mesh_index()] = aVtx
+			verts[bVtx.get_mesh_index()] = bVtx
+			
+			if (associations):
+				for vtx in get_vertices():
+					if (edge.is_point_on_edge(vtx.get_position())):
+						verts[vtx.get_mesh_index()] = vtx
+			
+	for vtx in verts.keys():
+		translate_vertex(vtx, offset)
+	pass
 	
 # does this work and leave a gap?
 func remove_face(faceId: int):

@@ -169,11 +169,14 @@ func _on_cursor_3d_transform_changed():
 		var newPos = newPosGlobal
 		#var offset = newPos - spatial.to_local(_currentGlobalPosition)
 		var offset = newPos - _startGlobalPosition
+		
+		var trans_edges = PoolIntArray()
 		for face in _get_selected_faces():
-			for i in range(face.get_vertices().size()):
-				#spatial.get_mc_mesh().translate_vertex(face.get_vertex(i).get_mesh_index(), offset)
-				undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", face.get_vertex(i).get_mesh_index(), offset)
-				undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", face.get_vertex(i).get_mesh_index(), -offset)
+			for edgeId in (face as MeshCreator_Mesh_Face).get_edges():
+				trans_edges.push_back(edgeId)
+		
+		undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_edges", trans_edges, offset)
+		undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_edges", trans_edges, -offset)
 		
 		#meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
 		undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)

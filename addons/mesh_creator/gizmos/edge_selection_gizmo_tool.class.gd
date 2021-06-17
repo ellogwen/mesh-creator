@@ -216,11 +216,18 @@ func _on_cursor_3d_transform_changed():
 		var newPos = newPosGlobal
 		#var offset = newPos - spatial.to_local(_currentGlobalPosition)
 		var offset = newPos - _startGlobalPosition
-		for edge in _get_selected_edges():			
-			undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", edge.get_a().get_mesh_index(), offset)
-			undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", edge.get_b().get_mesh_index(), offset)
-			undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", edge.get_a().get_mesh_index(), -offset)
-			undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", edge.get_b().get_mesh_index(), -offset)
+		
+		var trans_edges = PoolIntArray()
+		for edge in _get_selected_edges():
+			trans_edges.push_back(edge.get_mesh_index())
+			
+			# undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", edge.get_a().get_mesh_index(), offset)
+			# undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_vertex", edge.get_b().get_mesh_index(), offset)
+			# undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", edge.get_a().get_mesh_index(), -offset)
+			# undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_vertex", edge.get_b().get_mesh_index(), -offset)
+		
+		undo_redo.add_do_method(spatial.get_mc_mesh(), "translate_edges", trans_edges, offset)
+		undo_redo.add_undo_method(spatial.get_mc_mesh(), "translate_edges", trans_edges, -offset)
 		
 		#meshTools.SetMeshFromMeshCreatorMesh(spatial.get_mc_mesh(), spatial)
 		undo_redo.add_do_method(meshTools, "SetMeshFromMeshCreatorMesh", spatial.get_mc_mesh(), spatial)

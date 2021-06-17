@@ -6,6 +6,8 @@ var _a: MeshCreator_Mesh_Vertex
 var _b: MeshCreator_Mesh_Vertex
 var _meshIndex = -1
 
+const EPSILON = 0.00001
+
 func _init(a: MeshCreator_Mesh_Vertex, b: MeshCreator_Mesh_Vertex) -> void:
 	_a = a
 	_b = b	
@@ -39,3 +41,18 @@ func matches(a: Vector3, b: Vector3, strict: bool = false) -> bool:
 		return (_a.get_position() == a and _b.get_position() == b)
 	else:
 		return ( (_a.get_position() == a and _b.get_position() == b) or (_a.get_position() == b and _b.get_position() == a) )
+
+func is_point_on_edge(point: Vector3) -> bool:
+	var a = _a.get_position()
+	var b = _b.get_position()
+	
+	var AB = (b - a)
+	var BA = (a - b)
+	var AP = (point - a)
+	var BP = (point - b)
+	
+	if (AB.normalized().is_equal_approx(AP.normalized()) and BA.normalized().is_equal_approx(BP.normalized())):
+		return true
+	
+	return false
+	
