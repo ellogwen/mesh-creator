@@ -148,11 +148,16 @@ func add_point(pt: Vector3, independetVerts = false) -> MeshCreator_Mesh_Vertex:
 	var vtx = MeshCreator_Mesh_Vertex.new(pt)
 	return add_vertex(vtx, independetVerts)
 	
-func translate_vertex(vertexId: int, offset: Vector3):	
+func translate_vertex(vertexId: int, offset: Vector3):
 	var vtx = get_vertex(vertexId)
 	if (vtx != null):
 		vtx.set_position(vtx.get_position() + offset)
 	pass
+	
+func set_vertex_position(vertexId: int, position: Vector3):
+	var vtx = get_vertex(vertexId)
+	if (vtx != null):
+		vtx.set_position(position)
 
 # associations: translates all vertices along the edge with it
 func translate_edges(edgeIds: PoolIntArray, offset: Vector3, associations = true):

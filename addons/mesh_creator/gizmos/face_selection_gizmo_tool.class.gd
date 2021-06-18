@@ -44,7 +44,8 @@ func set_inactive() -> void:
 	_gizmoController.get_gizmo().hide_cursor_3d()
 	_gizmoController.get_gizmo().focus_mesh_instance()
 	pass
-	
+
+
 # return true if event claimed handled
 func on_input_mouse_button(event: InputEventMouseButton, camera) -> bool:
 	if (event.get_button_index() == BUTTON_LEFT):
@@ -139,7 +140,7 @@ func _get_clicked_on_faces_sorted_by_cam_distance(clickPos, camera: Camera):
 func _sort_by_distance_camera_asc(a, b):
 	return a.distance_camera < b.distance_camera
 	
-	
+
 func _on_cursor_3d_transform_changed():
 	var cursor3d = _gizmoController.get_gizmo().get_cursor_3d()
 	var newPosGlobal = _gizmoController.get_gizmo().get_cursor_3d().global_transform.origin	
@@ -159,8 +160,8 @@ func _on_cursor_3d_transform_changed():
 		# disconnect, to prevent editor to not fire event again before we commit
 		if (cursor3d.is_connected("transform_changed", self, "_on_cursor_3d_transform_changed")):
 			cursor3d.disconnect("transform_changed", self, "_on_cursor_3d_transform_changed")
-		
-		var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()		
+				
+		var undo_redo = MeshCreator_Signals.get_editor_plugin().get_undo_redo()
 		undo_redo.create_action("Translate Face")
 		
 		#var newPosLocal = spatial.to_local(newPosGlobal)
